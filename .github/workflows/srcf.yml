@@ -31,4 +31,3 @@ jobs:
           remote-user: ${{ secrets.FTP_USER }}
           remote-password: ${{ secrets.SRCF_FTP_PASSWORD }}
           remote-path: "/public/home/gh464/public_html/"
-          local-path: "public/"
