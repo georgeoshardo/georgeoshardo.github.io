@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Home on Georgeos Hardo</title>
+    <link>http://localhost:1313/</link>
+    <description>Recent content in Home on Georgeos Hardo</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 26 Jun 2024 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Measuring single cell width of bacteria from fluorescence microscopy images</title>
+      <link>http://localhost:1313/posts/test/</link>
+      <pubDate>Wed, 26 Jun 2024 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/posts/test/</guid>
+      <description>The difficulties involved in measuring single bacterial widths.</description>
+    </item>
+    <item>
+      <title></title>
+      <link>http://localhost:1313/about/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/about/</guid>
+      <description>About I’m a PhD student in systems (and synthetic) biology in the Department of Engineering in Somenath Bakshi’s lab at The University of Cambridge. I completed master’s degree in the same university, and my undergraduate degree (B.Eng) in Chemical Engineering at the University of Sheffield. I like DNA, maths, Linux and bacteria.&#xA;Research One of my major research focusses is in the field of high throughput timelapse microscopy image analysis, where I develop tools to extract information from mother machine experiments.</description>
+    </item>
+  </channel>
+</rss>
