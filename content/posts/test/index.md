@@ -14,10 +14,3 @@ resources:
 - src: "Screenshot from 2024-06-26 04-33-58.png"
   name: "header"
 ---
-
-fwenfewfienfifnwefe
-fwgrg
-
-
-
-gregre
