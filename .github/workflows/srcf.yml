@@ -14,3 +14,7 @@ jobs:
         server: files.srcf.net
         username: gh464
         password: ${{ secrets.SRCF_FTP_PASSWORD }}
+        port: 22
+        protocol: ftps
+        local-dir: ./public/
+        server-dir: /public/home/gh464/public_html/
