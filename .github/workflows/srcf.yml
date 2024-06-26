@@ -1,20 +1,87 @@
-on: push
-name: 🚀 Deploy website on push
+name: Deploy Files
+
+on:
+  push:
+    branches:
+      - master
+  # Enables manually triggering of Workflow with file synchronization option
+  workflow_dispatch:
+    inputs:
+      sync:
+        description: "File synchronization"
+        required: true
+        default: "delta"
+
 jobs:
-  web-deploy:
-    name: 🎉 Deploy
+  deploy-master:
+    name: "master branch"
+    if: ${{ github.ref == 'refs/heads/master' }}
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
-    - name: 🚚 Get latest code
-      uses: actions/checkout@v4
-    
-    - name: 📂 Sync files
-      uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-      with:
-        server: files.srcf.net
-        username: gh464
-        password: ${{ secrets.SRCF_FTP_PASSWORD }}
-        port: 22
-        local-dir: ./public/
-        server-dir: /public/home/gh464/public_html/
-        protocol: ftp
+      - name: "Checkout"
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: "Deploy"
+        uses: milanmk/actions-file-deployer@master
+        with:
+          remote-protocol: "sftp"
+          remote-host: ${{ secrets.FTP_HOST }}
+          remote-user: ${{ secrets.FTP_USER }}
+          remote-password: ${{ secrets.SRCF_FTP_PASSWORD }}
+          remote-path: "/public/home/gh464/public_html/"
+          local-path: "./public/"
+
+
+# This is a basic workflow to upload files 
+# from GitHub to server via GitHub Actions
+name: Publish Website on SRCF
+
+# Controls when the workflow will run
+on:
+
+  # Triggers the workflow on push request event 
+  # but only for the specific branch
+  push:
+    branches: [ main ]
+
+# A workflow run is made up of one or more jobs 
+# that can run sequentially or in parallel
+jobs:
+
+  # This workflow contains a single job called "SFTP-Deploy-Action"
+  SFTP-Deploy-Action:
+    name: SFTP-Deploy-Action
+
+    # The type of runner that the job will run on 
+    # (depends on server but usually this value is works)
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks 
+    # that will be executed as part of the job
+    steps:
+
+      # Checks-out your repository under $GITHUB_WORKSPACE, 
+      # so your job can access it
+      - name: Checkout
+        uses: actions/checkout@v3
+
+
+      # This is a composite GitHub Action (Linux runner) 
+      # for deploying repository content to remote server
+      - name: SFTP-Deploy-Action
+        uses: milanmk/actions-file-deployer@master
+        with:
+          remote-protocol: sftp
+
+          # Credentials for SFTP access to server using GitHub secrets
+          remote-host: ${{ secrets.FTP_HOST }}
+          remote-user: ${{ secrets.FTP_USER }}
+          remote-password: ${{ secrets.SRCF_FTP_PASSWORD }}
+
+          # Path for specific folder on server for files deployment
+          remote-path: /public/home/gh464/public_html/
+
+          # Port for SFTP access to server
+          remote-port: 22
