@@ -1,0 +1,54 @@
+baseURL = 'https://example.org/'
+languageCode = 'en-us'
+title = 'Georgeos Hardo'
+theme = 'typo'
+
+[taxonomies]
+tag = 'tags'
+
+
+[params]
+# Meta description
+description = "A personal website"
+colorPalette = 'default'
+# Appearance settings
+theme = 'auto'
+
+# Intro on main page, content is markdown
+homeIntroTitle = 'About'
+homeIntroContent = """
+I’m a PhD student in systems (and synthetic) biology in the Department of Engineering in Somenath Bakshi’s lab at The University of Cambridge.
+"""
+
+# Collection to display on home
+homeCollectionTitle = 'Posts'
+homeCollection = 'posts'
+
+# Lists parameters
+paginationSize = 100
+listSummaries = true
+listDateFormat = '2 Jan 2006'
+
+# Breadcrumbs
+breadcrumbs = true
+
+# Main menu pages
+[[params.menu]]
+name = "home"
+url = "/"
+
+[[params.menu]]
+name = "posts"
+url = "/posts"
+
+[[params.menu]]
+name = "about"
+url = "/about"
+
+# Syntax highligth on code blocks
+[markup]
+[markup.highlight]
+style = 'algol'
+
+# Giscus comments
+[params.giscus]
