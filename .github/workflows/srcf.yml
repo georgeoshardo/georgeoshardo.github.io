@@ -17,4 +17,4 @@ jobs:
         port: 22
         local-dir: ./public/
         server-dir: /public/home/gh464/public_html/
-        protocol: sftp
+        protocol: ftp
