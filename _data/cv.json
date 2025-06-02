@@ -104,43 +104,58 @@
 "interests": [
   {
     "name": "Bioimage analysis",
-    "keywords": ["Microscopy", "Deep Learning", "Single-cell imaging"]
+    "keywords": ["Deep Learning", "Segmentation", "Tracking"]
   },
   {
     "name": "Systems Biology",
-    "keywords": ["Modeling", "Networks"]
+    "keywords": ["Antibiotic persistence", "Antibiotic resistance", "Modelling biophysics of cell growth"]
+  },
+  {
+    "name": "Microscopy",
+    "keywords": ["Widefield microscopy", "Virtual microscopy", "High throughput single-cell imaging"]
+  },
+  {
+    "name": "Microfluidics",
+    "keywords": ["The mother machine", "Single cell chemostats"]
   }
 ]
   ,
   "references": [],
   "publications": [
     {
-      "name": "Paper Title Number 1",
-      "publisher": "Journal 1",
-      "releaseDate": "2009-10-01",
-      "website": "http://academicpages.github.io/files/paper1.pdf",
-      "summary": "This paper is about the number 1. The number 2 is left for future work."
+      "name": "Electrochemical coupling of porin permeability and metabolism controls antibiotic resistance in bacteria",
+      "publisher": "bioRxiv - currently in second review in Nature Micro",
+      "releaseDate": "2022-07-13",
+      "website": "https://www.biorxiv.org/content/10.1101/2022.07.13.499887v1.full",
+      "summary": "Joined this work as an author in 2024-25. This paper showes that the permeability of bacterial porin is dynamically regulated by periplasmic pH and potassium levels, altering antibiotic resistance."
     },
     {
-      "name": "Paper Title Number 2",
-      "publisher": "Journal 1",
-      "releaseDate": "2010-10-01",
-      "website": "http://academicpages.github.io/files/paper2.pdf",
-      "summary": "This paper is about the number 2. The number 3 is left for future work."
+      "name": "Single-cell imaging of the lytic phage life cycle in bacteria",
+      "publisher": "bioRxiv - currently in review in Cell Systems",
+      "releaseDate": "2024-10-22",
+      "website": "https://www.biorxiv.org/content/10.1101/2024.04.11.588870v3.full",
+      "summary": "Single-cell imaging reveals heterogeneous kinetics and physiological coupling in bacteriophage T7 infection dynamics."
     },
     {
-      "name": "Paper Title Number 3",
-      "publisher": "Journal 1",
-      "releaseDate": "2015-10-01",
-      "website": "http://academicpages.github.io/files/paper3.pdf",
-      "summary": "This paper is about the number 3. The number 4 is left for future work."
+      "name": "Quantitative microbiology with widefield microscopy: navigating optical artefacts for accurate interpretations",
+      "publisher": "npj Imaging",
+      "releaseDate": "2024-08-02",
+      "website": "https://www.nature.com/articles/s44303-024-00024-4",
+      "summary": "Addresses systematic errors in quantitative widefield microscopy of microbes (size, intensity, single-molecule counting) due to projection and diffraction, proposing synthetic data and machine learning for accurate interpretation."
     },
     {
-      "name": "Paper Title Number 4",
-      "publisher": "GitHub Journal of Bugs",
-      "releaseDate": "2024-02-17",
-      "website": "http://academicpages.github.io/files/paper3.pdf",
-      "summary": "This paper is about fixing template issue #693."
+      "name": "Synthetic Micrographs of Bacteria (SyMBac) allows accurate segmentation of bacterial cells using deep neural networks",
+      "publisher": "BMC Biology",
+      "releaseDate": "2022-11-30",
+      "website": "https://bmcbiol.biomedcentral.com/articles/10.1186/s12915-022-01453-6",
+      "summary": "Developed SyMBac, a novel method for accurate bacterial cell segmentation using deep neural networks trained with synthetically generated micrographs, outperforming human-annotated data."
+    },
+    {
+      "name": "Challenges of analysing stochastic gene expression in bacteria using single-cell time-lapse experiments",
+      "publisher": "Essays in Biochemistry",
+      "releaseDate": "2021-04-16",
+      "website": "https://doi.org/10.1042/EBC20200015",
+      "summary": "We outline a rigorous framework for single-cell time-lapse experiments to analyze stochastic gene expression in bacteria."
     }
   ],
   "presentations": [
