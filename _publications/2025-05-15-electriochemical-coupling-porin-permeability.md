@@ -5,7 +5,7 @@ category: manuscripts
 permalink: /publication/2025-05-15-electriochemical-coupling-porin-permeability
 excerpt: 'Studing ionic control of porin permeability in bacteria at the single-cell level.'
 date: 2025-05-15
-venue: 'bioRxiv, currently in review'
+venue: 'bioRxiv, currently in 2nd review in Nature Micro'
 #slidesurl: 'http://academicpages.github.io/files/slides1.pdf'
 #paperurl: 'http://georgeoshardo.github.io/files/papers/hardo_quantitative_microbio_artefacts.pdf'
 #bibtexurl: 'http://georgeoshardo.github.io/files/bibtex/hardo_quantitative_microbio_artefacts.bib'
