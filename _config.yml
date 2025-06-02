@@ -8,7 +8,7 @@
 
 # Basic Site Settings
 locale                   : "en-GB"
-site_theme               : "sollight"
+site_theme               : "default"
 title                    : "Georgeos Hardo"
 title_separator          : "-"
 name                     : &name "Georgeos Hardo"

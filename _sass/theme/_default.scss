@@ -1,24 +1,34 @@
 /* ==========================================================================
-   DEFAULT THEME
+   GENTLE OFF-WHITE THEME
    ========================================================================== */
 
-/* Color codes used for the theme */
-$gray                       : #7a8288;
-$dark-gray                  : mix(#000, $gray, 40%);
-$darker-gray                : mix(#000, $gray, 60%);
-$light-gray                 : #9ba1a6;
-$lighter-gray               : mix(#fff, $gray, 90%);
+/* --- Base SASS Variables (mostly from default) --- */
 
-/* Color codes used for the site */
+/* Original grayscale palette for text and general UI elements */
+$gray                       : #7a8288; /* Main text for subtle elements */
+$dark-gray                  : mix(#000, $gray, 40%); /* #494e52 - Primary text */
+$darker-gray                : mix(#000, $gray, 60%); /* #313436 - Stronger text, code text */
+$light-gray                 : #9ba1a6; /* Lighter text */
+/* $lighter-gray from default was mix(#fff, $gray, 90%) -> #f2f3f3 */
+/* We'll define new specific light colors below instead of relying heavily on $lighter-gray for backgrounds */
+
+/* --- New Off-White Palette --- */
+$gentle-bg-main             : #fdfdfb; /* Very subtle cool off-white for main page background */
+$gentle-bg-secondary        : #f5f7f8; /* Slightly darker/different off-white for footer, code blocks, table headers */
+$gentle-border-color        : #e9ecef; /* A clear but light border color for the new BGs */
+$gentle-dark-border-color   : mix(#000, $gentle-border-color, 20%); /* Approx #d8dce0, for more emphasis */
+
+
+/* --- Accent Color codes (from default) --- */
 $danger-color               : #ee5f5b;
 $info-color                 : #2f7f93;
-$notice-color               : #7a8288;
+$notice-color               : $gray; /* Using the defined $gray for notices */
 $success-color              : #62c462;
 $warning-color              : #f89406;
 
-/* Other basic settings for the template */
+/* --- Other basic settings (from default, box-shadow tweaked) --- */
 $border-radius              : 4px;
-$box-shadow                 : 0 1px 1px rgba(0, 0, 0, 0.125);
+$box-shadow                 : 0 1px 1px rgba(0, 0, 0, 0.09); /* Slightly reduced alpha for a softer look */
 $global-transition          : all 0.2s ease-in-out;
 $masthead-height            : 70px;
 $navicon-width              : 28px;
@@ -26,22 +36,37 @@ $navicon-height             : 4px;
 $sidebar-link-max-width     : 250px;
 $sidebar-screen-min-width   : 1024px;
 
-/* Default light theme for the site */
+/* --- CSS Custom Properties for the Gentle Off-White Theme --- */
 :root {
-    --global-base-color                 : #{$gray};
-    --global-bg-color                   : #fff;
-    --global-footer-bg-color            : #f2f3f3;
-    --global-border-color               : #{$lighter-gray};
-    --global-dark-border-color          : #bdc1c4;
-    --global-code-background-color      : #fafafa;
-    --global-code-text-color            : #{$darker-gray};
-    --global-fig-caption-color          : mix(#fff,  #{$dark-gray}, 25%);
-    --global-link-color                 : #52adc8;
-    --global-link-color-hover           : mix(#000, #2f7f93, 25%);
-    --global-link-color-visited         : mix(#fff, #2f7f93, 25%);  
-    --global-masthead-link-color        : #{$dark-gray};
-    --global-masthead-link-color-hover  : mix(#000, #{$gray}, 25%);    
+    /* Text Colors (primarily using SASS variables from above) */
     --global-text-color                 : #{$dark-gray};
     --global-text-color-light           : #{$light-gray};
-    --global-thead-color                : #{$lighter-gray};
+    --global-base-color                 : #{$gray}; /* For less prominent text elements, like in default */
+
+    /* Background Colors */
+    --global-bg-color                   : #{$gentle-bg-main};
+    --global-footer-bg-color            : #{$gentle-bg-secondary};
+    --global-code-background-color      : #{$gentle-bg-secondary};
+
+    /* Border Colors */
+    --global-border-color               : #{$gentle-border-color};
+    --global-dark-border-color          : #{$gentle-dark-border-color};
+
+    /* Code & Figure Captions */
+    --global-code-text-color            : #{$darker-gray};
+    /* Adjust fig caption to mix with the new gentle background */
+    --global-fig-caption-color          : mix(#{$gentle-bg-main}, #{$dark-gray}, 25%);
+
+    /* Link Colors (using default link colors, ensure contrast is good) */
+    --global-link-color                 : #52adc8;
+    --global-link-color-hover           : mix(#000, #2f7f93, 25%); /* #235f6e */
+    /* For visited links, let's make it distinct but not too pale */
+    --global-link-color-visited         : desaturate(lighten(#52adc8, 3%), 15%); /* Approx #7abccf */
+
+    /* Masthead Links (using default logic) */
+    --global-masthead-link-color        : #{$dark-gray};
+    --global-masthead-link-color-hover  : mix(#000, #{$gray}, 25%); /* #5b6166 */
+
+    /* Table Header Background */
+    --global-thead-color                : #{$gentle-bg-secondary};
 }
