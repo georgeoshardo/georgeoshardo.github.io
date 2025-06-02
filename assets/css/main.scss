@@ -11,9 +11,7 @@
 @import
     "vendor/breakpoint/breakpoint",
 
-    "themes",
-    "theme/default",
-    "theme/dark",
+    "theme/{{ site.site_theme | default: 'default' }}",
 
     "include/mixins",
     "vendor/susy/susy",

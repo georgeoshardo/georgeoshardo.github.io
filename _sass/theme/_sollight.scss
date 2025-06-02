@@ -1,0 +1,71 @@
+/* ==========================================================================
+   SOLARIZED LIGHT THEME
+   ========================================================================== */
+
+/* Solarized Light Palette */
+$base03:  #002b36;
+$base02:  #073642;
+$base01:  #586e75; // Content - secondary
+$base00:  #657b83; // Content - primary
+$base0:   #839496; // Content - tertiary, subtle
+$base1:   #93a1a1; // Content - subtle, comments, light borders
+$base2:   #eee8d5; // Background - light, UI elements, code background
+$base3:   #fdf6e3; // Background - lightest, main background
+
+$yellow:  #b58900;
+$orange:  #cb4b16;
+$red:     #dc322f;
+$magenta: #d33682;
+$violet:  #6c71c4;
+$blue:    #268bd2;
+$cyan:    #2aa198;
+$green:   #859900;
+
+/* Color codes used for the theme (mapped to Solarized) */
+// Original $gray: #7a8288; (similar to base00 or base0)
+$gray                       : $base00; // General purpose text, less emphasis
+// Original $dark-gray: mix(#000, $gray, 40%); (similar to base01 or base02)
+$dark-gray                  : $base01; // Primary text color
+// Original $darker-gray: mix(#000, $gray, 60%); (similar to base02 or base03)
+$darker-gray                : $base02; // Very dark elements, or strong text
+// Original $light-gray: #9ba1a6; (similar to base1)
+$light-gray                 : $base0;  // Lighter text, subtle elements
+// Original $lighter-gray: mix(#fff, $gray, 90%); (similar to base2)
+$lighter-gray               : $base2;  // Light backgrounds, subtle borders
+
+/* Color codes used for the site (mapped to Solarized accents) */
+$danger-color               : $red;
+$info-color                 : $blue;
+$notice-color               : $yellow; // Or $cyan for a different feel
+$success-color              : $green;
+$warning-color              : $orange;
+
+/* Other basic settings for the template (unchanged) */
+$border-radius              : 4px;
+$box-shadow                 : 0 1px 1px rgba(0, 0, 0, 0.08); // Adjusted alpha for lighter theme
+$global-transition          : all 0.2s ease-in-out;
+$masthead-height            : 70px;
+$navicon-width              : 28px;
+$navicon-height             : 4px;
+$sidebar-link-max-width     : 250px;
+$sidebar-screen-min-width   : 1024px;
+
+/* Solarized Light theme for the site */
+:root {
+    --global-base-color                 : #{$base00}; // General purpose text
+    --global-bg-color                   : #{$base3};  // Main background
+    --global-footer-bg-color            : #{$base2};  // Footer background
+    --global-border-color               : #{$base2};  // Subtle borders
+    --global-dark-border-color          : #{$base1};  // Slightly more prominent borders
+    --global-code-background-color      : #{$base2};  // Code blocks background
+    --global-code-text-color            : #{$base01}; // Code text
+    --global-fig-caption-color          : #{$base0};  // Figure captions
+    --global-link-color                 : #{$blue};
+    --global-link-color-hover           : #{$violet}; // Or darken($blue, 10%)
+    --global-link-color-visited         : #{$cyan};   // Or desaturate($blue, 15%)
+    --global-masthead-link-color        : #{$base01}; // Masthead links
+    --global-masthead-link-color-hover  : #{$base02}; // Masthead links hover
+    --global-text-color                 : #{$base01}; // Primary body text
+    --global-text-color-light           : #{$base0};  // Lighter/secondary text
+    --global-thead-color                : #{$base2};  // Table header background
+}

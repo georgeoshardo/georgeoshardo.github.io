@@ -8,7 +8,7 @@
 
 # Basic Site Settings
 locale                   : "en-GB"
-site_theme               : "default"
+site_theme               : "sollight"
 title                    : "Georgeos Hardo"
 title_separator          : "-"
 name                     : &name "Georgeos Hardo"
@@ -60,7 +60,7 @@ author:
   keybase          : # Username
   instagram        : # Username
   lastfm           : # Username
-  linkedin         : # Username
+  linkedin         : georgeos-hardo-08b23511a
   mastodon         : # URL
   medium           : # URL
   pinterest        : # Username
