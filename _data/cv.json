@@ -2,67 +2,116 @@
   "basics": {
     "name": "Georgeos Hardo",
     "email": "gh464@cantab.ac.uk",
-    "phone": "",
     "website": "https://academicpages.github.io",
-    "summary": "Currently employed at Red Brick University. Short biography for the left-hand sidebar",
+    "summary": "Freshly graduated PhD from University of Cambridge, and incoming assistant professor at UAE University in August 2025!",
     "location": {
       "address": "",
       "postalCode": "",
-      "city": "Earth",
-      "countryCode": "US",
-      "region": ""
+      "city": "Al Ain",
+      "countryCode": "AE",
+      "region": "Abu Dhabi"
     },
     "profiles": [
       {
         "network": "Google Scholar",
         "username": "",
-        "url": "https://scholar.google.com/citations?user=PS_CX0AAAAAJ"
-      },
-      {
-        "network": "ORCID",
-        "username": "",
-        "url": "http://orcid.org/yourorcidurl"
+        "url": "https://scholar.google.com/citations?user=M2ZIgmYAAAAJ&hl=en"
       },
       {
         "network": "GitHub",
         "username": "academicpages",
-        "url": "https://github.com/academicpages"
+        "url": "https://github.com/georgeoshardo"
       }
     ]
   },
-  "work": [],
+  "work": [
+    {
+      "company": "Department of Engineering - Cambridge University",
+      "position": "Researcher in Systems Biology and Single-Cell Microbiology",
+      "startDate": "January 2020",
+      "endDate": "Present (PhD completed in April 2025)",
+      "highlights": [
+        "I used smart microscopy combined with advanced deep-learning based bioimage analysis to do ultra-high-throughput single-cell imaging of bacteria in microfluidic devices.",
+        "I use these techniques to investigate heterogeneity in bacteria at the single-cell level, with applications pertaining to antibiotic resistance, persistence, and phage therapy, but also to enhance the throughput and efficacy of genetic engineering and synthetic biology techniques.",
+        "Built deep learning based systems that can image over ~10e6 cell lineages across time, building datasets of millions division events in a single experiment.",
+        "I built and maintain custom software packages that use machine-learning based methods to handle, analyse, and track cells in these huge datasets"
+      ]
+    },
+    {
+      "company": "Nemesis Bioscience - Cambridge, UK",
+      "position": "PhD Industrial Research Placement",
+      "startDate": "January 2022",
+      "endDate": "April 2022",
+      "highlights": [
+        "I took a 4 month break during my PhD to work in a phage therapy startup.",
+        "Developed deep learning based models to classify phage proteins.",
+        "Used bioinformatic techniques to optimise the design of custom-built phages.",
+        "As of 2024, continued collaboration to bring Nemesis’ technology to help tackle the antibiotic resistance crisis."
+      ]
+    },
+    {
+      "company": "AstraZeneca/MedImmune - Cambridge, UK",
+      "position": "Graduate Researcher",
+      "startDate": "June 2019",
+      "endDate": "September 2019",
+      "highlights": [
+        "Engineered 5’ and 3’ mRNA UTRs to enhance in vivo stability and protein expression, using deep learning to predict and optimise mRNA expression/stability from UTR sequences.",
+        "Developed generative AI models to design high-expression 5’ UTRs, identifying key regulatory motifs, and validating through successful in vivo transfection in human cell lines."
+      ]
+    },
+    {
+      "company": "Dept. of Chemical Engineering and Biotechnology, Sustaintable Reaction Engineering Group - University of Cambridge",
+      "position": "Researcher",
+      "startDate": "September 2018",
+      "endDate": "June 2019",
+      "highlights": [
+        "Developed graph-theory based tools and algorithms to model and search the entire organic chemistry literature as a network.",
+        "Created an all-in-one toolkit for efficient selection of reaction synthesis pathways, optimizing for yield, conditions, feasibility, and other parameters.."
+      ]
+    }
+  ],
   "education": [
     {
-      "institution": "GitHub University",
-      "area": "Ph.D in Version Control Theory",
+      "institution": "Control Group, Department of Engineering, University of Cambridge",
+      "area": "PhD in Systems/quantitative microbiology",
+      "studyType": "",
+      "startDate": "",
+      "endDate": "2025",
+      "gpa": null,
+      "courses": []
+    },
+    {
+      "institution": "Department of Chemical Engineering and Biotechnology, University of Cambridge",
+      "area": "MPhil in Biotechnology",
+      "studyType": "",
+      "startDate": "",
+      "endDate": "2019",
+      "gpa": null,
+      "courses": []
+    },
+    {
+      "institution": "Department of Chemical and Biological Engineering, University of Sheffield",
+      "area": "B.Eng in Chemical Engineering",
       "studyType": "",
       "startDate": "",
       "endDate": "2018",
-      "gpa": null,
-      "courses": []
-    },
-    {
-      "institution": "GitHub University",
-      "area": "M.S. in Jekyll",
-      "studyType": "",
-      "startDate": "",
-      "endDate": "2014",
-      "gpa": null,
-      "courses": []
-    },
-    {
-      "institution": "GitHub University",
-      "area": "B.S. in GitHub",
-      "studyType": "",
-      "startDate": "",
-      "endDate": "2012",
       "gpa": null,
       "courses": []
     }
   ],
   "skills": [],
   "languages": [],
-  "interests": [],
+"interests": [
+  {
+    "name": "Bioimage analysis",
+    "keywords": ["Microscopy", "Deep Learning", "Single-cell imaging"]
+  },
+  {
+    "name": "Systems Biology",
+    "keywords": ["Modeling", "Networks"]
+  }
+]
+  ,
   "references": [],
   "publications": [
     {
@@ -96,57 +145,65 @@
   ],
   "presentations": [
     {
-      "name": "Talk 1 on Relevant Topic in Your Field",
-      "event": "UC San Francisco, Department of Testing",
-      "date": "2012-03-01",
-      "location": "San Francisco, CA, USA",
+      "name": "Optical illusions in quantitative microbiology with widefield microscopy",
+      "event": "Warwick-Cambridge Quantitative Cell Biology Symposium",
+      "date": "2024",
+      "location": "Warwick, UK",
       "description": ""
     },
     {
-      "name": "Tutorial 1 on Relevant Topic in Your Field",
-      "event": "UC-Berkeley Institute for Testing Science",
-      "date": "2013-03-01",
-      "location": "Berkeley, CA, USA",
+      "name": "Optical illusions and artefacts in the use of widefield microscopy for microbiology",
+      "event": "Physics of Living Matter Early Career Researcher Conference",
+      "date": "2023",
+      "location": "Cambridge, UK",
       "description": ""
     },
     {
-      "name": "Talk 2 on Relevant Topic in Your Field",
-      "event": "London School of Testing",
-      "date": "2014-02-01",
-      "location": "London, UK",
+      "name": "Quantitative Microbiology with Microscopy: Effects of Projection and Diffraction",
+      "event": "Physics of Life Conference",
+      "date": "2023",
+      "location": "Harrogate, UK",
       "description": ""
     },
     {
-      "name": "Conference Proceeding talk 3 on Relevant Topic in Your Field",
-      "event": "Testing Institute of America 2014 Annual Conference",
-      "date": "2014-03-01",
-      "location": "Los Angeles, CA, USA",
+      "name": "Accurate Segmentation of Bacterial Cells Using Synthetic Training Data Reveals Novel Size Regulation Behaviour",
+      "event": "ASM Microbe Conference",
+      "date": "2022",
+      "location": "Washington DC, USA",
+      "description": ""
+    },
+    {
+      "name": "SyMBac: Synthetic Training Data for Accurate and Precise Segmentation of Bacteria",
+      "event": "Physics of Living Matter Conference",
+      "date": "2021",
+      "location": "Cambridge, UK",
       "description": ""
     }
   ],
   "teaching": [
     {
-      "course": "Teaching experience 1",
-      "institution": "University 1, Department",
-      "date": "2014-01-01",
-      "role": "Undergraduate course",
-      "description": ""
+      "course": "Cambridge University Synthetic Biology Society",
+      "institution": "University of Cambridge and iGEM",
+      "role": "Instructor",
+      "description": "I mentor undergraduates and graduate members of the Cambridge University Synthetic Biology Society in the fields of synthetic biology and molecular biology year round, giving talks on mathematical modelling of gene expression systems, and analysis of bioimage data. I also mentor students during the iGEM (International Genetically Engineered Machine) competition each summer, taking the lead on the mathematical and computational side of the project."
     },
     {
-      "course": "Teaching experience 2",
-      "institution": "University 1, Department",
-      "date": "2015-01-01",
-      "role": "Workshop",
-      "description": ""
-    }
-  ],
-  "portfolio": [
+      "course": "BioDesign - MPhil Computational Biology ",
+      "institution": "Department of Applied Mathematics and Theoretical Physics - University of Cambridge",
+      "role": "Supervisor and demonstrator",
+      "description": "Taught introductory mathematics for biologists, general biology for engineers and mathematicians, synthetic biology, genetic circuit design, modelling genetic circuits. Ran labs covering the theoretical (computational) design of COVID-19 mRNA vaccines, and the mathematics behind and implementation of modern DNA computing."
+    },
     {
-      "name": "Portfolio item number 1",
-      "category": "portfolio",
-      "date": "",
-      "url": "",
-      "description": "Short description of portfolio item number 1<br/><img src='/images/500x300.png'>"
+      "course": "Part III Systems Biology",
+      "institution": "Cambridge Systems Biology Centre - University of Cambridge",
+      "role": "Supervisor",
+      "description": "An advanced and mathematics focussed 4th year undergraduate course for the top performers of the Cambridge Natural Sciences Tripos. Taught evolutionary modelling, stochastic modelling of gene expression, synthetic biology principles, bioinformatics, game theory."
+    },
+    {
+      "course": "Mathematical Biology - Natural Sciences Tripos",
+      "institution": "Corpus Christi, Pembroke, and St Catherine's Colleges - University of Cambridge",
+      "role": "Supervisor",
+      "description": "A year-long mathematics course for undergraduates, encompassing a quarter of their teaching time in the first year. Taught probability theory, linear algebra, probability theory, statistics, linear models, calculus, differential equations, biological systems modelling."
     }
   ]
 }
