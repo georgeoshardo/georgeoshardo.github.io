@@ -148,7 +148,7 @@ social:
 
 # Analytics
 analytics:
-  provider               : "google-analytics-4"
+  provider               : "custom"
   google:
     tracking_id          : "G-MR87GKZ82B"
 
