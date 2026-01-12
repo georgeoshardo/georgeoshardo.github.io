@@ -66,7 +66,7 @@
       "endDate": "June 2019",
       "highlights": [
         "Developed graph-theory based tools and algorithms to model and search the entire organic chemistry literature as a network.",
-        "Created an all-in-one toolkit for efficient selection of reaction synthesis pathways, optimizing for yield, conditions, feasibility, and other parameters.."
+        "Created an all-in-one toolkit for efficient selection of reaction synthesis pathways, optimising for yield, conditions, feasibility, and other parameters.."
       ]
     }
   ],
@@ -123,11 +123,11 @@
   "references": [],
   "publications": [
     {
-      "name": "Electrochemical coupling of porin permeability and metabolism controls antibiotic resistance in bacteria",
-      "publisher": "bioRxiv - currently in second review in Nature Micro",
-      "releaseDate": "2022-07-13",
-      "website": "https://www.biorxiv.org/content/10.1101/2022.07.13.499887v1.full",
-      "summary": "Joined this work as an author in 2024-25. This paper showes that the permeability of bacterial porin is dynamically regulated by periplasmic pH and potassium levels, altering antibiotic resistance."
+      "name": "Metabolic control of porin permeability influences antibiotic resistance in Escherichia coli",
+      "publisher": "Nature Microbiology",
+      "releaseDate": "2025-11-24",
+      "website": "https://doi.org/10.1038/s41564-025-02175-5",
+      "summary": "Using single-cell imaging, this paper shows that porin permeability in E. coli is controlled by periplasmic H+ and K+ concentrations. This metabolic control explains ciprofloxacin resistance in lipid-catabolising bacteria and identifies Kch as a therapeutic target."
     },
     {
       "name": "Single-cell imaging of the lytic phage life cycle in bacteria",
