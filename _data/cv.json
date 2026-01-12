@@ -130,6 +130,13 @@
       "summary": "Using single-cell imaging, this paper shows that porin permeability in E. coli is controlled by periplasmic H+ and K+ concentrations. This metabolic control explains ciprofloxacin resistance in lipid-catabolising bacteria and identifies Kch as a therapeutic target."
     },
     {
+      "name": "Glycogen phase-separation drives macromolecular rearrangement and asymmetric division in E. coli",
+      "publisher": "The EMBO Journal",
+      "releaseDate": "2025-11-03",
+      "website": "https://doi.org/10.1038/s44318-025-00621-y",
+      "summary": "Using quantitative cell imaging, it is shown that glycogen accumulation at the old cell pole causes asymmetric nucleoid positioning and cell division during nutrient limitation. Glycogen phase-separates into soft condensates, allowing cells to store glucose reserves without affecting perceived cytoplasmic space."
+    },
+    {
       "name": "Single-cell imaging of the lytic phage life cycle in bacteria",
       "publisher": "bioRxiv - currently in review in Cell Systems",
       "releaseDate": "2024-10-22",
