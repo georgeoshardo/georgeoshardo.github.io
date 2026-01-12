@@ -204,6 +204,24 @@
   ],
   "teaching": [
     {
+      "course": "Selected Topics in Biotechnology (BIOM745)",
+      "institution": "Department of Biology - United Arab Emirates University",
+      "role": "Assistant Professor",
+      "description": "Taught Selected Topics in Biotechnology (BIOM745) in 2025 at the Department of Biology, United Arab Emirates University."
+    },
+    {
+      "course": "General Genetics (BIOC270)",
+      "institution": "Department of Biology - United Arab Emirates University",
+      "role": "Assistant Professor",
+      "description": "Taught General Genetics (BIOC270) in 2026 at the Department of Biology, United Arab Emirates University."
+    },
+    {
+      "course": "Molecular Biology of Genes (BIOM335)",
+      "institution": "Department of Biology - United Arab Emirates University",
+      "role": "Assistant Professor",
+      "description": "Taught Molecular Biology of Genes (BIOM335) in 2025 and 2026 at the Department of Biology, United Arab Emirates University."
+    },
+    {
       "course": "Cambridge University Synthetic Biology Society",
       "institution": "University of Cambridge and iGEM",
       "role": "Instructor",
