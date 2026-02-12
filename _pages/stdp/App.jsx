@@ -845,9 +845,9 @@ G_X(u) &= N_0\,\pi_X\,e^{gu}
       <EquationCard title="6) HOW TO READ THE DASHBOARD">
         <div style={{ fontSize: 10.3, color: DIM, lineHeight: 1.75 }}>
           1. `PHASE` shows how survivor composition shifts with one axis at a time. <br />
-          2. `HEATMAP` maps (C, τ) to composition and total survival at fixed age. <br />
+          2. `HEATMAP` maps (C, τ) to composition and total survival at fixed age, and includes post-treatment regrowth projections. <br />
           3. `KINETICS` exposes hS/hX/rS→X dose-response and lag distribution controls. <br />
-          4. `REGROWTH` projects which survivor class dominates descendants after removal.
+          4. In the regrowth section, descendants from S/X/D are compared after antibiotic removal.
         </div>
       </EquationCard>
     </div>
@@ -863,7 +863,6 @@ const TABS = [
   { id: "phase",    label: "PHASE" },
   { id: "heatmap",  label: "HEATMAP" },
   { id: "kinetics", label: "KINETICS" },
-  { id: "regrowth", label: "REGROWTH" },
 ];
 
 export default function App() {
@@ -1049,6 +1048,30 @@ export default function App() {
                   X-axis: concentration C, log₁₀ scale 0.3–1000 μg/mL. Y-axis: treatment duration τ, 0–8h. Age = {cond.age.toFixed(0)}h (adjust via sidebar).
                   {useK ? " Darkness encodes 1 − survivors^γ." : " Pure hue only; all brightnesses equal."}
                 </div>
+
+                <div style={{ marginTop: 18, borderTop: `1px solid ${BORDER}`, paddingTop: 12 }}>
+                  <div style={{ display: "flex", gap: 16, alignItems: "center", marginBottom: 10 }}>
+                    <div style={{ fontSize: 11, color: "#8888AA" }}>Post-treatment time u:</div>
+                    <input type="range" min={1} max={200} step={1} value={u}
+                      onChange={e => setU(Number(e.target.value))}
+                      style={{ width: 120, accentColor: ACCENT }} />
+                    <span style={{ color: ACCENT, fontSize: 12, fontFamily: "monospace" }}>u = {u}h</span>
+                    <span style={{ fontSize: 11, color: DIM }}>2^{(u * Math.log2(Math.E) * Math.log(2)).toFixed(1)} × N₀ max theoretical</span>
+                  </div>
+
+                  {legend}
+                  <div style={{ marginTop: 12, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+                    <RegrowthComposition p={params} C={cond.C} age={cond.age} u={u} />
+                    <RegrowthMass p={params} C={cond.C} age={cond.age} u={u} />
+                  </div>
+
+                  <div style={{ marginTop: 10, fontSize: 10.5, color: DIM, lineHeight: 1.7, background: "#0A0A12", border: `1px solid ${BORDER}`, borderRadius: 3, padding: "6px 10px" }}>
+                    <strong style={{ color: "#9999BB" }}>Left:</strong> Fractional contribution to the regrown population at time u, as a function of τ.
+                    S: incomplete-treatment survivors (grew exponentially from τ). X: induced tolerant survivors. D: deep persisters — delayed by residual lag before contributing. <br />
+                    <strong style={{ color: "#9999BB" }}>Right:</strong> Total regrown mass N(u)/N₀ on log scale. Minima arise because intermediate τ kills many cells before persisters dominate.
+                    g = ln 2 ≈ 0.693 h⁻¹ (1h doubling). Varying u shows how D-lineage dominance emerges over time.
+                  </div>
+                </div>
               </div>
             )}
 
@@ -1065,33 +1088,6 @@ export default function App() {
                   <strong style={{ color: "#9999BB" }}>Top-right:</strong> Erlang(k_lag, λ) lag distribution for current age.
                   λ = k_lag / (μ₀ + age/24·μ₂₄′). &nbsp;
                   <strong style={{ color: "#9999BB" }}>Bottom:</strong> rS→X at multiple ages — illustrates the m(a) = a/(a+a₅₀) stress-memory saturation.
-                </div>
-              </div>
-            )}
-
-            {/* ── REGROWTH ── */}
-            {tab === "regrowth" && (
-              <div>
-                <div style={{ display: "flex", gap: 16, alignItems: "center", marginBottom: 10 }}>
-                  <div style={{ fontSize: 11, color: "#8888AA" }}>Post-treatment time u:</div>
-                  <input type="range" min={1} max={200} step={1} value={u}
-                    onChange={e => setU(Number(e.target.value))}
-                    style={{ width: 120, accentColor: ACCENT }} />
-                  <span style={{ color: ACCENT, fontSize: 12, fontFamily: "monospace" }}>u = {u}h</span>
-                  <span style={{ fontSize: 11, color: DIM }}>2^{(u * Math.log2(Math.E) * Math.log(2)).toFixed(1)} × N₀ max theoretical</span>
-                </div>
-
-                {legend}
-                <div style={{ marginTop: 12, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
-                  <RegrowthComposition p={params} C={cond.C} age={cond.age} u={u} />
-                  <RegrowthMass p={params} C={cond.C} age={cond.age} u={u} />
-                </div>
-
-                <div style={{ marginTop: 10, fontSize: 10.5, color: DIM, lineHeight: 1.7, background: "#0A0A12", border: `1px solid ${BORDER}`, borderRadius: 3, padding: "6px 10px" }}>
-                  <strong style={{ color: "#9999BB" }}>Left:</strong> Fractional contribution to the regrown population at time u, as a function of τ.
-                  S: incomplete-treatment survivors (grew exponentially from τ). X: induced tolerant survivors. D: deep persisters — delayed by residual lag before contributing. <br />
-                  <strong style={{ color: "#9999BB" }}>Right:</strong> Total regrown mass N(u)/N₀ on log scale. Minima arise because intermediate τ kills many cells before persisters dominate.
-                  g = ln 2 ≈ 0.693 h⁻¹ (1h doubling). Varying u shows how D-lineage dominance emerges over time.
                 </div>
               </div>
             )}
