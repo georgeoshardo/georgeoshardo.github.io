@@ -91,7 +91,7 @@ function predict(p, C, tau, a) {
   return { S: piS, T: piT, D: piD, dead: Math.max(0, 1 - piD - piS - piT) };
 }
 
-function computeConvolutionSweep(p, cond, nPts = 240) {
+function computeConvolutionSeries(p, cond, nPts = 240) {
   const tau = Math.max(0, cond.tau);
   const lam = getLambda(p, cond.age);
   const meanLag = p.k_lag / Math.max(lam, 1e-12);
@@ -100,58 +100,40 @@ function computeConvolutionSweep(p, cond, nPts = 240) {
   const r = rST(cond.C, cond.age, p.kST, p.KST, p.nST, p.a50, p.r0);
   const H = hs + r;
   const isDegenerate = Math.abs(H - ht) <= 1e-10;
-  const deltaMax = Math.min(24, Math.max(1.15 * tau, 4 * meanLag, 8));
+  const tMax = Math.min(24, Math.max(1.15 * tau, 4 * meanLag, 8));
   const points = Math.max(3, Math.floor(nPts));
-  const step = deltaMax / (points - 1);
+  const step = tMax / (points - 1);
   const dataRaw = [];
   let maxF = 0;
   let maxPS = 0;
   let maxPX = 0;
-  let piSNum = 0;
-  let piXNum = 0;
 
   for (let i = 0; i < points; i++) {
-    const delta = i * step;
-    const ell = tau - delta;
-    const fLag = ell >= 0 ? erlangPDF(p.k_lag, lam, ell) : 0;
-    const pSShift = Math.exp(-H * delta);
-    let pXShift;
+    const t = i * step;
+    const pr = predict(p, cond.C, t, cond.age);
+    const fLag = erlangPDF(p.k_lag, lam, t);
+    const pS = Math.exp(-H * t);
+    let pX;
     if (isDegenerate) {
-      pXShift = r * delta * Math.exp(-ht * delta);
+      pX = r * t * Math.exp(-ht * t);
     } else {
-      pXShift = (r / (H - ht)) * (Math.exp(-ht * delta) - Math.exp(-H * delta));
+      pX = (r / (H - ht)) * (Math.exp(-ht * t) - Math.exp(-H * t));
     }
-    pXShift = Math.max(0, pXShift);
-    const wS = fLag * pSShift;
-    const wX = fLag * pXShift;
+    pX = Math.max(0, pX);
     maxF = Math.max(maxF, fLag);
-    maxPS = Math.max(maxPS, pSShift);
-    maxPX = Math.max(maxPX, pXShift);
-    dataRaw.push({ delta: +delta.toFixed(4), ell: +ell.toFixed(4), fLag, pSShift, pXShift, wS, wX });
-  }
-
-  for (let i = 1; i < dataRaw.length; i++) {
-    piSNum += 0.5 * (dataRaw[i - 1].wS + dataRaw[i].wS) * step;
-    piXNum += 0.5 * (dataRaw[i - 1].wX + dataRaw[i].wX) * step;
+    maxPS = Math.max(maxPS, pS);
+    maxPX = Math.max(maxPX, pX);
+    dataRaw.push({ t: +t.toFixed(4), S_t: pr.S, X_t: pr.T, fLag, pS, pX });
   }
 
   const data = dataRaw.map(d => ({
     ...d,
     fNorm: maxF > 0 ? d.fLag / maxF : 0,
-    pSNorm: maxPS > 0 ? d.pSShift / maxPS : 0,
-    pXNorm: maxPX > 0 ? d.pXShift / maxPX : 0,
+    pSNorm: maxPS > 0 ? d.pS / maxPS : 0,
+    pXNorm: maxPX > 0 ? d.pX / maxPX : 0,
   }));
 
-  const predRef = predict(p, cond.C, tau, cond.age);
-  return {
-    data,
-    tau,
-    deltaMax,
-    piSNum,
-    piXNum,
-    piSRef: predRef.S,
-    piXRef: predRef.T,
-  };
+  return { data, tau, tMax };
 }
 
 // Post-treatment: discounted deep-persister arrival integral
@@ -702,74 +684,79 @@ function KernelChart({ p, cond }) {
 }
 
 function ConvolutionSweepPanels({ p, cond, pred }) {
-  const sweep = useMemo(() => computeConvolutionSweep(p, cond), [p, cond]);
-  const errS = Math.abs(sweep.piSNum - pred.S);
-  const errX = Math.abs(sweep.piXNum - pred.T);
-  const errColor = e => e < 1e-3 ? ACCENT : "#FF6B6B";
-  const areaFmt = v => Number(v).toExponential(3);
+  const sweep = useMemo(() => computeConvolutionSeries(p, cond), [p, cond]);
   const shapeFmt = v => Number(v).toFixed(3);
+  const probFmt = v => `${(100 * Math.max(0, v)).toFixed(3)}%`;
 
-      return (
+  return (
     <div style={{ background: "#0A0A12", border: `1px solid ${BORDER}`, borderRadius: 4, padding: "8px 10px" }}>
       <div style={{ fontSize: 10, color: ACCENT, letterSpacing: 1.6, marginBottom: 5 }}>
-        CONVOLUTION VIEW · WHERE SURVIVORS COME FROM
+        STATE PROBABILITY OVER TIME
       </div>
       <div style={{ fontSize: 10, color: DIM, marginBottom: 8, lineHeight: 1.6 }}>
-        Left to right means longer exposure time before wake-up. In each panel, the shaded curve shows how much each wake-up timing contributes to survivors.
-        Total shaded area is the survivor fraction (top: S, bottom: X). Dashed lines are shape guides for wake timing and post-wake survival.
+        All curves move left-to-right in treatment time. Filled curves show the probability of being in state S (top) and state X (bottom).
+        Dashed curves show the two ingredients of the convolution: wake-up timing and post-wake survival/contribution shape.
       </div>
 
       <div style={{ fontSize: 10, color: "#7788AA", marginBottom: 4, display: "flex", gap: 12, flexWrap: "wrap" }}>
-        <span style={{ color: SC.S }}>shaded area (S) = {areaFmt(sweep.piSNum)}</span>
-        <span>model S = {fmtVal(pred.S, 6)}</span>
-        <span style={{ color: errColor(errS) }}>difference = {areaFmt(errS)}</span>
+        <span style={{ color: SC.S }}>S(τ) = {probFmt(pred.S)}</span>
+        <span>Probability of being in state S at current treatment time</span>
       </div>
       <ResponsiveContainer width="100%" height={180}>
-        <ComposedChart data={sweep.data} margin={{ top: 4, right: 6, bottom: 16, left: 34 }}>
+        <ComposedChart data={sweep.data} margin={{ top: 28, right: 8, bottom: 24, left: 36 }}>
           <CartesianGrid strokeDasharray="2 3" stroke="#1C1C2A" />
-          <XAxis type="number" dataKey="delta" domain={[0, sweep.deltaMax]} stroke={DIM} tick={{ fill: "#667", fontSize: 11 }} tickCount={6} />
-          <YAxis yAxisId="raw" stroke={DIM} tick={{ fill: "#667", fontSize: 11 }} tickFormatter={v => Number(v).toExponential(0)} />
+          <XAxis
+            type="number"
+            dataKey="t"
+            domain={[0, sweep.tMax]}
+            stroke={DIM}
+            tick={{ fill: "#667", fontSize: 11 }}
+            tickCount={6}
+            label={{ value: "treatment time t (h)", position: "insideBottom", offset: -10, fill: "#667", fontSize: 11 }}
+          />
+          <YAxis yAxisId="raw" stroke={DIM} domain={[0, 1]} tick={{ fill: "#667", fontSize: 11 }} tickFormatter={v => `${(100 * v).toFixed(0)}%`} />
           <YAxis yAxisId="norm" orientation="right" domain={[0, 1]} stroke={DIM} tick={{ fill: "#667", fontSize: 10 }} tickCount={3} />
           <Tooltip
             {...TT}
-            labelFormatter={v => `Δ = ${Number(v).toFixed(2)}h`}
-            formatter={(v, n) => [String(n).includes("norm") ? shapeFmt(v) : areaFmt(v), n]}
+            labelFormatter={v => `t = ${Number(v).toFixed(2)}h`}
+            formatter={(v, n) => [String(n).includes("relative shape") ? shapeFmt(v) : probFmt(v), n]}
           />
-          <ReferenceLine x={sweep.tau} stroke="#9AA3B2" strokeDasharray="4 2" yAxisId="raw" />
-          <Area yAxisId="raw" type="monotone" dataKey="wS" stroke={SC.S} fill={SC.S} fillOpacity={0.42} name="wS = fL(τ-Δ)·PS(Δ)" />
-          <Line yAxisId="norm" type="monotone" dataKey="fNorm" stroke={ACCENT} dot={false} strokeWidth={1.6} strokeDasharray="4 2" name="fL(τ-Δ) norm" />
-          <Line yAxisId="norm" type="monotone" dataKey="pSNorm" stroke={SC.S} dot={false} strokeWidth={1.6} strokeDasharray="6 2" name="PS(Δ) norm" />
+          <ReferenceLine x={sweep.tau} stroke="#9AA3B2" strokeDasharray="4 2" yAxisId="raw" label={{ value: "τ", fill: "#9AA3B2", fontSize: 10, position: "top" }} />
+          <Area yAxisId="raw" type="monotone" dataKey="S_t" stroke={SC.S} fill={SC.S} fillOpacity={0.42} name="S(t): probability of being in state S at time t" />
+          <Line yAxisId="norm" type="monotone" dataKey="fNorm" stroke={ACCENT} dot={false} strokeWidth={1.6} strokeDasharray="4 2" name="Wake-up timing f_L(t|a) (relative shape)" />
+          <Line yAxisId="norm" type="monotone" dataKey="pSNorm" stroke={SC.S} dot={false} strokeWidth={1.6} strokeDasharray="6 2" name="P_S(t): probability a waking cell remains in S up to time t (relative shape)" />
+          <Legend verticalAlign="top" align="right" iconSize={8} wrapperStyle={{ fontSize: 10, color: TXT }} />
         </ComposedChart>
       </ResponsiveContainer>
 
       <div style={{ fontSize: 10, color: "#7788AA", marginBottom: 4, marginTop: 6, display: "flex", gap: 12, flexWrap: "wrap" }}>
-        <span style={{ color: SC.T }}>shaded area (X) = {areaFmt(sweep.piXNum)}</span>
-        <span>model X = {fmtVal(pred.T, 6)}</span>
-        <span style={{ color: errColor(errX) }}>difference = {areaFmt(errX)}</span>
+        <span style={{ color: SC.T }}>X(τ) = {probFmt(pred.T)}</span>
+        <span>Probability of being in state X at current treatment time</span>
       </div>
       <ResponsiveContainer width="100%" height={188}>
-        <ComposedChart data={sweep.data} margin={{ top: 4, right: 6, bottom: 24, left: 34 }}>
+        <ComposedChart data={sweep.data} margin={{ top: 28, right: 8, bottom: 24, left: 36 }}>
           <CartesianGrid strokeDasharray="2 3" stroke="#1C1C2A" />
           <XAxis
             type="number"
-            dataKey="delta"
-            domain={[0, sweep.deltaMax]}
+            dataKey="t"
+            domain={[0, sweep.tMax]}
             stroke={DIM}
             tick={{ fill: "#667", fontSize: 11 }}
             tickCount={6}
-            label={{ value: "exposure time Δ (h)", position: "insideBottom", offset: -10, fill: "#667", fontSize: 11 }}
+            label={{ value: "treatment time t (h)", position: "insideBottom", offset: -10, fill: "#667", fontSize: 11 }}
           />
-          <YAxis yAxisId="raw" stroke={DIM} tick={{ fill: "#667", fontSize: 11 }} tickFormatter={v => Number(v).toExponential(0)} />
+          <YAxis yAxisId="raw" stroke={DIM} domain={[0, 1]} tick={{ fill: "#667", fontSize: 11 }} tickFormatter={v => `${(100 * v).toFixed(0)}%`} />
           <YAxis yAxisId="norm" orientation="right" domain={[0, 1]} stroke={DIM} tick={{ fill: "#667", fontSize: 10 }} tickCount={3} />
           <Tooltip
             {...TT}
-            labelFormatter={v => `Δ = ${Number(v).toFixed(2)}h`}
-            formatter={(v, n) => [String(n).includes("norm") ? shapeFmt(v) : areaFmt(v), n]}
+            labelFormatter={v => `t = ${Number(v).toFixed(2)}h`}
+            formatter={(v, n) => [String(n).includes("relative shape") ? shapeFmt(v) : probFmt(v), n]}
           />
-          <ReferenceLine x={sweep.tau} stroke="#9AA3B2" strokeDasharray="4 2" yAxisId="raw" />
-          <Area yAxisId="raw" type="monotone" dataKey="wX" stroke={SC.T} fill={SC.T} fillOpacity={0.42} name="wX = fL(τ-Δ)·PX(Δ)" />
-          <Line yAxisId="norm" type="monotone" dataKey="fNorm" stroke={ACCENT} dot={false} strokeWidth={1.6} strokeDasharray="4 2" name="fL(τ-Δ) norm" />
-          <Line yAxisId="norm" type="monotone" dataKey="pXNorm" stroke={SC.T} dot={false} strokeWidth={1.6} strokeDasharray="6 2" name="PX(Δ) norm" />
+          <ReferenceLine x={sweep.tau} stroke="#9AA3B2" strokeDasharray="4 2" yAxisId="raw" label={{ value: "τ", fill: "#9AA3B2", fontSize: 10, position: "top" }} />
+          <Area yAxisId="raw" type="monotone" dataKey="X_t" stroke={SC.T} fill={SC.T} fillOpacity={0.42} name="X(t): probability of being in state X at time t" />
+          <Line yAxisId="norm" type="monotone" dataKey="fNorm" stroke={ACCENT} dot={false} strokeWidth={1.6} strokeDasharray="4 2" name="Wake-up timing f_L(t|a) (relative shape)" />
+          <Line yAxisId="norm" type="monotone" dataKey="pXNorm" stroke={SC.T} dot={false} strokeWidth={1.6} strokeDasharray="6 2" name="P_X(t): probability a waking cell contributes to X by time t (relative shape)" />
+          <Legend verticalAlign="top" align="right" iconSize={8} wrapperStyle={{ fontSize: 10, color: TXT }} />
         </ComposedChart>
       </ResponsiveContainer>
     </div>
