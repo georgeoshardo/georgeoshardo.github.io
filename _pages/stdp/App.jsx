@@ -1,6 +1,6 @@
 // STDP Persistence Model — Interactive Visualization Dashboard
 // All math ported from Python; no external data dependency.
-import { useState, useEffect, useRef, useMemo } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import {
   AreaChart, Area, XAxis, YAxis, Tooltip, LineChart, Line,
   ResponsiveContainer, CartesianGrid, Legend
