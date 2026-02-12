@@ -334,11 +334,11 @@ function LiveMathStrip({ p, cond, pred }) {
 // CHART COMPONENTS
 // ═══════════════════════════════════════════════════════════════════
 
-function StackedArea({ data, xKey, xLabel, xTicks, xFmt, title }) {
+function StackedArea({ data, xKey, xLabel, xTicks, xFmt, title, height = 155 }) {
   return (
     <div>
       <div style={{ fontSize: 11, color: "#7788AA", fontFamily: "monospace", marginBottom: 3 }}>{title}</div>
-      <ResponsiveContainer width="100%" height={155}>
+      <ResponsiveContainer width="100%" height={height}>
         <AreaChart data={data} margin={{ top: 4, right: 4, bottom: 22, left: 28 }}>
           <CartesianGrid strokeDasharray="2 3" stroke="#1C1C2A" />
           <XAxis dataKey={xKey} stroke={DIM} tick={{ fill: "#667", fontSize: 11 }}
@@ -362,7 +362,7 @@ function PhaseTau({ p, C, age }) {
     const r = predict(p, C, tau, age);
     return { tau: +tau.toFixed(2), ...r };
   }), [p, C, age]);
-  return <StackedArea data={data} xKey="tau" xLabel="τ (h)" title="vs treatment duration τ" />;
+  return <StackedArea data={data} xKey="tau" xLabel="τ (h)" title="vs treatment duration τ" height={465} />;
 }
 
 function PhaseConc({ p, tau, age }) {
@@ -373,7 +373,7 @@ function PhaseConc({ p, tau, age }) {
     return { logC: +logC.toFixed(3), ...r };
   }), [p, tau, age]);
   return <StackedArea data={data} xKey="logC" xLabel="C (μg/mL)"
-    xTicks={LOG_TICKS} xFmt={logTickFmt} title="vs concentration C" />;
+    xTicks={LOG_TICKS} xFmt={logTickFmt} title="vs concentration C" height={465} />;
 }
 
 function PhaseAge({ p, C, tau }) {
@@ -382,7 +382,7 @@ function PhaseAge({ p, C, tau }) {
     const r = predict(p, C, tau, a);
     return { a: +a.toFixed(1), ...r };
   }), [p, C, tau]);
-  return <StackedArea data={data} xKey="a" xLabel="age (h)" title="vs culture age" />;
+  return <StackedArea data={data} xKey="a" xLabel="age (h)" title="vs culture age" height={465} />;
 }
 
 function HazardChart({ p, age }) {
@@ -619,7 +619,7 @@ function RegrowthComposition({ p, C, age, u }) {
     const denom = Math.max(r.S + r.T + J, 1e-12);
     return { tau: +tau.toFixed(2), S: r.S / denom, T: r.T / denom, D: J / denom };
   }), [p, C, age, u]);
-  return <StackedArea data={data} xKey="tau" xLabel="τ (h)" title={`Descendant composition at u = ${u.toFixed(0)}h post-removal`} />;
+  return <StackedArea data={data} xKey="tau" xLabel="τ (h)" title={`Descendant composition at u = ${u.toFixed(0)}h post-removal`} height={465} />;
 }
 
 function RegrowthMass({ p, C, age, u }) {
@@ -637,7 +637,7 @@ function RegrowthMass({ p, C, age, u }) {
       <div style={{ fontSize: 11, color: "#7788AA", fontFamily: "monospace", marginBottom: 3 }}>
         Total regrown mass N(u)/N₀  (log₁₀ scale) · g = ln2 ≈ 0.693 h⁻¹
       </div>
-      <ResponsiveContainer width="100%" height={155}>
+      <ResponsiveContainer width="100%" height={465}>
         <LineChart data={data} margin={{ top: 4, right: 4, bottom: 22, left: 35 }}>
           <CartesianGrid strokeDasharray="2 3" stroke="#1C1C2A" />
           <XAxis dataKey="tau" stroke={DIM} tick={{ fill: "#667", fontSize: 11 }} tickCount={5}
