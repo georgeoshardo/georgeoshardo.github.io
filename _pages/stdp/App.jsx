@@ -165,6 +165,10 @@ const P0 = {
   K: 20.0, n: 1.45, KST: 19.3, nST: 1.16,
   a50: 32.1, r0: 0.01,
 };
+const COND0 = { C: 50, tau: 4, age: 24 };
+const U0 = 24;
+const KGAMMA0 = 0.35;
+const USEK0 = true;
 
 const SC = { S: "#F7A541", T: "#D4C832", D: "#7BC940", dead: "#C94040" };
 const ACCENT = "#64FFDA";
@@ -873,16 +877,23 @@ const TABS = [
 ];
 
 export default function App() {
-  const [params, setParams] = useState(P0);
-  const [cond, setCond] = useState({ C: 50, tau: 4, age: 24 });
+  const [params, setParams] = useState({ ...P0 });
+  const [cond, setCond] = useState({ ...COND0 });
   const [tab, setTab] = useState("phase");
   const [sidebar, setSidebar] = useState(true);
-  const [u, setU] = useState(24);
-  const [kGamma, setKGamma] = useState(0.35);
-  const [useK, setUseK] = useState(true);
+  const [u, setU] = useState(U0);
+  const [kGamma, setKGamma] = useState(KGAMMA0);
+  const [useK, setUseK] = useState(USEK0);
 
   const setP = (k, v) => setParams(p => ({ ...p, [k]: v }));
   const setC = (k, v) => setCond(c => ({ ...c, [k]: v }));
+  const resetAll = () => {
+    setParams({ ...P0 });
+    setCond({ ...COND0 });
+    setU(U0);
+    setKGamma(KGAMMA0);
+    setUseK(USEK0);
+  };
 
   const pred = useMemo(() => predict(params, cond.C, cond.tau, cond.age), [params, cond]);
 
@@ -909,7 +920,7 @@ export default function App() {
           style={{ background: "none", border: `1px solid ${BORDER}`, color: DIM, fontSize: 11, padding: "2px 8px", cursor: "pointer", borderRadius: 2, fontFamily: "monospace" }}>
           {sidebar ? "◀" : "▶"} PARAMS
         </button>
-        <button onClick={() => setParams(P0)}
+        <button onClick={resetAll}
           style={{ background: "none", border: `1px solid ${BORDER}`, color: DIM, fontSize: 11, padding: "2px 8px", cursor: "pointer", borderRadius: 2, fontFamily: "monospace" }}>
           RESET
         </button>
