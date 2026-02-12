@@ -100,9 +100,9 @@ function computeConvolutionSweep(p, cond, nPts = 240) {
   const r = rST(cond.C, cond.age, p.kST, p.KST, p.nST, p.a50, p.r0);
   const H = hs + r;
   const isDegenerate = Math.abs(H - ht) <= 1e-10;
-  const ellMax = Math.min(24, Math.max(1.15 * tau, 4 * meanLag, 8));
+  const deltaMax = Math.min(24, Math.max(1.15 * tau, 4 * meanLag, 8));
   const points = Math.max(3, Math.floor(nPts));
-  const step = ellMax / (points - 1);
+  const step = deltaMax / (points - 1);
   const dataRaw = [];
   let maxF = 0;
   let maxPS = 0;
@@ -111,25 +111,23 @@ function computeConvolutionSweep(p, cond, nPts = 240) {
   let piXNum = 0;
 
   for (let i = 0; i < points; i++) {
-    const ell = i * step;
-    const fLag = erlangPDF(p.k_lag, lam, ell);
-    const delta = tau - ell;
-    const pSShift = delta >= 0 ? Math.exp(-H * delta) : 0;
-    let pXShift = 0;
-    if (delta >= 0) {
-      if (isDegenerate) {
-        pXShift = r * delta * Math.exp(-ht * delta);
-      } else {
-        pXShift = (r / (H - ht)) * (Math.exp(-ht * delta) - Math.exp(-H * delta));
-      }
-      pXShift = Math.max(0, pXShift);
+    const delta = i * step;
+    const ell = tau - delta;
+    const fLag = ell >= 0 ? erlangPDF(p.k_lag, lam, ell) : 0;
+    const pSShift = Math.exp(-H * delta);
+    let pXShift;
+    if (isDegenerate) {
+      pXShift = r * delta * Math.exp(-ht * delta);
+    } else {
+      pXShift = (r / (H - ht)) * (Math.exp(-ht * delta) - Math.exp(-H * delta));
     }
+    pXShift = Math.max(0, pXShift);
     const wS = fLag * pSShift;
     const wX = fLag * pXShift;
     maxF = Math.max(maxF, fLag);
     maxPS = Math.max(maxPS, pSShift);
     maxPX = Math.max(maxPX, pXShift);
-    dataRaw.push({ ell: +ell.toFixed(4), fLag, pSShift, pXShift, wS, wX });
+    dataRaw.push({ delta: +delta.toFixed(4), ell: +ell.toFixed(4), fLag, pSShift, pXShift, wS, wX });
   }
 
   for (let i = 1; i < dataRaw.length; i++) {
@@ -148,7 +146,7 @@ function computeConvolutionSweep(p, cond, nPts = 240) {
   return {
     data,
     tau,
-    ellMax,
+    deltaMax,
     piSNum,
     piXNum,
     piSRef: predRef.S,
@@ -711,66 +709,67 @@ function ConvolutionSweepPanels({ p, cond, pred }) {
   const areaFmt = v => Number(v).toExponential(3);
   const shapeFmt = v => Number(v).toFixed(3);
 
-  return (
+      return (
     <div style={{ background: "#0A0A12", border: `1px solid ${BORDER}`, borderRadius: 4, padding: "8px 10px" }}>
       <div style={{ fontSize: 8, color: ACCENT, letterSpacing: 1.6, marginBottom: 5 }}>
-        CONVOLUTION SWEEP · w(ℓ;τ) = fL(ℓ|a) · P(τ-ℓ)
+        CONVOLUTION VIEW · WHERE SURVIVORS COME FROM
       </div>
       <div style={{ fontSize: 8, color: DIM, marginBottom: 8, lineHeight: 1.6 }}>
-        Shaded area equals convolution mass at the current τ. Dashed overlays show normalized shapes of fL(ℓ|a) and shifted kernel P(τ-ℓ).
+        Left to right means longer exposure time before wake-up. In each panel, the shaded curve shows how much each wake-up timing contributes to survivors.
+        Total shaded area is the survivor fraction (top: S, bottom: X). Dashed lines are shape guides for wake timing and post-wake survival.
       </div>
 
       <div style={{ fontSize: 8, color: "#7788AA", marginBottom: 4, display: "flex", gap: 12, flexWrap: "wrap" }}>
-        <span style={{ color: SC.S }}>∫wS dℓ = {areaFmt(sweep.piSNum)}</span>
-        <span>pred.S = {fmtVal(pred.S, 6)}</span>
-        <span style={{ color: errColor(errS) }}>|Δ| = {areaFmt(errS)}</span>
+        <span style={{ color: SC.S }}>shaded area (S) = {areaFmt(sweep.piSNum)}</span>
+        <span>model S = {fmtVal(pred.S, 6)}</span>
+        <span style={{ color: errColor(errS) }}>difference = {areaFmt(errS)}</span>
       </div>
       <ResponsiveContainer width="100%" height={180}>
         <ComposedChart data={sweep.data} margin={{ top: 4, right: 6, bottom: 16, left: 34 }}>
           <CartesianGrid strokeDasharray="2 3" stroke="#1C1C2A" />
-          <XAxis type="number" dataKey="ell" domain={[0, sweep.ellMax]} stroke={DIM} tick={{ fill: "#667", fontSize: 9 }} tickCount={6} />
+          <XAxis type="number" dataKey="delta" domain={[0, sweep.deltaMax]} stroke={DIM} tick={{ fill: "#667", fontSize: 9 }} tickCount={6} />
           <YAxis yAxisId="raw" stroke={DIM} tick={{ fill: "#667", fontSize: 9 }} tickFormatter={v => Number(v).toExponential(0)} />
           <YAxis yAxisId="norm" orientation="right" domain={[0, 1]} stroke={DIM} tick={{ fill: "#667", fontSize: 8 }} tickCount={3} />
           <Tooltip
             {...TT}
-            labelFormatter={v => `ℓ = ${Number(v).toFixed(2)}h`}
+            labelFormatter={v => `Δ = ${Number(v).toFixed(2)}h`}
             formatter={(v, n) => [String(n).includes("norm") ? shapeFmt(v) : areaFmt(v), n]}
           />
           <ReferenceLine x={sweep.tau} stroke="#9AA3B2" strokeDasharray="4 2" yAxisId="raw" />
-          <Area yAxisId="raw" type="monotone" dataKey="wS" stroke={SC.S} fill={SC.S} fillOpacity={0.42} name="wS = fL·PS(τ-ℓ)" />
-          <Line yAxisId="norm" type="monotone" dataKey="fNorm" stroke={ACCENT} dot={false} strokeWidth={1.6} strokeDasharray="4 2" name="fL(ℓ) norm" />
-          <Line yAxisId="norm" type="monotone" dataKey="pSNorm" stroke={SC.S} dot={false} strokeWidth={1.6} strokeDasharray="6 2" name="PS(τ-ℓ) norm" />
+          <Area yAxisId="raw" type="monotone" dataKey="wS" stroke={SC.S} fill={SC.S} fillOpacity={0.42} name="wS = fL(τ-Δ)·PS(Δ)" />
+          <Line yAxisId="norm" type="monotone" dataKey="fNorm" stroke={ACCENT} dot={false} strokeWidth={1.6} strokeDasharray="4 2" name="fL(τ-Δ) norm" />
+          <Line yAxisId="norm" type="monotone" dataKey="pSNorm" stroke={SC.S} dot={false} strokeWidth={1.6} strokeDasharray="6 2" name="PS(Δ) norm" />
         </ComposedChart>
       </ResponsiveContainer>
 
       <div style={{ fontSize: 8, color: "#7788AA", marginBottom: 4, marginTop: 6, display: "flex", gap: 12, flexWrap: "wrap" }}>
-        <span style={{ color: SC.T }}>∫wX dℓ = {areaFmt(sweep.piXNum)}</span>
-        <span>pred.X = {fmtVal(pred.T, 6)}</span>
-        <span style={{ color: errColor(errX) }}>|Δ| = {areaFmt(errX)}</span>
+        <span style={{ color: SC.T }}>shaded area (X) = {areaFmt(sweep.piXNum)}</span>
+        <span>model X = {fmtVal(pred.T, 6)}</span>
+        <span style={{ color: errColor(errX) }}>difference = {areaFmt(errX)}</span>
       </div>
       <ResponsiveContainer width="100%" height={188}>
         <ComposedChart data={sweep.data} margin={{ top: 4, right: 6, bottom: 24, left: 34 }}>
           <CartesianGrid strokeDasharray="2 3" stroke="#1C1C2A" />
           <XAxis
             type="number"
-            dataKey="ell"
-            domain={[0, sweep.ellMax]}
+            dataKey="delta"
+            domain={[0, sweep.deltaMax]}
             stroke={DIM}
             tick={{ fill: "#667", fontSize: 9 }}
             tickCount={6}
-            label={{ value: "lag ℓ (h)", position: "insideBottom", offset: -10, fill: "#667", fontSize: 9 }}
+            label={{ value: "exposure time Δ (h)", position: "insideBottom", offset: -10, fill: "#667", fontSize: 9 }}
           />
           <YAxis yAxisId="raw" stroke={DIM} tick={{ fill: "#667", fontSize: 9 }} tickFormatter={v => Number(v).toExponential(0)} />
           <YAxis yAxisId="norm" orientation="right" domain={[0, 1]} stroke={DIM} tick={{ fill: "#667", fontSize: 8 }} tickCount={3} />
           <Tooltip
             {...TT}
-            labelFormatter={v => `ℓ = ${Number(v).toFixed(2)}h`}
+            labelFormatter={v => `Δ = ${Number(v).toFixed(2)}h`}
             formatter={(v, n) => [String(n).includes("norm") ? shapeFmt(v) : areaFmt(v), n]}
           />
           <ReferenceLine x={sweep.tau} stroke="#9AA3B2" strokeDasharray="4 2" yAxisId="raw" />
-          <Area yAxisId="raw" type="monotone" dataKey="wX" stroke={SC.T} fill={SC.T} fillOpacity={0.42} name="wX = fL·PX(τ-ℓ)" />
-          <Line yAxisId="norm" type="monotone" dataKey="fNorm" stroke={ACCENT} dot={false} strokeWidth={1.6} strokeDasharray="4 2" name="fL(ℓ) norm" />
-          <Line yAxisId="norm" type="monotone" dataKey="pXNorm" stroke={SC.T} dot={false} strokeWidth={1.6} strokeDasharray="6 2" name="PX(τ-ℓ) norm" />
+          <Area yAxisId="raw" type="monotone" dataKey="wX" stroke={SC.T} fill={SC.T} fillOpacity={0.42} name="wX = fL(τ-Δ)·PX(Δ)" />
+          <Line yAxisId="norm" type="monotone" dataKey="fNorm" stroke={ACCENT} dot={false} strokeWidth={1.6} strokeDasharray="4 2" name="fL(τ-Δ) norm" />
+          <Line yAxisId="norm" type="monotone" dataKey="pXNorm" stroke={SC.T} dot={false} strokeWidth={1.6} strokeDasharray="6 2" name="PX(Δ) norm" />
         </ComposedChart>
       </ResponsiveContainer>
     </div>
