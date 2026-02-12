@@ -146,7 +146,7 @@ const PARAM_GROUPS = [
     ]
   },
   {
-    label: "S→T SWITCHING",
+    label: "S→X SWITCHING",
     params: [
       { key: "kST",  label: "κST",  tip: "switching prefactor",          min: 0.01, max: 10,  step: 0.01 },
       { key: "KST",  label: "KST",  tip: "switching ref. conc. (μg/mL)", min: 1,    max: 200, step: 0.5,  fmt: v => `${v.toFixed(0)}` },
@@ -202,6 +202,56 @@ const TT = { contentStyle: { background: "#0A0A12", border: `1px solid ${BORDER}
 // X-axis log-concentration ticks
 const LOG_TICKS = [-0.5, 0, 1, 2, 3, 3.5];
 const logTickFmt = v => ["0.3", "1", "10", "100", "1k", "3k"][[-0.5,0,1,2,3,3.5].indexOf(v)] ?? `10^${v}`;
+const fmtVal = (v, d = 4) => Number.isFinite(v) ? v.toFixed(d) : "0";
+const fmtPct = v => `${(100 * Math.max(0, v)).toFixed(3)}%`;
+
+function modelSnapshot(p, cond) {
+  const m = cond.age / (cond.age + p.a50);
+  const phiShared = cond.C <= 0 ? 0 : Math.pow(cond.C / p.K, p.n);
+  const phiSwitch = cond.C <= 0 ? 0 : Math.pow(cond.C / p.KST, p.nST);
+  const hs = hS(cond.C, p.kS, p.K, p.n);
+  const ht = hT(cond.C, p.kT, p.K, p.n);
+  const r = rST(cond.C, cond.age, p.kST, p.KST, p.nST, p.a50, p.r0);
+  const H = hs + r;
+  const lam = getLambda(p, cond.age);
+  const sfTau = erlangSF(p.k_lag, lam, cond.tau);
+  const pdfTau = erlangPDF(p.k_lag, lam, cond.tau);
+  const hLagNow = pdfTau / Math.max(sfTau, 1e-12);
+  return { m, phiShared, phiSwitch, hs, ht, r, H, lam, sfTau, pdfTau, hLagNow };
+}
+
+function EquationCard({ title, children }) {
+  return (
+    <div style={{ background: "#0A0A12", border: `1px solid ${BORDER}`, borderRadius: 4, padding: "8px 10px" }}>
+      <div style={{ fontSize: 8, letterSpacing: 1.6, color: ACCENT, marginBottom: 5 }}>{title}</div>
+      {children}
+    </div>
+  );
+}
+
+function LiveMathStrip({ p, cond, pred }) {
+  const s = useMemo(() => modelSnapshot(p, cond), [p, cond]);
+  return (
+    <div style={{ marginBottom: 12, background: "#0A0A12", border: `1px solid ${BORDER}`, borderRadius: 4, padding: "7px 10px", lineHeight: 1.6 }}>
+      <div style={{ fontSize: 8, color: ACCENT, letterSpacing: 1.4, marginBottom: 4 }}>
+        LIVE MODEL READOUT · D --hL(t;a)→ S --rS→X(C;a)→ X, with death exits from S and X
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(165px, 1fr))", gap: 8, fontSize: 8.5, color: DIM }}>
+        <div>m(a) = a/(a+a50) = <span style={{ color: TXT }}>{fmtVal(s.m, 3)}</span></div>
+        <div>phiS = (C/K)^n = <span style={{ color: TXT }}>{fmtVal(s.phiShared, 3)}</span></div>
+        <div>phiS→X = (C/KST)^nST = <span style={{ color: TXT }}>{fmtVal(s.phiSwitch, 3)}</span></div>
+        <div>hS(C) = <span style={{ color: SC.S }}>{fmtVal(s.hs)}</span></div>
+        <div>hX(C) = <span style={{ color: SC.T }}>{fmtVal(s.ht)}</span></div>
+        <div>rS→X(C;a) = <span style={{ color: "#00CBCB" }}>{fmtVal(s.r)}</span></div>
+        <div>H = hS + rS→X = <span style={{ color: ACCENT }}>{fmtVal(s.H)}</span></div>
+        <div>hL(t=τ;a) = fL/SL = <span style={{ color: SC.D }}>{fmtVal(s.hLagNow)}</span></div>
+      </div>
+      <div style={{ marginTop: 5, fontSize: 8, color: "#7788AA" }}>
+        Survivor split at current sliders: S={fmtPct(pred.S)} · X={fmtPct(pred.T)} · D={fmtPct(pred.D)} · dead={fmtPct(pred.dead)}
+      </div>
+    </div>
+  );
+}
 
 // ═══════════════════════════════════════════════════════════════════
 // CHART COMPONENTS
@@ -220,7 +270,7 @@ function StackedArea({ data, xKey, xLabel, xTicks, xFmt, title }) {
           <YAxis stroke={DIM} tick={{ fill: "#667", fontSize: 9 }} tickCount={5} domain={[0, 1]} />
           <Tooltip {...TT} formatter={(v, n) => [(v * 100).toFixed(3) + "%", n]} />
           <Area type="monotone" dataKey="dead" stackId="1" stroke={SC.dead} fill={SC.dead} fillOpacity={0.9} name="Dead" />
-          <Area type="monotone" dataKey="T" stackId="1" stroke={SC.T} fill={SC.T} fillOpacity={0.9} name="Tolerant (T)" />
+          <Area type="monotone" dataKey="T" stackId="1" stroke={SC.T} fill={SC.T} fillOpacity={0.9} name="Tolerant (X)" />
           <Area type="monotone" dataKey="D" stackId="1" stroke={SC.D} fill={SC.D} fillOpacity={0.9} name="Dormant (D)" />
           <Area type="monotone" dataKey="S" stackId="1" stroke={SC.S} fill={SC.S} fillOpacity={0.9} name="Susceptible (S)" />
         </AreaChart>
@@ -281,8 +331,8 @@ function HazardChart({ p, age }) {
           <YAxis stroke={DIM} tick={{ fill: "#667", fontSize: 9 }} tickCount={5} />
           <Tooltip {...TT} formatter={(v, n) => [v.toFixed(4), n]} labelFormatter={v => `C ≈ ${Math.pow(10, v).toFixed(2)} μg/mL`} />
           <Line type="monotone" dataKey="hS_v" stroke="#C900C9" dot={false} name="hS  (S death)" strokeWidth={2} />
-          <Line type="monotone" dataKey="hT_v" stroke="#FF8C00" dot={false} name="hT  (T death)" strokeWidth={2} />
-          <Line type="monotone" dataKey="rST_v" stroke="#00CBCB" dot={false} name="rST (S→T switch)" strokeWidth={2} strokeDasharray="5 2" />
+          <Line type="monotone" dataKey="hT_v" stroke="#FF8C00" dot={false} name="hX  (X death)" strokeWidth={2} />
+          <Line type="monotone" dataKey="rST_v" stroke="#00CBCB" dot={false} name="rS→X (switch)" strokeWidth={2} strokeDasharray="5 2" />
         </LineChart>
       </ResponsiveContainer>
     </div>
@@ -328,7 +378,7 @@ function SwitchingAgeLines({ p }) {
   }), [p]);
   return (
     <div>
-      <div style={{ fontSize: 9, color: "#7788AA", fontFamily: "monospace", marginBottom: 3 }}>rST vs C  at multiple culture ages (memory effect)</div>
+      <div style={{ fontSize: 9, color: "#7788AA", fontFamily: "monospace", marginBottom: 3 }}>rS→X vs C  at multiple culture ages (memory effect)</div>
       <ResponsiveContainer width="100%" height={155}>
         <LineChart data={data} margin={{ top: 4, right: 4, bottom: 22, left: 28 }}>
           <CartesianGrid strokeDasharray="2 3" stroke="#1C1C2A" />
@@ -427,7 +477,7 @@ function TernaryKey({ size = 110 }) {
         <div style={{ color: "#00CBCB" }}>▲ D Dormant (Cyan)</div>
         <div style={{ display: "flex", justifyContent: "space-between", fontSize: 7.5 }}>
           <span style={{ color: "#C900C9" }}>S Suscept.</span>
-          <span style={{ color: "#F7BB25" }}>T Tolerant</span>
+          <span style={{ color: "#F7BB25" }}>X Tolerant</span>
         </div>
       </div>
     </div>
@@ -525,11 +575,114 @@ function RegrowthMass({ p, C, age, u }) {
   );
 }
 
+function KernelChart({ p, cond }) {
+  const s = useMemo(() => modelSnapshot(p, cond), [p, cond]);
+  const isDegenerate = Math.abs(s.H - s.ht) <= 1e-10;
+  const data = useMemo(() => Array.from({ length: 120 }, (_, i) => {
+    const delta = i / 119 * 10;
+    const PS = Math.exp(-s.H * delta);
+    const PX = isDegenerate
+      ? s.r * delta * Math.exp(-s.ht * delta)
+      : (s.r / (s.H - s.ht)) * (Math.exp(-s.ht * delta) - Math.exp(-s.H * delta));
+    return { delta: +delta.toFixed(3), PS, PX: Math.max(0, PX) };
+  }), [s.H, s.ht, s.r, isDegenerate]);
+  return (
+    <div>
+      <div style={{ fontSize: 9, color: "#7788AA", fontFamily: "monospace", marginBottom: 4 }}>
+        Convolution kernels at current C, age: P_S(Δ)=e^(-HΔ), P_X(Δ) [{isDegenerate ? "H = hX" : "H ≠ hX"}]
+      </div>
+      <ResponsiveContainer width="100%" height={170}>
+        <LineChart data={data} margin={{ top: 4, right: 4, bottom: 22, left: 32 }}>
+          <CartesianGrid strokeDasharray="2 3" stroke="#1C1C2A" />
+          <XAxis dataKey="delta" stroke={DIM} tick={{ fill: "#667", fontSize: 9 }}
+            label={{ value: "Δ (h)", position: "insideBottom", offset: -10, fill: "#667", fontSize: 9 }} />
+          <YAxis stroke={DIM} tick={{ fill: "#667", fontSize: 9 }} domain={[0, "auto"]} />
+          <Tooltip {...TT} formatter={(v, n) => [v.toFixed(4), n]} />
+          <Line type="monotone" dataKey="PS" stroke={SC.S} dot={false} name="P_S(Δ)" strokeWidth={2} />
+          <Line type="monotone" dataKey="PX" stroke={SC.T} dot={false} name="P_X(Δ)" strokeWidth={2} strokeDasharray="5 2" />
+        </LineChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
+
+function ModelTab({ p, cond, pred, u }) {
+  const s = useMemo(() => modelSnapshot(p, cond), [p, cond]);
+  return (
+    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 12 }}>
+      <EquationCard title="1) STATE FLOW (UNDER ANTIBIOTICS)">
+        <pre style={{ margin: 0, fontSize: 8.5, color: TXT, lineHeight: 1.55, whiteSpace: "pre-wrap" }}>{`D --hL(t;a)--> S --rS→X(C;a)--> X
+          | hS(C)             | hX(C)
+          v                   v
+         dead                dead`}</pre>
+        <div style={{ marginTop: 6, fontSize: 8, color: DIM }}>
+          Move <span style={{ color: TXT }}>C</span> to tune hS/hX/rS→X, move <span style={{ color: TXT }}>age</span> to tune memory m(a), and move <span style={{ color: TXT }}>τ</span> to change how long these rates act.
+        </div>
+      </EquationCard>
+
+      <EquationCard title="2) ODE SYSTEM DURING TREATMENT">
+        <pre style={{ margin: 0, fontSize: 8.5, color: TXT, lineHeight: 1.6, whiteSpace: "pre-wrap" }}>{`dD/dt = -hL(t;a)·D
+dS/dt = hL(t;a)·D - hS(C)·S - rS→X(C;a)·S
+dX/dt = rS→X(C;a)·S - hX(C)·X`}</pre>
+        <div style={{ marginTop: 6, fontSize: 8, color: DIM }}>
+          Current values: hL(t=τ;a)={fmtVal(s.hLagNow)}, hS={fmtVal(s.hs)}, rS→X={fmtVal(s.r)}, hX={fmtVal(s.ht)}.
+        </div>
+      </EquationCard>
+
+      <EquationCard title="3) RATE PARAMETRISATION">
+        <pre style={{ margin: 0, fontSize: 8.3, color: TXT, lineHeight: 1.6, whiteSpace: "pre-wrap" }}>{`phi_i(C) = (C/Ci,0)^ni
+hS(C) = log(1 + κS·phiS)
+hX(C) = log(1 + κT·phiS)
+rS→X(C;a) = m(a)·[r0 + log(1 + κST·phiS→X)]
+m(a) = a/(a+a50)`}</pre>
+        <div style={{ marginTop: 6, fontSize: 8, color: DIM }}>
+          At this point: m(a)={fmtVal(s.m, 3)}, phiS={fmtVal(s.phiShared, 3)}, phiS→X={fmtVal(s.phiSwitch, 3)}.
+        </div>
+      </EquationCard>
+
+      <EquationCard title="4) CONVOLUTION SOLVER VIEW">
+        <pre style={{ margin: 0, fontSize: 8.2, color: TXT, lineHeight: 1.6, whiteSpace: "pre-wrap" }}>{`D(t) = N0·SL(t|a)
+S(t) = N0∫0^t PS(t-ℓ) fL(ℓ|a)dℓ
+X(t) = N0∫0^t PX(t-ℓ) fL(ℓ|a)dℓ
+PS(Δ)=e^(-HΔ),  H=hS+rS→X
+PX(Δ)= rS→X/(H-hX) · [e^(-hXΔ)-e^(-HΔ)]  (or rS→X·Δ·e^(-hXΔ) if H=hX)`}</pre>
+        <div style={{ marginTop: 6, fontSize: 8, color: DIM }}>
+          Current branch: {Math.abs(s.H - s.ht) <= 1e-10 ? "degenerate H = hX" : "generic H ≠ hX"} with H={fmtVal(s.H)}.
+        </div>
+      </EquationCard>
+
+      <div style={{ gridColumn: "1/-1" }}>
+        <KernelChart p={p} cond={cond} />
+      </div>
+
+      <EquationCard title="5) POST-TREATMENT REGROWTH (u = t - τ)">
+        <pre style={{ margin: 0, fontSize: 8.3, color: TXT, lineHeight: 1.6, whiteSpace: "pre-wrap" }}>{`πS = S(τ)/N0,  πX = X(τ)/N0,  πD = SL(τ|a)
+GS(u) = N0·πS·e^(gu)
+GX(u) = N0·πX·e^(gu)
+GD(u) = e^(gu)∫0^u e^(-gs)·N0·fL(τ+s|a) ds`}</pre>
+        <div style={{ marginTop: 6, fontSize: 8, color: DIM }}>
+          With current sliders: πS={fmtPct(pred.S)}, πX={fmtPct(pred.T)}, πD={fmtPct(pred.D)}; at u={u}h both S/X branches amplify by e^(gu) with g=ln2.
+        </div>
+      </EquationCard>
+
+      <EquationCard title="6) HOW TO READ THE DASHBOARD">
+        <div style={{ fontSize: 8.3, color: DIM, lineHeight: 1.75 }}>
+          1. `PHASE` shows how survivor composition shifts with one axis at a time. <br />
+          2. `HEATMAP` maps (C, τ) to composition and total survival at fixed age. <br />
+          3. `KINETICS` exposes hS/hX/rS→X dose-response and lag distribution controls. <br />
+          4. `REGROWTH` projects which survivor class dominates descendants after removal.
+        </div>
+      </EquationCard>
+    </div>
+  );
+}
+
 // ═══════════════════════════════════════════════════════════════════
 // MAIN DASHBOARD
 // ═══════════════════════════════════════════════════════════════════
 
 const TABS = [
+  { id: "model",    label: "MODEL" },
   { id: "phase",    label: "PHASE" },
   { id: "heatmap",  label: "HEATMAP" },
   { id: "kinetics", label: "KINETICS" },
@@ -549,11 +702,10 @@ export default function App() {
   const setC = (k, v) => setCond(c => ({ ...c, [k]: v }));
 
   const pred = useMemo(() => predict(params, cond.C, cond.tau, cond.age), [params, cond]);
-  const total = pred.S + pred.T + pred.D + pred.dead;
 
   const legend = (
     <div style={{ display: "flex", gap: 14, flexWrap: "wrap", fontSize: 9, fontFamily: "monospace", color: "#8888AA" }}>
-      {[["S", "Susceptible survivors"], ["T", "Tolerant survivors"], ["D", "Dormant (pre-existing)"], ["dead", "Dead"]].map(([k, lbl]) => (
+      {[["S", "Susceptible survivors"], ["T", "Tolerant survivors (X)"], ["D", "Dormant (pre-existing)"], ["dead", "Dead"]].map(([k, lbl]) => (
         <span key={k} style={{ display: "flex", alignItems: "center", gap: 4 }}>
           <span style={{ width: 10, height: 10, background: SC[k], display: "inline-block", borderRadius: 2 }} />
           {lbl}
@@ -594,7 +746,7 @@ export default function App() {
             {/* Live prediction readout */}
             <div style={{ background: "#080810", border: `1px solid ${BORDER}`, borderRadius: 3, padding: "6px 8px", margin: "8px 0 4px", fontSize: 9, lineHeight: 1.9 }}>
               <div style={{ color: ACCENT, fontSize: 8, letterSpacing: 2, marginBottom: 3 }}>PREDICTION</div>
-              {[["S (incomplete)", pred.S, SC.S], ["T (induced)", pred.T, SC.T], ["D (pre-existing)", pred.D, SC.D], ["Dead", pred.dead, SC.dead]].map(([lbl, v, c]) => (
+              {[["S (incomplete)", pred.S, SC.S], ["X (induced tolerant)", pred.T, SC.T], ["D (pre-existing)", pred.D, SC.D], ["Dead", pred.dead, SC.dead]].map(([lbl, v, c]) => (
                 <div key={lbl} style={{ display: "flex", justifyContent: "space-between" }}>
                   <span style={{ color: c }}>{lbl}</span>
                   <span style={{ color: "#CCC" }}>{(v * 100).toFixed(3)}%</span>
@@ -606,8 +758,8 @@ export default function App() {
               </div>
               <div style={{ marginTop: 4, fontSize: 8, color: DIM, lineHeight: 1.5 }}>
                 hS = {hS(cond.C, params.kS, params.K, params.n).toFixed(4)}<br />
-                hT = {hT(cond.C, params.kT, params.K, params.n).toFixed(4)}<br />
-                rST = {rST(cond.C, cond.age, params.kST, params.KST, params.nST, params.a50, params.r0).toFixed(4)}
+                hX = {hT(cond.C, params.kT, params.K, params.n).toFixed(4)}<br />
+                rS→X = {rST(cond.C, cond.age, params.kST, params.KST, params.nST, params.a50, params.r0).toFixed(4)}
               </div>
             </div>
 
@@ -650,6 +802,12 @@ export default function App() {
 
           {/* Content */}
           <div style={{ flex: 1, overflowY: "auto", padding: 14 }}>
+            <LiveMathStrip p={params} cond={cond} pred={pred} />
+
+            {/* ── MODEL ── */}
+            {tab === "model" && (
+              <ModelTab p={params} cond={cond} pred={pred} u={u} />
+            )}
 
             {/* ── PHASE ── */}
             {tab === "phase" && (
@@ -676,7 +834,7 @@ export default function App() {
                   <div style={{ fontSize: 9, color: "#8888AA" }}>
                     Hue: <span style={{ color: "#00CBCB" }}>■ D</span>·
                     <span style={{ color: "#C900C9" }}> ■ S</span>·
-                    <span style={{ color: "#F7BB25" }}> ■ T</span> (CMY colorspace)
+                    <span style={{ color: "#F7BB25" }}> ■ X</span> (CMY colorspace)
                   </div>
                   <label style={{ fontSize: 9, color: "#8888AA", display: "flex", alignItems: "center", gap: 4, cursor: "pointer" }}>
                     <input type="checkbox" checked={useK} onChange={e => setUseK(e.target.checked)} style={{ accentColor: ACCENT }} />
@@ -702,7 +860,7 @@ export default function App() {
                   </div>
                   <div>
                     <div style={{ fontSize: 9, color: "#7788AA", fontFamily: "monospace", marginBottom: 4 }}>
-                      Total survivor fraction  S(τ,C) = π_S + π_T + π_D
+                      Total survivor fraction  S(τ,C) = π_S + π_X + π_D
                     </div>
                     <SurvivalHeatmap p={params} age={cond.age} nC={80} nTau={80} />
                     <div style={{ fontSize: 8, color: DIM, marginTop: 4 }}>Brightness ∝ log₁₀(survivors). Gold=high, black=zero.</div>
@@ -726,10 +884,10 @@ export default function App() {
                   <SwitchingAgeLines p={params} />
                 </div>
                 <div style={{ gridColumn: "1/-1", fontSize: 8.5, color: DIM, lineHeight: 1.7, background: "#0A0A12", border: `1px solid ${BORDER}`, borderRadius: 3, padding: "6px 10px" }}>
-                  <strong style={{ color: "#9999BB" }}>Top-left:</strong> Dose-response curves hS(C), hT(C), rST(C) — all in log(1+x) form. Constraint: κT {"<"} κS with shared K,n ensures h_T {"<"} h_S ∀C. &nbsp;
+                  <strong style={{ color: "#9999BB" }}>Top-left:</strong> Dose-response curves hS(C), hX(C), rS→X(C) — all in log(1+x) form. Constraint: κT {"<"} κS with shared K,n ensures h_X {"<"} h_S ∀C. &nbsp;
                   <strong style={{ color: "#9999BB" }}>Top-right:</strong> Erlang(k_lag, λ) lag distribution for current age.
                   λ = k_lag / (μ₀ + age/24·μ₂₄′). &nbsp;
-                  <strong style={{ color: "#9999BB" }}>Bottom:</strong> rST at multiple ages — illustrates the m(a) = a/(a+a₅₀) stress-memory saturation.
+                  <strong style={{ color: "#9999BB" }}>Bottom:</strong> rS→X at multiple ages — illustrates the m(a) = a/(a+a₅₀) stress-memory saturation.
                 </div>
               </div>
             )}
@@ -754,7 +912,7 @@ export default function App() {
 
                 <div style={{ marginTop: 10, fontSize: 8.5, color: DIM, lineHeight: 1.7, background: "#0A0A12", border: `1px solid ${BORDER}`, borderRadius: 3, padding: "6px 10px" }}>
                   <strong style={{ color: "#9999BB" }}>Left:</strong> Fractional contribution to the regrown population at time u, as a function of τ.
-                  S: incomplete-treatment survivors (grew exponentially from τ). T: induced tolerant survivors. D: deep persisters — delayed by residual lag before contributing. <br />
+                  S: incomplete-treatment survivors (grew exponentially from τ). X: induced tolerant survivors. D: deep persisters — delayed by residual lag before contributing. <br />
                   <strong style={{ color: "#9999BB" }}>Right:</strong> Total regrown mass N(u)/N₀ on log scale. Minima arise because intermediate τ kills many cells before persisters dominate.
                   g = ln 2 ≈ 0.693 h⁻¹ (1h doubling). Varying u shows how D-lineage dominance emerges over time.
                 </div>
