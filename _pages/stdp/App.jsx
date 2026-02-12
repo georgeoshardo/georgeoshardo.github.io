@@ -284,8 +284,34 @@ const TT = { contentStyle: { background: "#0A0A12", border: `1px solid ${BORDER}
 // X-axis log-concentration ticks
 const LOG_TICKS = [-0.5, 0, 1, 2, 3, 3.5];
 const logTickFmt = v => ["0.3", "1", "10", "100", "1k", "3k"][[-0.5,0,1,2,3,3.5].indexOf(v)] ?? `10^${v}`;
+const CONC_TICKS_LOG = [Math.pow(10, -0.5), 1, 10, 100, 1000, Math.pow(10, 3.5)];
 const fmtVal = (v, d = 4) => Number.isFinite(v) ? v.toFixed(d) : "0";
 const fmtPct = v => `${(100 * Math.max(0, v)).toFixed(3)}%`;
+const LOG_EPS = 1e-6;
+const yPctTickFmt = v => v >= 0.01 ? `${(100 * v).toFixed(0)}%` : `${(100 * v).toExponential(0)}%`;
+const concTickFmt = v => {
+  if (v < 1) return "0.3";
+  if (v >= 3000) return "3k";
+  if (v >= 1000) return "1k";
+  return `${Math.round(v)}`;
+};
+
+function sampleRange(min, max, n, logScale = false) {
+  if (n <= 1) return [min];
+  if (!logScale) return Array.from({ length: n }, (_, i) => min + (i / (n - 1)) * (max - min));
+  const lo = Math.max(min, 1e-9);
+  const hi = Math.max(max, lo * 1.0001);
+  return Array.from({ length: n }, (_, i) => lo * Math.pow(hi / lo, i / (n - 1)));
+}
+
+function clampFractionsForLog(r) {
+  return {
+    S: Math.max(r.S, LOG_EPS),
+    T: Math.max(r.T, LOG_EPS),
+    D: Math.max(r.D, LOG_EPS),
+    dead: Math.max(r.dead, LOG_EPS),
+  };
+}
 
 function modelSnapshot(p, cond) {
   const m = cond.age / (cond.age + p.a50);
@@ -339,17 +365,42 @@ function LiveMathStrip({ p, cond, pred }) {
 // CHART COMPONENTS
 // ═══════════════════════════════════════════════════════════════════
 
-function StackedArea({ data, xKey, xLabel, xTicks, xFmt, title, height = 155 }) {
+function StackedArea({
+  data, xKey, xLabel, xTicks, xFmt, title, height = 155,
+  logX = false, logY = false, onToggleLogX, onToggleLogY, xDomain,
+}) {
   return (
     <div>
-      <div style={{ fontSize: 11, color: "#7788AA", fontFamily: "monospace", marginBottom: 3 }}>{title}</div>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8, marginBottom: 3 }}>
+        <div style={{ fontSize: 11, color: "#7788AA", fontFamily: "monospace" }}>{title}</div>
+        {(onToggleLogX || onToggleLogY) && (
+          <div style={{ display: "flex", gap: 10, fontSize: 10, color: "#889" }}>
+            {onToggleLogX && (
+              <label style={{ display: "flex", alignItems: "center", gap: 4, cursor: "pointer" }}>
+                <input type="checkbox" checked={logX} onChange={e => onToggleLogX(e.target.checked)} style={{ accentColor: ACCENT }} />
+                log x
+              </label>
+            )}
+            {onToggleLogY && (
+              <label style={{ display: "flex", alignItems: "center", gap: 4, cursor: "pointer" }}>
+                <input type="checkbox" checked={logY} onChange={e => onToggleLogY(e.target.checked)} style={{ accentColor: ACCENT }} />
+                log y
+              </label>
+            )}
+          </div>
+        )}
+      </div>
       <ResponsiveContainer width="100%" height={height}>
         <AreaChart data={data} margin={{ top: 4, right: 4, bottom: 22, left: 28 }}>
           <CartesianGrid strokeDasharray="2 3" stroke="#1C1C2A" />
-          <XAxis dataKey={xKey} stroke={DIM} tick={{ fill: "#667", fontSize: 11 }}
+          <XAxis type="number" dataKey={xKey} domain={xDomain ?? ["auto", "auto"]} scale={logX ? "log" : "linear"}
+            stroke={DIM} tick={{ fill: "#667", fontSize: 11 }}
             ticks={xTicks} tickFormatter={xFmt}
             label={{ value: xLabel, position: "insideBottom", offset: -10, fill: "#667", fontSize: 11 }} />
-          <YAxis stroke={DIM} tick={{ fill: "#667", fontSize: 11 }} tickCount={5} domain={[0, 1]} />
+          <YAxis stroke={DIM} tick={{ fill: "#667", fontSize: 11 }} tickCount={5}
+            scale={logY ? "log" : "linear"}
+            domain={logY ? [LOG_EPS, 1] : [0, 1]}
+            tickFormatter={logY ? yPctTickFmt : (v => `${(100 * v).toFixed(0)}%`)} />
           <Tooltip {...TT} formatter={(v, n) => [(v * 100).toFixed(3) + "%", n]} />
           <Area type="monotone" dataKey="dead" stackId="1" stroke={SC.dead} fill={SC.dead} fillOpacity={0.9} name="Dead" />
           <Area type="monotone" dataKey="T" stackId="1" stroke={SC.T} fill={SC.T} fillOpacity={0.9} name="Tolerant (X)" />
@@ -361,33 +412,79 @@ function StackedArea({ data, xKey, xLabel, xTicks, xFmt, title, height = 155 }) 
   );
 }
 
-function PhaseTau({ p, C, age }) {
-  const data = useMemo(() => Array.from({ length: 100 }, (_, i) => {
-    const tau = i / 99 * 12;
-    const r = predict(p, C, tau, age);
-    return { tau: +tau.toFixed(2), ...r };
-  }), [p, C, age]);
-  return <StackedArea data={data} xKey="tau" xLabel="τ (h)" title="vs treatment duration τ" height={465} />;
+function PhaseTau({ p, C, age, scaleCfg, setScaleCfg }) {
+  const data = useMemo(() => {
+    const taus = sampleRange(scaleCfg.logX ? 0.01 : 0, 12, 100, scaleCfg.logX);
+    return taus.map(tau => {
+      const r = predict(p, C, tau, age);
+      return { tau: +tau.toFixed(4), ...(scaleCfg.logY ? clampFractionsForLog(r) : r) };
+    });
+  }, [p, C, age, scaleCfg.logX, scaleCfg.logY]);
+  return (
+    <StackedArea
+      data={data}
+      xKey="tau"
+      xLabel="τ (h)"
+      title="vs treatment duration τ"
+      height={465}
+      logX={scaleCfg.logX}
+      logY={scaleCfg.logY}
+      onToggleLogX={v => setScaleCfg("logX", v)}
+      onToggleLogY={v => setScaleCfg("logY", v)}
+      xDomain={scaleCfg.logX ? [0.01, 12] : [0, 12]}
+    />
+  );
 }
 
-function PhaseConc({ p, tau, age }) {
-  const data = useMemo(() => Array.from({ length: 100 }, (_, i) => {
-    const logC = -0.5 + i / 99 * 4;
-    const C = Math.pow(10, logC);
-    const r = predict(p, C, tau, age);
-    return { logC: +logC.toFixed(3), ...r };
-  }), [p, tau, age]);
-  return <StackedArea data={data} xKey="logC" xLabel="C (μg/mL)"
-    xTicks={LOG_TICKS} xFmt={logTickFmt} title="vs concentration C" height={465} />;
+function PhaseConc({ p, tau, age, scaleCfg, setScaleCfg }) {
+  const cMin = Math.pow(10, -0.5), cMax = Math.pow(10, 3.5);
+  const data = useMemo(() => {
+    const concs = sampleRange(cMin, cMax, 100, scaleCfg.logX);
+    return concs.map(C => {
+      const r = predict(p, C, tau, age);
+      return { C: +C.toFixed(4), ...(scaleCfg.logY ? clampFractionsForLog(r) : r) };
+    });
+  }, [p, tau, age, scaleCfg.logX, scaleCfg.logY]);
+  return (
+    <StackedArea
+      data={data}
+      xKey="C"
+      xLabel="C (μg/mL)"
+      xTicks={scaleCfg.logX ? CONC_TICKS_LOG : undefined}
+      xFmt={concTickFmt}
+      title="vs concentration C"
+      height={465}
+      logX={scaleCfg.logX}
+      logY={scaleCfg.logY}
+      onToggleLogX={v => setScaleCfg("logX", v)}
+      onToggleLogY={v => setScaleCfg("logY", v)}
+      xDomain={scaleCfg.logX ? [cMin, cMax] : [cMin, cMax]}
+    />
+  );
 }
 
-function PhaseAge({ p, C, tau }) {
-  const data = useMemo(() => Array.from({ length: 100 }, (_, i) => {
-    const a = i / 99 * 96;
-    const r = predict(p, C, tau, a);
-    return { a: +a.toFixed(1), ...r };
-  }), [p, C, tau]);
-  return <StackedArea data={data} xKey="a" xLabel="age (h)" title="vs culture age" height={465} />;
+function PhaseAge({ p, C, tau, scaleCfg, setScaleCfg }) {
+  const data = useMemo(() => {
+    const ages = sampleRange(scaleCfg.logX ? 1 : 0, 96, 100, scaleCfg.logX);
+    return ages.map(a => {
+      const r = predict(p, C, tau, a);
+      return { a: +a.toFixed(4), ...(scaleCfg.logY ? clampFractionsForLog(r) : r) };
+    });
+  }, [p, C, tau, scaleCfg.logX, scaleCfg.logY]);
+  return (
+    <StackedArea
+      data={data}
+      xKey="a"
+      xLabel="age (h)"
+      title="vs culture age"
+      height={465}
+      logX={scaleCfg.logX}
+      logY={scaleCfg.logY}
+      onToggleLogX={v => setScaleCfg("logX", v)}
+      onToggleLogY={v => setScaleCfg("logY", v)}
+      xDomain={scaleCfg.logX ? [1, 96] : [0, 96]}
+    />
+  );
 }
 
 function HazardChart({ p, age }) {
@@ -884,15 +981,28 @@ export default function App() {
   const [u, setU] = useState(U0);
   const [kGamma, setKGamma] = useState(KGAMMA0);
   const [useK, setUseK] = useState(USEK0);
+  const [phaseScales, setPhaseScales] = useState({
+    tau: { logX: false, logY: false },
+    conc: { logX: true, logY: false },
+    age: { logX: false, logY: false },
+  });
 
   const setP = (k, v) => setParams(p => ({ ...p, [k]: v }));
   const setC = (k, v) => setCond(c => ({ ...c, [k]: v }));
+  const setPhaseScale = (plot, axis, value) => {
+    setPhaseScales(s => ({ ...s, [plot]: { ...s[plot], [axis]: value } }));
+  };
   const resetAll = () => {
     setParams({ ...P0 });
     setCond({ ...COND0 });
     setU(U0);
     setKGamma(KGAMMA0);
     setUseK(USEK0);
+    setPhaseScales({
+      tau: { logX: false, logY: false },
+      conc: { logX: true, logY: false },
+      age: { logX: false, logY: false },
+    });
   };
 
   const pred = useMemo(() => predict(params, cond.C, cond.tau, cond.age), [params, cond]);
@@ -1008,9 +1118,27 @@ export default function App() {
               <div>
                 {legend}
                 <div style={{ marginTop: 12, display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 14 }}>
-                  <PhaseTau p={params} C={cond.C} age={cond.age} />
-                  <PhaseConc p={params} tau={cond.tau} age={cond.age} />
-                  <PhaseAge p={params} C={cond.C} tau={cond.tau} />
+                  <PhaseTau
+                    p={params}
+                    C={cond.C}
+                    age={cond.age}
+                    scaleCfg={phaseScales.tau}
+                    setScaleCfg={(axis, value) => setPhaseScale("tau", axis, value)}
+                  />
+                  <PhaseConc
+                    p={params}
+                    tau={cond.tau}
+                    age={cond.age}
+                    scaleCfg={phaseScales.conc}
+                    setScaleCfg={(axis, value) => setPhaseScale("conc", axis, value)}
+                  />
+                  <PhaseAge
+                    p={params}
+                    C={cond.C}
+                    tau={cond.tau}
+                    scaleCfg={phaseScales.age}
+                    setScaleCfg={(axis, value) => setPhaseScale("age", axis, value)}
+                  />
                 </div>
                 <div style={{ marginTop: 10, fontSize: 10.5, color: DIM, lineHeight: 1.7, background: "#0A0A12", border: `1px solid ${BORDER}`, borderRadius: 3, padding: "6px 10px" }}>
                   <strong style={{ color: "#9999BB" }}>Left:</strong> Composition as τ increases at fixed C = {cond.C} μg/mL, age = {cond.age}h. &nbsp;
