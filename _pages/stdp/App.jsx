@@ -94,13 +94,14 @@ function predict(p, C, tau, a) {
 function computeConvolutionSeries(p, cond, nPts = 240) {
   const tau = Math.max(0, cond.tau);
   const lam = getLambda(p, cond.age);
-  const meanLag = p.k_lag / Math.max(lam, 1e-12);
   const hs = hS(cond.C, p.kS, p.K, p.n);
   const ht = hT(cond.C, p.kT, p.K, p.n);
   const r = rST(cond.C, cond.age, p.kST, p.KST, p.nST, p.a50, p.r0);
   const H = hs + r;
   const isDegenerate = Math.abs(H - ht) <= 1e-10;
-  const tMax = Math.min(24, Math.max(1.15 * tau, 4 * meanLag, 8));
+  // Keep the visible window tied to current treatment duration so the plot
+  // trims with τ and does not show post-τ right-hand space.
+  const tMax = Math.max(tau, 0.25);
   const points = Math.max(3, Math.floor(nPts));
   const step = tMax / (points - 1);
   const dataRaw = [];
