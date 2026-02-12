@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import {
   AreaChart, Area, XAxis, YAxis, Tooltip, LineChart, Line,
-  ResponsiveContainer, CartesianGrid, Legend
+  ResponsiveContainer, CartesianGrid, Legend, ComposedChart, ReferenceLine
 } from "recharts";
 
 // ═══════════════════════════════════════════════════════════════════
@@ -89,6 +89,71 @@ function predict(p, C, tau, a) {
   }
   piT = Math.min(Math.max(piT || 0, 0), 1);
   return { S: piS, T: piT, D: piD, dead: Math.max(0, 1 - piD - piS - piT) };
+}
+
+function computeConvolutionSweep(p, cond, nPts = 240) {
+  const tau = Math.max(0, cond.tau);
+  const lam = getLambda(p, cond.age);
+  const meanLag = p.k_lag / Math.max(lam, 1e-12);
+  const hs = hS(cond.C, p.kS, p.K, p.n);
+  const ht = hT(cond.C, p.kT, p.K, p.n);
+  const r = rST(cond.C, cond.age, p.kST, p.KST, p.nST, p.a50, p.r0);
+  const H = hs + r;
+  const isDegenerate = Math.abs(H - ht) <= 1e-10;
+  const ellMax = Math.min(24, Math.max(1.15 * tau, 4 * meanLag, 8));
+  const points = Math.max(3, Math.floor(nPts));
+  const step = ellMax / (points - 1);
+  const dataRaw = [];
+  let maxF = 0;
+  let maxPS = 0;
+  let maxPX = 0;
+  let piSNum = 0;
+  let piXNum = 0;
+
+  for (let i = 0; i < points; i++) {
+    const ell = i * step;
+    const fLag = erlangPDF(p.k_lag, lam, ell);
+    const delta = tau - ell;
+    const pSShift = delta >= 0 ? Math.exp(-H * delta) : 0;
+    let pXShift = 0;
+    if (delta >= 0) {
+      if (isDegenerate) {
+        pXShift = r * delta * Math.exp(-ht * delta);
+      } else {
+        pXShift = (r / (H - ht)) * (Math.exp(-ht * delta) - Math.exp(-H * delta));
+      }
+      pXShift = Math.max(0, pXShift);
+    }
+    const wS = fLag * pSShift;
+    const wX = fLag * pXShift;
+    maxF = Math.max(maxF, fLag);
+    maxPS = Math.max(maxPS, pSShift);
+    maxPX = Math.max(maxPX, pXShift);
+    dataRaw.push({ ell: +ell.toFixed(4), fLag, pSShift, pXShift, wS, wX });
+  }
+
+  for (let i = 1; i < dataRaw.length; i++) {
+    piSNum += 0.5 * (dataRaw[i - 1].wS + dataRaw[i].wS) * step;
+    piXNum += 0.5 * (dataRaw[i - 1].wX + dataRaw[i].wX) * step;
+  }
+
+  const data = dataRaw.map(d => ({
+    ...d,
+    fNorm: maxF > 0 ? d.fLag / maxF : 0,
+    pSNorm: maxPS > 0 ? d.pSShift / maxPS : 0,
+    pXNorm: maxPX > 0 ? d.pXShift / maxPX : 0,
+  }));
+
+  const predRef = predict(p, cond.C, tau, cond.age);
+  return {
+    data,
+    tau,
+    ellMax,
+    piSNum,
+    piXNum,
+    piSRef: predRef.S,
+    piXRef: predRef.T,
+  };
 }
 
 // Post-treatment: discounted deep-persister arrival integral
@@ -638,6 +703,80 @@ function KernelChart({ p, cond }) {
   );
 }
 
+function ConvolutionSweepPanels({ p, cond, pred }) {
+  const sweep = useMemo(() => computeConvolutionSweep(p, cond), [p, cond]);
+  const errS = Math.abs(sweep.piSNum - pred.S);
+  const errX = Math.abs(sweep.piXNum - pred.T);
+  const errColor = e => e < 1e-3 ? ACCENT : "#FF6B6B";
+  const areaFmt = v => Number(v).toExponential(3);
+  const shapeFmt = v => Number(v).toFixed(3);
+
+  return (
+    <div style={{ background: "#0A0A12", border: `1px solid ${BORDER}`, borderRadius: 4, padding: "8px 10px" }}>
+      <div style={{ fontSize: 8, color: ACCENT, letterSpacing: 1.6, marginBottom: 5 }}>
+        CONVOLUTION SWEEP · w(ℓ;τ) = fL(ℓ|a) · P(τ-ℓ)
+      </div>
+      <div style={{ fontSize: 8, color: DIM, marginBottom: 8, lineHeight: 1.6 }}>
+        Shaded area equals convolution mass at the current τ. Dashed overlays show normalized shapes of fL(ℓ|a) and shifted kernel P(τ-ℓ).
+      </div>
+
+      <div style={{ fontSize: 8, color: "#7788AA", marginBottom: 4, display: "flex", gap: 12, flexWrap: "wrap" }}>
+        <span style={{ color: SC.S }}>∫wS dℓ = {areaFmt(sweep.piSNum)}</span>
+        <span>pred.S = {fmtVal(pred.S, 6)}</span>
+        <span style={{ color: errColor(errS) }}>|Δ| = {areaFmt(errS)}</span>
+      </div>
+      <ResponsiveContainer width="100%" height={180}>
+        <ComposedChart data={sweep.data} margin={{ top: 4, right: 6, bottom: 16, left: 34 }}>
+          <CartesianGrid strokeDasharray="2 3" stroke="#1C1C2A" />
+          <XAxis type="number" dataKey="ell" domain={[0, sweep.ellMax]} stroke={DIM} tick={{ fill: "#667", fontSize: 9 }} tickCount={6} />
+          <YAxis yAxisId="raw" stroke={DIM} tick={{ fill: "#667", fontSize: 9 }} tickFormatter={v => Number(v).toExponential(0)} />
+          <YAxis yAxisId="norm" orientation="right" domain={[0, 1]} stroke={DIM} tick={{ fill: "#667", fontSize: 8 }} tickCount={3} />
+          <Tooltip
+            {...TT}
+            labelFormatter={v => `ℓ = ${Number(v).toFixed(2)}h`}
+            formatter={(v, n) => [String(n).includes("norm") ? shapeFmt(v) : areaFmt(v), n]}
+          />
+          <ReferenceLine x={sweep.tau} stroke="#9AA3B2" strokeDasharray="4 2" yAxisId="raw" />
+          <Area yAxisId="raw" type="monotone" dataKey="wS" stroke={SC.S} fill={SC.S} fillOpacity={0.42} name="wS = fL·PS(τ-ℓ)" />
+          <Line yAxisId="norm" type="monotone" dataKey="fNorm" stroke={ACCENT} dot={false} strokeWidth={1.6} strokeDasharray="4 2" name="fL(ℓ) norm" />
+          <Line yAxisId="norm" type="monotone" dataKey="pSNorm" stroke={SC.S} dot={false} strokeWidth={1.6} strokeDasharray="6 2" name="PS(τ-ℓ) norm" />
+        </ComposedChart>
+      </ResponsiveContainer>
+
+      <div style={{ fontSize: 8, color: "#7788AA", marginBottom: 4, marginTop: 6, display: "flex", gap: 12, flexWrap: "wrap" }}>
+        <span style={{ color: SC.T }}>∫wX dℓ = {areaFmt(sweep.piXNum)}</span>
+        <span>pred.X = {fmtVal(pred.T, 6)}</span>
+        <span style={{ color: errColor(errX) }}>|Δ| = {areaFmt(errX)}</span>
+      </div>
+      <ResponsiveContainer width="100%" height={188}>
+        <ComposedChart data={sweep.data} margin={{ top: 4, right: 6, bottom: 24, left: 34 }}>
+          <CartesianGrid strokeDasharray="2 3" stroke="#1C1C2A" />
+          <XAxis
+            type="number"
+            dataKey="ell"
+            domain={[0, sweep.ellMax]}
+            stroke={DIM}
+            tick={{ fill: "#667", fontSize: 9 }}
+            tickCount={6}
+            label={{ value: "lag ℓ (h)", position: "insideBottom", offset: -10, fill: "#667", fontSize: 9 }}
+          />
+          <YAxis yAxisId="raw" stroke={DIM} tick={{ fill: "#667", fontSize: 9 }} tickFormatter={v => Number(v).toExponential(0)} />
+          <YAxis yAxisId="norm" orientation="right" domain={[0, 1]} stroke={DIM} tick={{ fill: "#667", fontSize: 8 }} tickCount={3} />
+          <Tooltip
+            {...TT}
+            labelFormatter={v => `ℓ = ${Number(v).toFixed(2)}h`}
+            formatter={(v, n) => [String(n).includes("norm") ? shapeFmt(v) : areaFmt(v), n]}
+          />
+          <ReferenceLine x={sweep.tau} stroke="#9AA3B2" strokeDasharray="4 2" yAxisId="raw" />
+          <Area yAxisId="raw" type="monotone" dataKey="wX" stroke={SC.T} fill={SC.T} fillOpacity={0.42} name="wX = fL·PX(τ-ℓ)" />
+          <Line yAxisId="norm" type="monotone" dataKey="fNorm" stroke={ACCENT} dot={false} strokeWidth={1.6} strokeDasharray="4 2" name="fL(ℓ) norm" />
+          <Line yAxisId="norm" type="monotone" dataKey="pXNorm" stroke={SC.T} dot={false} strokeWidth={1.6} strokeDasharray="6 2" name="PX(τ-ℓ) norm" />
+        </ComposedChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
+
 function ModelTab({ p, cond, pred, u }) {
   const s = useMemo(() => modelSnapshot(p, cond), [p, cond]);
   return (
@@ -699,6 +838,10 @@ r_{S\to X}\,\Delta\,e^{-h_X\Delta}, & H=h_X
 
       <div style={{ gridColumn: "1/-1" }}>
         <KernelChart p={p} cond={cond} />
+      </div>
+
+      <div style={{ gridColumn: "1/-1" }}>
+        <ConvolutionSweepPanels p={p} cond={cond} pred={pred} />
       </div>
 
       <EquationCard title="5) POST-TREATMENT REGROWTH (u = t - τ)">
