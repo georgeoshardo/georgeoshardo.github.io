@@ -724,9 +724,9 @@ function ConvolutionSweepPanels({ p, cond, pred }) {
                 formatter={(v, n) => [String(n).includes("relative shape") ? shapeFmt(v) : probFmt(v), n]}
               />
               <ReferenceLine x={sweep.tau} stroke="#9AA3B2" strokeDasharray="4 2" yAxisId="raw" label={{ value: "τ", fill: "#9AA3B2", fontSize: 10, position: "top" }} />
-              <Area yAxisId="raw" type="monotone" dataKey="S_t" stroke={SC.S} fill={SC.S} fillOpacity={0.42} name="S(t): probability of being in state S at time t" />
-              <Line yAxisId="norm" type="monotone" dataKey="fNorm" stroke={ACCENT} dot={false} strokeWidth={1.6} strokeDasharray="4 2" name="Wake-up timing f_L(t|a) (relative shape)" />
-              <Line yAxisId="norm" type="monotone" dataKey="pSNorm" stroke={SC.S} dot={false} strokeWidth={1.6} strokeDasharray="6 2" name="P_S(t): probability a waking cell remains in S up to time t (relative shape)" />
+              <Area yAxisId="raw" type="monotone" dataKey="S_t" stroke={SC.S} fill={SC.S} fillOpacity={0.48} name="S(t) filled: probability in susceptible state" />
+              <Line yAxisId="norm" type="monotone" dataKey="fNorm" stroke={ACCENT} dot={false} strokeWidth={1.6} strokeDasharray="4 2" name="f_L(t|a): wake-up timing (relative)" />
+              <Line yAxisId="norm" type="monotone" dataKey="pSNorm" stroke="#5CA9FF" dot={false} strokeWidth={1.8} strokeDasharray="8 3" name="P_S(t) dashed: post-wake survival in S (relative)" />
               <Legend verticalAlign="top" align="right" iconSize={8} wrapperStyle={{ fontSize: 10, color: TXT }} />
             </ComposedChart>
           </ResponsiveContainer>
@@ -757,9 +757,9 @@ function ConvolutionSweepPanels({ p, cond, pred }) {
                 formatter={(v, n) => [String(n).includes("relative shape") ? shapeFmt(v) : probFmt(v), n]}
               />
               <ReferenceLine x={sweep.tau} stroke="#9AA3B2" strokeDasharray="4 2" yAxisId="raw" label={{ value: "τ", fill: "#9AA3B2", fontSize: 10, position: "top" }} />
-              <Area yAxisId="raw" type="monotone" dataKey="X_t" stroke={SC.T} fill={SC.T} fillOpacity={0.42} name="X(t): probability of being in state X at time t" />
-              <Line yAxisId="norm" type="monotone" dataKey="fNorm" stroke={ACCENT} dot={false} strokeWidth={1.6} strokeDasharray="4 2" name="Wake-up timing f_L(t|a) (relative shape)" />
-              <Line yAxisId="norm" type="monotone" dataKey="pXNorm" stroke={SC.T} dot={false} strokeWidth={1.6} strokeDasharray="6 2" name="P_X(t): probability a waking cell contributes to X by time t (relative shape)" />
+              <Area yAxisId="raw" type="monotone" dataKey="X_t" stroke={SC.T} fill={SC.T} fillOpacity={0.48} name="X(t) filled: probability in tolerant state" />
+              <Line yAxisId="norm" type="monotone" dataKey="fNorm" stroke={ACCENT} dot={false} strokeWidth={1.6} strokeDasharray="4 2" name="f_L(t|a): wake-up timing (relative)" />
+              <Line yAxisId="norm" type="monotone" dataKey="pXNorm" stroke="#FF7A59" dot={false} strokeWidth={1.8} strokeDasharray="8 3" name="P_X(t) dashed: post-wake contribution to X (relative)" />
               <Legend verticalAlign="top" align="right" iconSize={8} wrapperStyle={{ fontSize: 10, color: TXT }} />
             </ComposedChart>
           </ResponsiveContainer>
