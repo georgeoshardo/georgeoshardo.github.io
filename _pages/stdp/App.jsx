@@ -668,7 +668,7 @@ function KernelChart({ p, cond }) {
       <div style={{ fontSize: 11, color: "#7788AA", fontFamily: "monospace", marginBottom: 4 }}>
         Convolution kernels at current C, age: P_S(Δ)=e^(-HΔ), P_X(Δ) [{isDegenerate ? "H = hX" : "H ≠ hX"}]
       </div>
-      <ResponsiveContainer width="100%" height={170}>
+      <ResponsiveContainer width="100%" height={255}>
         <LineChart data={data} margin={{ top: 4, right: 4, bottom: 22, left: 32 }}>
           <CartesianGrid strokeDasharray="2 3" stroke="#1C1C2A" />
           <XAxis dataKey="delta" stroke={DIM} tick={{ fill: "#667", fontSize: 11 }}
@@ -698,67 +698,73 @@ function ConvolutionSweepPanels({ p, cond, pred }) {
         Dashed curves show the two ingredients of the convolution: wake-up timing and post-wake survival/contribution shape.
       </div>
 
-      <div style={{ fontSize: 10, color: "#7788AA", marginBottom: 4, display: "flex", gap: 12, flexWrap: "wrap" }}>
-        <span style={{ color: SC.S }}>S(τ) = {probFmt(pred.S)}</span>
-        <span>Probability of being in state S at current treatment time</span>
-      </div>
-      <ResponsiveContainer width="100%" height={180}>
-        <ComposedChart data={sweep.data} margin={{ top: 28, right: 8, bottom: 24, left: 36 }}>
-          <CartesianGrid strokeDasharray="2 3" stroke="#1C1C2A" />
-          <XAxis
-            type="number"
-            dataKey="t"
-            domain={[0, sweep.tMax]}
-            stroke={DIM}
-            tick={{ fill: "#667", fontSize: 11 }}
-            tickCount={6}
-            label={{ value: "treatment time t (h)", position: "insideBottom", offset: -10, fill: "#667", fontSize: 11 }}
-          />
-          <YAxis yAxisId="raw" stroke={DIM} domain={[0, 1]} tick={{ fill: "#667", fontSize: 11 }} tickFormatter={v => `${(100 * v).toFixed(0)}%`} />
-          <YAxis yAxisId="norm" orientation="right" domain={[0, 1]} stroke={DIM} tick={{ fill: "#667", fontSize: 10 }} tickCount={3} />
-          <Tooltip
-            {...TT}
-            labelFormatter={v => `t = ${Number(v).toFixed(2)}h`}
-            formatter={(v, n) => [String(n).includes("relative shape") ? shapeFmt(v) : probFmt(v), n]}
-          />
-          <ReferenceLine x={sweep.tau} stroke="#9AA3B2" strokeDasharray="4 2" yAxisId="raw" label={{ value: "τ", fill: "#9AA3B2", fontSize: 10, position: "top" }} />
-          <Area yAxisId="raw" type="monotone" dataKey="S_t" stroke={SC.S} fill={SC.S} fillOpacity={0.42} name="S(t): probability of being in state S at time t" />
-          <Line yAxisId="norm" type="monotone" dataKey="fNorm" stroke={ACCENT} dot={false} strokeWidth={1.6} strokeDasharray="4 2" name="Wake-up timing f_L(t|a) (relative shape)" />
-          <Line yAxisId="norm" type="monotone" dataKey="pSNorm" stroke={SC.S} dot={false} strokeWidth={1.6} strokeDasharray="6 2" name="P_S(t): probability a waking cell remains in S up to time t (relative shape)" />
-          <Legend verticalAlign="top" align="right" iconSize={8} wrapperStyle={{ fontSize: 10, color: TXT }} />
-        </ComposedChart>
-      </ResponsiveContainer>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(520px, 1fr))", gap: 14 }}>
+        <div>
+          <div style={{ fontSize: 10, color: "#7788AA", marginBottom: 4, display: "flex", gap: 12, flexWrap: "wrap" }}>
+            <span style={{ color: SC.S }}>S(τ) = {probFmt(pred.S)}</span>
+            <span>Probability of being in state S at current treatment time</span>
+          </div>
+          <ResponsiveContainer width="100%" height={270}>
+            <ComposedChart data={sweep.data} margin={{ top: 28, right: 8, bottom: 24, left: 36 }}>
+              <CartesianGrid strokeDasharray="2 3" stroke="#1C1C2A" />
+              <XAxis
+                type="number"
+                dataKey="t"
+                domain={[0, sweep.tMax]}
+                stroke={DIM}
+                tick={{ fill: "#667", fontSize: 11 }}
+                tickCount={6}
+                label={{ value: "treatment time t (h)", position: "insideBottom", offset: -10, fill: "#667", fontSize: 11 }}
+              />
+              <YAxis yAxisId="raw" stroke={DIM} domain={[0, 1]} tick={{ fill: "#667", fontSize: 11 }} tickFormatter={v => `${(100 * v).toFixed(0)}%`} />
+              <YAxis yAxisId="norm" orientation="right" domain={[0, 1]} stroke={DIM} tick={{ fill: "#667", fontSize: 10 }} tickCount={3} />
+              <Tooltip
+                {...TT}
+                labelFormatter={v => `t = ${Number(v).toFixed(2)}h`}
+                formatter={(v, n) => [String(n).includes("relative shape") ? shapeFmt(v) : probFmt(v), n]}
+              />
+              <ReferenceLine x={sweep.tau} stroke="#9AA3B2" strokeDasharray="4 2" yAxisId="raw" label={{ value: "τ", fill: "#9AA3B2", fontSize: 10, position: "top" }} />
+              <Area yAxisId="raw" type="monotone" dataKey="S_t" stroke={SC.S} fill={SC.S} fillOpacity={0.42} name="S(t): probability of being in state S at time t" />
+              <Line yAxisId="norm" type="monotone" dataKey="fNorm" stroke={ACCENT} dot={false} strokeWidth={1.6} strokeDasharray="4 2" name="Wake-up timing f_L(t|a) (relative shape)" />
+              <Line yAxisId="norm" type="monotone" dataKey="pSNorm" stroke={SC.S} dot={false} strokeWidth={1.6} strokeDasharray="6 2" name="P_S(t): probability a waking cell remains in S up to time t (relative shape)" />
+              <Legend verticalAlign="top" align="right" iconSize={8} wrapperStyle={{ fontSize: 10, color: TXT }} />
+            </ComposedChart>
+          </ResponsiveContainer>
+        </div>
 
-      <div style={{ fontSize: 10, color: "#7788AA", marginBottom: 4, marginTop: 6, display: "flex", gap: 12, flexWrap: "wrap" }}>
-        <span style={{ color: SC.T }}>X(τ) = {probFmt(pred.T)}</span>
-        <span>Probability of being in state X at current treatment time</span>
+        <div>
+          <div style={{ fontSize: 10, color: "#7788AA", marginBottom: 4, display: "flex", gap: 12, flexWrap: "wrap" }}>
+            <span style={{ color: SC.T }}>X(τ) = {probFmt(pred.T)}</span>
+            <span>Probability of being in state X at current treatment time</span>
+          </div>
+          <ResponsiveContainer width="100%" height={282}>
+            <ComposedChart data={sweep.data} margin={{ top: 28, right: 8, bottom: 24, left: 36 }}>
+              <CartesianGrid strokeDasharray="2 3" stroke="#1C1C2A" />
+              <XAxis
+                type="number"
+                dataKey="t"
+                domain={[0, sweep.tMax]}
+                stroke={DIM}
+                tick={{ fill: "#667", fontSize: 11 }}
+                tickCount={6}
+                label={{ value: "treatment time t (h)", position: "insideBottom", offset: -10, fill: "#667", fontSize: 11 }}
+              />
+              <YAxis yAxisId="raw" stroke={DIM} domain={[0, 1]} tick={{ fill: "#667", fontSize: 11 }} tickFormatter={v => `${(100 * v).toFixed(0)}%`} />
+              <YAxis yAxisId="norm" orientation="right" domain={[0, 1]} stroke={DIM} tick={{ fill: "#667", fontSize: 10 }} tickCount={3} />
+              <Tooltip
+                {...TT}
+                labelFormatter={v => `t = ${Number(v).toFixed(2)}h`}
+                formatter={(v, n) => [String(n).includes("relative shape") ? shapeFmt(v) : probFmt(v), n]}
+              />
+              <ReferenceLine x={sweep.tau} stroke="#9AA3B2" strokeDasharray="4 2" yAxisId="raw" label={{ value: "τ", fill: "#9AA3B2", fontSize: 10, position: "top" }} />
+              <Area yAxisId="raw" type="monotone" dataKey="X_t" stroke={SC.T} fill={SC.T} fillOpacity={0.42} name="X(t): probability of being in state X at time t" />
+              <Line yAxisId="norm" type="monotone" dataKey="fNorm" stroke={ACCENT} dot={false} strokeWidth={1.6} strokeDasharray="4 2" name="Wake-up timing f_L(t|a) (relative shape)" />
+              <Line yAxisId="norm" type="monotone" dataKey="pXNorm" stroke={SC.T} dot={false} strokeWidth={1.6} strokeDasharray="6 2" name="P_X(t): probability a waking cell contributes to X by time t (relative shape)" />
+              <Legend verticalAlign="top" align="right" iconSize={8} wrapperStyle={{ fontSize: 10, color: TXT }} />
+            </ComposedChart>
+          </ResponsiveContainer>
+        </div>
       </div>
-      <ResponsiveContainer width="100%" height={188}>
-        <ComposedChart data={sweep.data} margin={{ top: 28, right: 8, bottom: 24, left: 36 }}>
-          <CartesianGrid strokeDasharray="2 3" stroke="#1C1C2A" />
-          <XAxis
-            type="number"
-            dataKey="t"
-            domain={[0, sweep.tMax]}
-            stroke={DIM}
-            tick={{ fill: "#667", fontSize: 11 }}
-            tickCount={6}
-            label={{ value: "treatment time t (h)", position: "insideBottom", offset: -10, fill: "#667", fontSize: 11 }}
-          />
-          <YAxis yAxisId="raw" stroke={DIM} domain={[0, 1]} tick={{ fill: "#667", fontSize: 11 }} tickFormatter={v => `${(100 * v).toFixed(0)}%`} />
-          <YAxis yAxisId="norm" orientation="right" domain={[0, 1]} stroke={DIM} tick={{ fill: "#667", fontSize: 10 }} tickCount={3} />
-          <Tooltip
-            {...TT}
-            labelFormatter={v => `t = ${Number(v).toFixed(2)}h`}
-            formatter={(v, n) => [String(n).includes("relative shape") ? shapeFmt(v) : probFmt(v), n]}
-          />
-          <ReferenceLine x={sweep.tau} stroke="#9AA3B2" strokeDasharray="4 2" yAxisId="raw" label={{ value: "τ", fill: "#9AA3B2", fontSize: 10, position: "top" }} />
-          <Area yAxisId="raw" type="monotone" dataKey="X_t" stroke={SC.T} fill={SC.T} fillOpacity={0.42} name="X(t): probability of being in state X at time t" />
-          <Line yAxisId="norm" type="monotone" dataKey="fNorm" stroke={ACCENT} dot={false} strokeWidth={1.6} strokeDasharray="4 2" name="Wake-up timing f_L(t|a) (relative shape)" />
-          <Line yAxisId="norm" type="monotone" dataKey="pXNorm" stroke={SC.T} dot={false} strokeWidth={1.6} strokeDasharray="6 2" name="P_X(t): probability a waking cell contributes to X by time t (relative shape)" />
-          <Legend verticalAlign="top" align="right" iconSize={8} wrapperStyle={{ fontSize: 10, color: TXT }} />
-        </ComposedChart>
-      </ResponsiveContainer>
     </div>
   );
 }
