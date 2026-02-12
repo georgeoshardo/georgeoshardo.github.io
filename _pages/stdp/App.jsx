@@ -196,6 +196,38 @@ function SectionLabel({ children }) {
   );
 }
 
+function useMathJax(tex) {
+  const ref = useRef(null);
+  useEffect(() => {
+    if (typeof window === "undefined") return undefined;
+    let cancelled = false;
+    let timer = null;
+    const run = (tries = 0) => {
+      if (cancelled) return;
+      const mj = window.MathJax;
+      const node = ref.current;
+      if (node && mj && typeof mj.typesetPromise === "function") {
+        if (typeof mj.typesetClear === "function") mj.typesetClear([node]);
+        mj.typesetPromise([node]).catch(() => {});
+        return;
+      }
+      if (tries < 20) timer = setTimeout(() => run(tries + 1), 120);
+    };
+    run();
+    return () => { cancelled = true; if (timer) clearTimeout(timer); };
+  }, [tex]);
+  return ref;
+}
+
+function MathDisplay({ tex, style }) {
+  const ref = useMathJax(tex);
+  return (
+    <div ref={ref} style={{ color: TXT, fontSize: 8.6, lineHeight: 1.7, ...style }}>
+      {`\\[${tex}\\]`}
+    </div>
+  );
+}
+
 // Shared tooltip style for recharts
 const TT = { contentStyle: { background: "#0A0A12", border: `1px solid ${BORDER}`, fontSize: 10, padding: "4px 8px" }, itemStyle: { color: TXT }, labelStyle: { color: DIM } };
 
@@ -611,41 +643,55 @@ function ModelTab({ p, cond, pred, u }) {
   return (
     <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 12 }}>
       <EquationCard title="1) STATE FLOW (UNDER ANTIBIOTICS)">
-        <pre style={{ margin: 0, fontSize: 8.5, color: TXT, lineHeight: 1.55, whiteSpace: "pre-wrap" }}>{`D --hL(t;a)--> S --rS→X(C;a)--> X
-          | hS(C)             | hX(C)
-          v                   v
-         dead                dead`}</pre>
+        <MathDisplay tex={String.raw`\begin{aligned}
+D &\xrightarrow{h_L(t;a)} S \\
+S &\xrightarrow{r_{S\to X}(C;a)} X \\
+S &\xrightarrow{h_S(C)} \varnothing,\qquad
+X \xrightarrow{h_X(C)} \varnothing
+\end{aligned}`} />
         <div style={{ marginTop: 6, fontSize: 8, color: DIM }}>
           Move <span style={{ color: TXT }}>C</span> to tune hS/hX/rS→X, move <span style={{ color: TXT }}>age</span> to tune memory m(a), and move <span style={{ color: TXT }}>τ</span> to change how long these rates act.
         </div>
       </EquationCard>
 
       <EquationCard title="2) ODE SYSTEM DURING TREATMENT">
-        <pre style={{ margin: 0, fontSize: 8.5, color: TXT, lineHeight: 1.6, whiteSpace: "pre-wrap" }}>{`dD/dt = -hL(t;a)·D
-dS/dt = hL(t;a)·D - hS(C)·S - rS→X(C;a)·S
-dX/dt = rS→X(C;a)·S - hX(C)·X`}</pre>
+        <MathDisplay tex={String.raw`\begin{aligned}
+\frac{dD}{dt} &= -h_L(t;a)\,D \\
+\frac{dS}{dt} &= h_L(t;a)\,D - h_S(C)\,S - r_{S\to X}(C;a)\,S \\
+\frac{dX}{dt} &= r_{S\to X}(C;a)\,S - h_X(C)\,X
+\end{aligned}`} />
         <div style={{ marginTop: 6, fontSize: 8, color: DIM }}>
           Current values: hL(t=τ;a)={fmtVal(s.hLagNow)}, hS={fmtVal(s.hs)}, rS→X={fmtVal(s.r)}, hX={fmtVal(s.ht)}.
         </div>
       </EquationCard>
 
       <EquationCard title="3) RATE PARAMETRISATION">
-        <pre style={{ margin: 0, fontSize: 8.3, color: TXT, lineHeight: 1.6, whiteSpace: "pre-wrap" }}>{`phi_i(C) = (C/Ci,0)^ni
-hS(C) = log(1 + κS·phiS)
-hX(C) = log(1 + κT·phiS)
-rS→X(C;a) = m(a)·[r0 + log(1 + κST·phiS→X)]
-m(a) = a/(a+a50)`}</pre>
+        <MathDisplay tex={String.raw`\begin{aligned}
+\varphi_i(C) &= \left(\frac{C}{C_{i,0}}\right)^{n_i},\qquad i\in\{S,X,S\to X\} \\
+r_{S\to X}(C;a) &= m(a)\left[r_0 + \alpha_{S\to X}\,\varphi_{S\to X}(C)\right],\quad m(a)=\frac{a}{a+a_{50}} \\
+h_S(C) &= \alpha_S\,\varphi_S(C),\qquad h_X(C)=\alpha_X\,\varphi_X(C)
+\end{aligned}`} />
+        <MathDisplay tex={String.raw`C_{S,0}=C_{X,0},\quad n_S=n_X,\quad 0<\alpha_X<\alpha_S`} style={{ marginTop: -5 }} />
+        <div style={{ marginTop: 2, fontSize: 8, color: DIM }}>
+          Implementation note: solver uses log(1+...) dose-response internally for numerical stability in this dashboard.
+        </div>
         <div style={{ marginTop: 6, fontSize: 8, color: DIM }}>
           At this point: m(a)={fmtVal(s.m, 3)}, phiS={fmtVal(s.phiShared, 3)}, phiS→X={fmtVal(s.phiSwitch, 3)}.
         </div>
       </EquationCard>
 
       <EquationCard title="4) CONVOLUTION SOLVER VIEW">
-        <pre style={{ margin: 0, fontSize: 8.2, color: TXT, lineHeight: 1.6, whiteSpace: "pre-wrap" }}>{`D(t) = N0·SL(t|a)
-S(t) = N0∫0^t PS(t-ℓ) fL(ℓ|a)dℓ
-X(t) = N0∫0^t PX(t-ℓ) fL(ℓ|a)dℓ
-PS(Δ)=e^(-HΔ),  H=hS+rS→X
-PX(Δ)= rS→X/(H-hX) · [e^(-hXΔ)-e^(-HΔ)]  (or rS→X·Δ·e^(-hXΔ) if H=hX)`}</pre>
+        <MathDisplay tex={String.raw`\begin{aligned}
+D(t) &= N_0\,S_L(t\mid a) \\
+S(t) &= N_0\int_0^t P_S(t-\ell)\,f_L(\ell\mid a)\,d\ell \\
+X(t) &= N_0\int_0^t P_X(t-\ell)\,f_L(\ell\mid a)\,d\ell
+\end{aligned}`} />
+        <MathDisplay tex={String.raw`P_S(\Delta)=e^{-H\Delta},\quad H=h_S+r_{S\to X}`} style={{ marginTop: -8 }} />
+        <MathDisplay tex={String.raw`P_X(\Delta)=
+\begin{cases}
+\dfrac{r_{S\to X}}{H-h_X}\left[e^{-h_X\Delta}-e^{-H\Delta}\right], & H\neq h_X \\[6pt]
+r_{S\to X}\,\Delta\,e^{-h_X\Delta}, & H=h_X
+\end{cases}`} style={{ marginTop: -8 }} />
         <div style={{ marginTop: 6, fontSize: 8, color: DIM }}>
           Current branch: {Math.abs(s.H - s.ht) <= 1e-10 ? "degenerate H = hX" : "generic H ≠ hX"} with H={fmtVal(s.H)}.
         </div>
@@ -656,10 +702,12 @@ PX(Δ)= rS→X/(H-hX) · [e^(-hXΔ)-e^(-HΔ)]  (or rS→X·Δ·e^(-hXΔ) if H=hX
       </div>
 
       <EquationCard title="5) POST-TREATMENT REGROWTH (u = t - τ)">
-        <pre style={{ margin: 0, fontSize: 8.3, color: TXT, lineHeight: 1.6, whiteSpace: "pre-wrap" }}>{`πS = S(τ)/N0,  πX = X(τ)/N0,  πD = SL(τ|a)
-GS(u) = N0·πS·e^(gu)
-GX(u) = N0·πX·e^(gu)
-GD(u) = e^(gu)∫0^u e^(-gs)·N0·fL(τ+s|a) ds`}</pre>
+        <MathDisplay tex={String.raw`\pi_S=\frac{S(\tau)}{N_0},\qquad \pi_X=\frac{X(\tau)}{N_0},\qquad \pi_D=S_L(\tau\mid a)`} />
+        <MathDisplay tex={String.raw`\begin{aligned}
+G_S(u) &= N_0\,\pi_S\,e^{gu} \\
+G_X(u) &= N_0\,\pi_X\,e^{gu}
+\end{aligned}`} style={{ marginTop: -8 }} />
+        <MathDisplay tex={String.raw`G_D(u)=e^{gu}\int_{0}^{u}e^{-gs}\,\underbrace{N_0\,f_L(\tau+s\mid a)}_{\text{wake rate at }\tau+s}\,ds`} style={{ marginTop: -8 }} />
         <div style={{ marginTop: 6, fontSize: 8, color: DIM }}>
           With current sliders: πS={fmtPct(pred.S)}, πX={fmtPct(pred.T)}, πD={fmtPct(pred.D)}; at u={u}h both S/X branches amplify by e^(gu) with g=ln2.
         </div>
