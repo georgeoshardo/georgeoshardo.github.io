@@ -1,6 +1,6 @@
 ---
 title: STDP persistence model
-layout: page
+layout: default
 permalink: /stdp/
 ---
 
