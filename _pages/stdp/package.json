@@ -2,7 +2,7 @@
   "name": "stdp-widget",
   "version": "1.0.0",
   "scripts": {
-    "build": "esbuild entry.jsx --bundle --minify --outfile=../../assets/js/stdp.js"
+    "build": "esbuild entry.jsx --bundle --minify --platform=browser --target=es2018 --format=iife --outfile=../../assets/js/stdp.js"
   },
   "dependencies": {
     "react": "^18.0.0",
