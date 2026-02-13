@@ -170,13 +170,17 @@ const U0 = 24;
 const KGAMMA0 = 0.35;
 const USEK0 = true;
 
-const SC = { S: "#F7A541", T: "#D4C832", D: "#7BC940", dead: "#C94040" };
-const ACCENT = "#64FFDA";
-const BG = "#0D0D14";
-const PANEL = "#14141E";
-const BORDER = "#252535";
-const DIM = "#555577";
-const TXT = "#C8C8D8";
+const SC = { S: "#9b2f7f", T: "#9c6a00", D: "#0f7f8c", dead: "#b13a3a", switch: "#1f6b7a" };
+const BG = "#fdfdfb";
+const PANEL = "#f5f7f8";
+const SURFACE = "#ffffff";
+const BORDER = "#d8dce0";
+const GRID = "#d2d8de";
+const TXT = "#313436";
+const DIM = "#5f6770";
+const MUTED = "#6b7280";
+const ACCENT = "#2a7487";
+const ACCENT_SOFT_BG = "#2a748722";
 
 const PARAM_GROUPS = [
   {
@@ -219,7 +223,7 @@ const PARAM_GROUPS = [
 function Slider({ label, tip, value, min, max, step, onChange, fmt }) {
   return (
     <div style={{ marginBottom: 6 }}>
-      <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "#8888AA", fontFamily: "monospace", marginBottom: 1 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: MUTED, fontFamily: "monospace", marginBottom: 1 }}>
         <span title={tip}>{label}</span>
         <span style={{ color: ACCENT }}>{fmt ? fmt(value) : value.toFixed(3)}</span>
       </div>
@@ -230,7 +234,7 @@ function Slider({ label, tip, value, min, max, step, onChange, fmt }) {
   );
 }
 
-function Tag({ children, color = ACCENT, bg = "#0A1A14" }) {
+function Tag({ children, color = ACCENT, bg = ACCENT_SOFT_BG }) {
   return (
     <span style={{ background: bg, border: `1px solid ${color}33`, color, fontSize: 11, padding: "1px 6px", borderRadius: 10, fontFamily: "monospace" }}>
       {children}
@@ -279,7 +283,7 @@ function MathDisplay({ tex, style }) {
 }
 
 // Shared tooltip style for recharts
-const TT = { contentStyle: { background: "#0A0A12", border: `1px solid ${BORDER}`, fontSize: 12, padding: "4px 8px" }, itemStyle: { color: TXT }, labelStyle: { color: DIM } };
+const TT = { contentStyle: { background: SURFACE, border: `1px solid ${BORDER}`, fontSize: 12, padding: "4px 8px" }, itemStyle: { color: TXT }, labelStyle: { color: DIM } };
 
 // X-axis log-concentration ticks
 const LOG_TICKS = [-0.5, 0, 1, 2, 3, 3.5];
@@ -330,7 +334,7 @@ function modelSnapshot(p, cond) {
 
 function EquationCard({ title, children }) {
   return (
-    <div style={{ background: "#0A0A12", border: `1px solid ${BORDER}`, borderRadius: 4, padding: "8px 10px" }}>
+    <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 4, padding: "8px 10px" }}>
       <div style={{ fontSize: 10, letterSpacing: 1.6, color: ACCENT, marginBottom: 5 }}>{title}</div>
       {children}
     </div>
@@ -340,7 +344,7 @@ function EquationCard({ title, children }) {
 function LiveMathStrip({ p, cond, pred }) {
   const s = useMemo(() => modelSnapshot(p, cond), [p, cond]);
   return (
-    <div style={{ marginBottom: 12, background: "#0A0A12", border: `1px solid ${BORDER}`, borderRadius: 4, padding: "7px 10px", lineHeight: 1.6 }}>
+    <div style={{ marginBottom: 12, background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 4, padding: "7px 10px", lineHeight: 1.6 }}>
       <div style={{ fontSize: 10, color: ACCENT, letterSpacing: 1.4, marginBottom: 4 }}>
         LIVE MODEL READOUT · D --hL(t;a)→ S --rS→X(C;a)→ X, with death exits from S and X
       </div>
@@ -350,11 +354,11 @@ function LiveMathStrip({ p, cond, pred }) {
         <div>phiS→X = (C/KST)^nST = <span style={{ color: TXT }}>{fmtVal(s.phiSwitch, 3)}</span></div>
         <div>hS(C) = <span style={{ color: SC.S }}>{fmtVal(s.hs)}</span></div>
         <div>hX(C) = <span style={{ color: SC.T }}>{fmtVal(s.ht)}</span></div>
-        <div>rS→X(C;a) = <span style={{ color: "#00CBCB" }}>{fmtVal(s.r)}</span></div>
+        <div>rS→X(C;a) = <span style={{ color: SC.switch }}>{fmtVal(s.r)}</span></div>
         <div>H = hS + rS→X = <span style={{ color: ACCENT }}>{fmtVal(s.H)}</span></div>
         <div>hL(t=τ;a) = fL/SL = <span style={{ color: SC.D }}>{fmtVal(s.hLagNow)}</span></div>
       </div>
-      <div style={{ marginTop: 5, fontSize: 10, color: "#7788AA" }}>
+      <div style={{ marginTop: 5, fontSize: 10, color: MUTED }}>
         Survivor split at current sliders: S={fmtPct(pred.S)} · X={fmtPct(pred.T)} · D={fmtPct(pred.D)} · dead={fmtPct(pred.dead)}
       </div>
     </div>
@@ -372,9 +376,9 @@ function StackedArea({
   return (
     <div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8, marginBottom: 3 }}>
-        <div style={{ fontSize: 11, color: "#7788AA", fontFamily: "monospace" }}>{title}</div>
+        <div style={{ fontSize: 11, color: MUTED, fontFamily: "monospace" }}>{title}</div>
         {(onToggleLogX || onToggleLogY) && (
-          <div style={{ display: "flex", gap: 10, fontSize: 10, color: "#889" }}>
+          <div style={{ display: "flex", gap: 10, fontSize: 10, color: MUTED }}>
             {onToggleLogX && (
               <label style={{ display: "flex", alignItems: "center", gap: 4, cursor: "pointer" }}>
                 <input type="checkbox" checked={logX} onChange={e => onToggleLogX(e.target.checked)} style={{ accentColor: ACCENT }} />
@@ -392,12 +396,12 @@ function StackedArea({
       </div>
       <ResponsiveContainer width="100%" height={height}>
         <AreaChart data={data} margin={{ top: 4, right: 4, bottom: 22, left: 28 }}>
-          <CartesianGrid strokeDasharray="2 3" stroke="#1C1C2A" />
+          <CartesianGrid strokeDasharray="2 3" stroke={GRID} />
           <XAxis type="number" dataKey={xKey} domain={xDomain ?? ["auto", "auto"]} scale={logX ? "log" : "linear"}
-            stroke={DIM} tick={{ fill: "#667", fontSize: 11 }}
+            stroke={DIM} tick={{ fill: DIM, fontSize: 11 }}
             ticks={xTicks} tickFormatter={xFmt}
-            label={{ value: xLabel, position: "insideBottom", offset: -10, fill: "#667", fontSize: 11 }} />
-          <YAxis stroke={DIM} tick={{ fill: "#667", fontSize: 11 }} tickCount={5}
+            label={{ value: xLabel, position: "insideBottom", offset: -10, fill: DIM, fontSize: 11 }} />
+          <YAxis stroke={DIM} tick={{ fill: DIM, fontSize: 11 }} tickCount={5}
             scale={logY ? "log" : "linear"}
             domain={logY ? [LOG_EPS, 1] : [0, 1]}
             tickFormatter={logY ? yPctTickFmt : (v => `${(100 * v).toFixed(0)}%`)} />
@@ -500,18 +504,18 @@ function HazardChart({ p, age }) {
   }), [p, age]);
   return (
     <div>
-      <div style={{ fontSize: 11, color: "#7788AA", fontFamily: "monospace", marginBottom: 3 }}>Hazard rates vs C  (age = {age.toFixed(0)}h)</div>
+      <div style={{ fontSize: 11, color: MUTED, fontFamily: "monospace", marginBottom: 3 }}>Hazard rates vs C  (age = {age.toFixed(0)}h)</div>
       <ResponsiveContainer width="100%" height={155}>
         <LineChart data={data} margin={{ top: 4, right: 4, bottom: 22, left: 28 }}>
-          <CartesianGrid strokeDasharray="2 3" stroke="#1C1C2A" />
-          <XAxis dataKey="logC" stroke={DIM} tick={{ fill: "#667", fontSize: 11 }}
+          <CartesianGrid strokeDasharray="2 3" stroke={GRID} />
+          <XAxis dataKey="logC" stroke={DIM} tick={{ fill: DIM, fontSize: 11 }}
             ticks={LOG_TICKS} tickFormatter={logTickFmt}
-            label={{ value: "C (μg/mL)", position: "insideBottom", offset: -10, fill: "#667", fontSize: 11 }} />
-          <YAxis stroke={DIM} tick={{ fill: "#667", fontSize: 11 }} tickCount={5} />
+            label={{ value: "C (μg/mL)", position: "insideBottom", offset: -10, fill: DIM, fontSize: 11 }} />
+          <YAxis stroke={DIM} tick={{ fill: DIM, fontSize: 11 }} tickCount={5} />
           <Tooltip {...TT} formatter={(v, n) => [v.toFixed(4), n]} labelFormatter={v => `C ≈ ${Math.pow(10, v).toFixed(2)} μg/mL`} />
-          <Line type="monotone" dataKey="hS_v" stroke="#C900C9" dot={false} name="hS  (S death)" strokeWidth={2} />
-          <Line type="monotone" dataKey="hT_v" stroke="#FF8C00" dot={false} name="hX  (X death)" strokeWidth={2} />
-          <Line type="monotone" dataKey="rST_v" stroke="#00CBCB" dot={false} name="rS→X (switch)" strokeWidth={2} strokeDasharray="5 2" />
+          <Line type="monotone" dataKey="hS_v" stroke={SC.S} dot={false} name="hS  (S death)" strokeWidth={2} />
+          <Line type="monotone" dataKey="hT_v" stroke={SC.T} dot={false} name="hX  (X death)" strokeWidth={2} />
+          <Line type="monotone" dataKey="rST_v" stroke={SC.switch} dot={false} name="rS→X (switch)" strokeWidth={2} strokeDasharray="5 2" />
         </LineChart>
       </ResponsiveContainer>
     </div>
@@ -527,18 +531,18 @@ function LagChart({ p, age }) {
   }), [p, age]);
   return (
     <div>
-      <div style={{ fontSize: 11, color: "#7788AA", fontFamily: "monospace", marginBottom: 3 }}>
+      <div style={{ fontSize: 11, color: MUTED, fontFamily: "monospace", marginBottom: 3 }}>
         Lag distribution  Erlang(k={p.k_lag}, λ={lam.toFixed(3)}) · mean = {meanLag.toFixed(2)}h
       </div>
       <ResponsiveContainer width="100%" height={155}>
         <LineChart data={data} margin={{ top: 4, right: 4, bottom: 22, left: 28 }}>
-          <CartesianGrid strokeDasharray="2 3" stroke="#1C1C2A" />
-          <XAxis dataKey="t" stroke={DIM} tick={{ fill: "#667", fontSize: 11 }} tickCount={5}
-            label={{ value: "t (h)", position: "insideBottom", offset: -10, fill: "#667", fontSize: 11 }} />
-          <YAxis stroke={DIM} tick={{ fill: "#667", fontSize: 11 }} tickCount={5} />
+          <CartesianGrid strokeDasharray="2 3" stroke={GRID} />
+          <XAxis dataKey="t" stroke={DIM} tick={{ fill: DIM, fontSize: 11 }} tickCount={5}
+            label={{ value: "t (h)", position: "insideBottom", offset: -10, fill: DIM, fontSize: 11 }} />
+          <YAxis stroke={DIM} tick={{ fill: DIM, fontSize: 11 }} tickCount={5} />
           <Tooltip {...TT} formatter={(v, n) => [v.toFixed(4), n]} labelFormatter={v => `t = ${Number(v).toFixed(2)}h`} />
           <Line type="monotone" dataKey="pdf" stroke={ACCENT} dot={false} name="f(t)  PDF" strokeWidth={2} />
-          <Line type="monotone" dataKey="sf"  stroke="#FF6B6B" dot={false} name="S(t)  Survival" strokeWidth={2} strokeDasharray="5 2" />
+          <Line type="monotone" dataKey="sf"  stroke={SC.dead} dot={false} name="S(t)  Survival" strokeWidth={2} strokeDasharray="5 2" />
         </LineChart>
       </ResponsiveContainer>
     </div>
@@ -547,7 +551,7 @@ function LagChart({ p, age }) {
 
 function SwitchingAgeLines({ p }) {
   const AGES = [6, 12, 24, 48, 72];
-  const COLS = ["#334", "#447", "#559", "#66C", "#88EE"];
+  const COLS = [MUTED, ACCENT, SC.switch, SC.D, SC.S];
   const data = useMemo(() => Array.from({ length: 100 }, (_, i) => {
     const logC = -0.5 + i / 99 * 4;
     const C = Math.pow(10, logC);
@@ -557,14 +561,14 @@ function SwitchingAgeLines({ p }) {
   }), [p]);
   return (
     <div>
-      <div style={{ fontSize: 11, color: "#7788AA", fontFamily: "monospace", marginBottom: 3 }}>rS→X vs C  at multiple culture ages (memory effect)</div>
+      <div style={{ fontSize: 11, color: MUTED, fontFamily: "monospace", marginBottom: 3 }}>rS→X vs C  at multiple culture ages (memory effect)</div>
       <ResponsiveContainer width="100%" height={155}>
         <LineChart data={data} margin={{ top: 4, right: 4, bottom: 22, left: 28 }}>
-          <CartesianGrid strokeDasharray="2 3" stroke="#1C1C2A" />
-          <XAxis dataKey="logC" stroke={DIM} tick={{ fill: "#667", fontSize: 11 }}
+          <CartesianGrid strokeDasharray="2 3" stroke={GRID} />
+          <XAxis dataKey="logC" stroke={DIM} tick={{ fill: DIM, fontSize: 11 }}
             ticks={LOG_TICKS} tickFormatter={logTickFmt}
-            label={{ value: "C (μg/mL)", position: "insideBottom", offset: -10, fill: "#667", fontSize: 11 }} />
-          <YAxis stroke={DIM} tick={{ fill: "#667", fontSize: 11 }} tickCount={5} />
+            label={{ value: "C (μg/mL)", position: "insideBottom", offset: -10, fill: DIM, fontSize: 11 }} />
+          <YAxis stroke={DIM} tick={{ fill: DIM, fontSize: 11 }} tickCount={5} />
           <Tooltip {...TT} formatter={(v, n) => [v.toFixed(5), n]} labelFormatter={v => `C ≈ ${Math.pow(10, v).toFixed(2)} μg/mL`} />
           {AGES.map((a, i) => (
             <Line key={a} dataKey={`a${a}`} stroke={COLS[i]} dot={false} name={`age ${a}h`} strokeWidth={1.5} />
@@ -644,7 +648,7 @@ function TernaryKey({ size = 110 }) {
       }
     }
     ctx.putImageData(img, 0, 0);
-    ctx.strokeStyle = "#555"; ctx.lineWidth = 0.8;
+    ctx.strokeStyle = BORDER; ctx.lineWidth = 0.8;
     ctx.beginPath();
     ctx.moveTo(0, H); ctx.lineTo(W, H); ctx.lineTo(W / 2, H * (1 - h)); ctx.closePath();
     ctx.stroke();
@@ -653,10 +657,10 @@ function TernaryKey({ size = 110 }) {
     <div style={{ textAlign: "center" }}>
       <canvas ref={canvasRef} style={{ width: size, height: size }} />
       <div style={{ fontSize: 10, color: DIM, fontFamily: "monospace", lineHeight: 1.7, marginTop: 2 }}>
-        <div style={{ color: "#00CBCB" }}>▲ D Dormant (Cyan)</div>
+        <div style={{ color: SC.D }}>▲ D Dormant (Cyan)</div>
         <div style={{ display: "flex", justifyContent: "space-between", fontSize: 9.5 }}>
-          <span style={{ color: "#C900C9" }}>S Suscept.</span>
-          <span style={{ color: "#F7BB25" }}>X Tolerant</span>
+          <span style={{ color: SC.S }}>S Suscept.</span>
+          <span style={{ color: SC.T }}>X Tolerant</span>
         </div>
       </div>
     </div>
@@ -736,15 +740,15 @@ function RegrowthMass({ p, C, age, u }) {
   }), [p, C, age, u]);
   return (
     <div>
-      <div style={{ fontSize: 11, color: "#7788AA", fontFamily: "monospace", marginBottom: 3 }}>
+      <div style={{ fontSize: 11, color: MUTED, fontFamily: "monospace", marginBottom: 3 }}>
         Total regrown mass N(u)/N₀  (log₁₀ scale) · g = ln2 ≈ 0.693 h⁻¹
       </div>
       <ResponsiveContainer width="100%" height={465}>
         <LineChart data={data} margin={{ top: 4, right: 4, bottom: 22, left: 35 }}>
-          <CartesianGrid strokeDasharray="2 3" stroke="#1C1C2A" />
-          <XAxis dataKey="tau" stroke={DIM} tick={{ fill: "#667", fontSize: 11 }} tickCount={5}
-            label={{ value: "τ (h)", position: "insideBottom", offset: -10, fill: "#667", fontSize: 11 }} />
-          <YAxis stroke={DIM} tick={{ fill: "#667", fontSize: 11 }} tickCount={5}
+          <CartesianGrid strokeDasharray="2 3" stroke={GRID} />
+          <XAxis dataKey="tau" stroke={DIM} tick={{ fill: DIM, fontSize: 11 }} tickCount={5}
+            label={{ value: "τ (h)", position: "insideBottom", offset: -10, fill: DIM, fontSize: 11 }} />
+          <YAxis stroke={DIM} tick={{ fill: DIM, fontSize: 11 }} tickCount={5}
             scale="log" domain={["auto", "auto"]} tickFormatter={v => v.toExponential(0)} />
           <Tooltip {...TT} formatter={(v) => [v.toExponential(3), "N(u)/N₀"]} />
           <Line type="monotone" dataKey="R" stroke={ACCENT} dot={false} name="N(u)/N₀" strokeWidth={2} />
@@ -767,15 +771,15 @@ function KernelChart({ p, cond }) {
   }), [s.H, s.ht, s.r, isDegenerate]);
   return (
     <div>
-      <div style={{ fontSize: 11, color: "#7788AA", fontFamily: "monospace", marginBottom: 4 }}>
+      <div style={{ fontSize: 11, color: MUTED, fontFamily: "monospace", marginBottom: 4 }}>
         Convolution kernels at current C, age: P_S(Δ)=e^(-HΔ), P_X(Δ) [{isDegenerate ? "H = hX" : "H ≠ hX"}]
       </div>
       <ResponsiveContainer width="100%" height={255}>
         <LineChart data={data} margin={{ top: 4, right: 4, bottom: 22, left: 32 }}>
-          <CartesianGrid strokeDasharray="2 3" stroke="#1C1C2A" />
-          <XAxis dataKey="delta" stroke={DIM} tick={{ fill: "#667", fontSize: 11 }}
-            label={{ value: "Δ (h)", position: "insideBottom", offset: -10, fill: "#667", fontSize: 11 }} />
-          <YAxis stroke={DIM} tick={{ fill: "#667", fontSize: 11 }} domain={[0, "auto"]} />
+          <CartesianGrid strokeDasharray="2 3" stroke={GRID} />
+          <XAxis dataKey="delta" stroke={DIM} tick={{ fill: DIM, fontSize: 11 }}
+            label={{ value: "Δ (h)", position: "insideBottom", offset: -10, fill: DIM, fontSize: 11 }} />
+          <YAxis stroke={DIM} tick={{ fill: DIM, fontSize: 11 }} domain={[0, "auto"]} />
           <Tooltip {...TT} formatter={(v, n) => [v.toFixed(4), n]} />
           <Line type="monotone" dataKey="PS" stroke={SC.S} dot={false} name="P_S(Δ)" strokeWidth={2} />
           <Line type="monotone" dataKey="PX" stroke={SC.T} dot={false} name="P_X(Δ)" strokeWidth={2} strokeDasharray="5 2" />
@@ -791,7 +795,7 @@ function ConvolutionSweepPanels({ p, cond, pred }) {
   const probFmt = v => `${(100 * Math.max(0, v)).toFixed(3)}%`;
 
   return (
-    <div style={{ background: "#0A0A12", border: `1px solid ${BORDER}`, borderRadius: 4, padding: "8px 10px" }}>
+    <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 4, padding: "8px 10px" }}>
       <div style={{ fontSize: 10, color: ACCENT, letterSpacing: 1.6, marginBottom: 5 }}>
         STATE PROBABILITY OVER TIME
       </div>
@@ -802,66 +806,66 @@ function ConvolutionSweepPanels({ p, cond, pred }) {
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(520px, 1fr))", gap: 14 }}>
         <div>
-          <div style={{ fontSize: 10, color: "#7788AA", marginBottom: 4, display: "flex", gap: 12, flexWrap: "wrap" }}>
+          <div style={{ fontSize: 10, color: MUTED, marginBottom: 4, display: "flex", gap: 12, flexWrap: "wrap" }}>
             <span style={{ color: SC.S }}>S(τ) = {probFmt(pred.S)}</span>
             <span>Probability of being in state S at current treatment time</span>
           </div>
           <ResponsiveContainer width="100%" height={270}>
             <ComposedChart data={sweep.data} margin={{ top: 28, right: 8, bottom: 24, left: 36 }}>
-              <CartesianGrid strokeDasharray="2 3" stroke="#1C1C2A" />
+              <CartesianGrid strokeDasharray="2 3" stroke={GRID} />
               <XAxis
                 type="number"
                 dataKey="t"
                 domain={[0, sweep.tMax]}
                 stroke={DIM}
-                tick={{ fill: "#667", fontSize: 11 }}
+                tick={{ fill: DIM, fontSize: 11 }}
                 tickCount={6}
-                label={{ value: "treatment time t (h)", position: "insideBottom", offset: -10, fill: "#667", fontSize: 11 }}
+                label={{ value: "treatment time t (h)", position: "insideBottom", offset: -10, fill: DIM, fontSize: 11 }}
               />
-              <YAxis yAxisId="raw" stroke={DIM} domain={[0, 1]} tick={{ fill: "#667", fontSize: 11 }} tickFormatter={v => `${(100 * v).toFixed(0)}%`} />
-              <YAxis yAxisId="norm" orientation="right" domain={[0, 1]} stroke={DIM} tick={{ fill: "#667", fontSize: 10 }} tickCount={3} />
+              <YAxis yAxisId="raw" stroke={DIM} domain={[0, 1]} tick={{ fill: DIM, fontSize: 11 }} tickFormatter={v => `${(100 * v).toFixed(0)}%`} />
+              <YAxis yAxisId="norm" orientation="right" domain={[0, 1]} stroke={DIM} tick={{ fill: DIM, fontSize: 10 }} tickCount={3} />
               <Tooltip
                 {...TT}
                 labelFormatter={v => `t = ${Number(v).toFixed(2)}h`}
                 formatter={(v, n) => [String(n).includes("relative shape") ? shapeFmt(v) : probFmt(v), n]}
               />
-              <ReferenceLine x={sweep.tau} stroke="#9AA3B2" strokeDasharray="4 2" yAxisId="raw" label={{ value: "τ", fill: "#9AA3B2", fontSize: 10, position: "top" }} />
+              <ReferenceLine x={sweep.tau} stroke={MUTED} strokeDasharray="4 2" yAxisId="raw" label={{ value: "τ", fill: MUTED, fontSize: 10, position: "top" }} />
               <Area yAxisId="raw" type="monotone" dataKey="S_t" stroke={SC.S} fill={SC.S} fillOpacity={0.48} name="S(t) filled: probability in susceptible state" />
               <Line yAxisId="norm" type="monotone" dataKey="fNorm" stroke={ACCENT} dot={false} strokeWidth={1.6} strokeDasharray="4 2" name="f_L(t|a): wake-up timing (relative)" />
-              <Line yAxisId="norm" type="monotone" dataKey="pSNorm" stroke="#5CA9FF" dot={false} strokeWidth={1.8} strokeDasharray="8 3" name="P_S(t) dashed: post-wake survival in S (relative)" />
+              <Line yAxisId="norm" type="monotone" dataKey="pSNorm" stroke={SC.switch} dot={false} strokeWidth={1.8} strokeDasharray="8 3" name="P_S(t) dashed: post-wake survival in S (relative)" />
               <Legend verticalAlign="top" align="right" iconSize={8} wrapperStyle={{ fontSize: 10, color: TXT }} />
             </ComposedChart>
           </ResponsiveContainer>
         </div>
 
         <div>
-          <div style={{ fontSize: 10, color: "#7788AA", marginBottom: 4, display: "flex", gap: 12, flexWrap: "wrap" }}>
+          <div style={{ fontSize: 10, color: MUTED, marginBottom: 4, display: "flex", gap: 12, flexWrap: "wrap" }}>
             <span style={{ color: SC.T }}>X(τ) = {probFmt(pred.T)}</span>
             <span>Probability of being in state X at current treatment time</span>
           </div>
           <ResponsiveContainer width="100%" height={282}>
             <ComposedChart data={sweep.data} margin={{ top: 28, right: 8, bottom: 24, left: 36 }}>
-              <CartesianGrid strokeDasharray="2 3" stroke="#1C1C2A" />
+              <CartesianGrid strokeDasharray="2 3" stroke={GRID} />
               <XAxis
                 type="number"
                 dataKey="t"
                 domain={[0, sweep.tMax]}
                 stroke={DIM}
-                tick={{ fill: "#667", fontSize: 11 }}
+                tick={{ fill: DIM, fontSize: 11 }}
                 tickCount={6}
-                label={{ value: "treatment time t (h)", position: "insideBottom", offset: -10, fill: "#667", fontSize: 11 }}
+                label={{ value: "treatment time t (h)", position: "insideBottom", offset: -10, fill: DIM, fontSize: 11 }}
               />
-              <YAxis yAxisId="raw" stroke={DIM} domain={[0, 1]} tick={{ fill: "#667", fontSize: 11 }} tickFormatter={v => `${(100 * v).toFixed(0)}%`} />
-              <YAxis yAxisId="norm" orientation="right" domain={[0, 1]} stroke={DIM} tick={{ fill: "#667", fontSize: 10 }} tickCount={3} />
+              <YAxis yAxisId="raw" stroke={DIM} domain={[0, 1]} tick={{ fill: DIM, fontSize: 11 }} tickFormatter={v => `${(100 * v).toFixed(0)}%`} />
+              <YAxis yAxisId="norm" orientation="right" domain={[0, 1]} stroke={DIM} tick={{ fill: DIM, fontSize: 10 }} tickCount={3} />
               <Tooltip
                 {...TT}
                 labelFormatter={v => `t = ${Number(v).toFixed(2)}h`}
                 formatter={(v, n) => [String(n).includes("relative shape") ? shapeFmt(v) : probFmt(v), n]}
               />
-              <ReferenceLine x={sweep.tau} stroke="#9AA3B2" strokeDasharray="4 2" yAxisId="raw" label={{ value: "τ", fill: "#9AA3B2", fontSize: 10, position: "top" }} />
+              <ReferenceLine x={sweep.tau} stroke={MUTED} strokeDasharray="4 2" yAxisId="raw" label={{ value: "τ", fill: MUTED, fontSize: 10, position: "top" }} />
               <Area yAxisId="raw" type="monotone" dataKey="X_t" stroke={SC.T} fill={SC.T} fillOpacity={0.48} name="X(t) filled: probability in tolerant state" />
               <Line yAxisId="norm" type="monotone" dataKey="fNorm" stroke={ACCENT} dot={false} strokeWidth={1.6} strokeDasharray="4 2" name="f_L(t|a): wake-up timing (relative)" />
-              <Line yAxisId="norm" type="monotone" dataKey="pXNorm" stroke="#FF7A59" dot={false} strokeWidth={1.8} strokeDasharray="8 3" name="P_X(t) dashed: post-wake contribution to X (relative)" />
+              <Line yAxisId="norm" type="monotone" dataKey="pXNorm" stroke={SC.T} dot={false} strokeWidth={1.8} strokeDasharray="8 3" name="P_X(t) dashed: post-wake contribution to X (relative)" />
               <Legend verticalAlign="top" align="right" iconSize={8} wrapperStyle={{ fontSize: 10, color: TXT }} />
             </ComposedChart>
           </ResponsiveContainer>
@@ -1008,7 +1012,7 @@ export default function App() {
   const pred = useMemo(() => predict(params, cond.C, cond.tau, cond.age), [params, cond]);
 
   const legend = (
-    <div style={{ display: "flex", gap: 14, flexWrap: "wrap", fontSize: 11, fontFamily: "monospace", color: "#8888AA" }}>
+    <div style={{ display: "flex", gap: 14, flexWrap: "wrap", fontSize: 11, fontFamily: "monospace", color: MUTED }}>
       {[["S", "Susceptible survivors"], ["T", "Tolerant survivors (X)"], ["D", "Dormant (pre-existing)"], ["dead", "Dead"]].map(([k, lbl]) => (
         <span key={k} style={{ display: "flex", alignItems: "center", gap: 4 }}>
           <span style={{ width: 10, height: 10, background: SC[k], display: "inline-block", borderRadius: 2 }} />
@@ -1048,12 +1052,12 @@ export default function App() {
             <Slider label="age  (h)"   tip="Culture age at treatment" value={cond.age} min={1} max={96} step={0.5} onChange={v => setC("age", v)} fmt={v => `${v.toFixed(0)}`} />
 
             {/* Live prediction readout */}
-            <div style={{ background: "#080810", border: `1px solid ${BORDER}`, borderRadius: 3, padding: "6px 8px", margin: "8px 0 4px", fontSize: 11, lineHeight: 1.9 }}>
+            <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 3, padding: "6px 8px", margin: "8px 0 4px", fontSize: 11, lineHeight: 1.9 }}>
               <div style={{ color: ACCENT, fontSize: 10, letterSpacing: 2, marginBottom: 3 }}>PREDICTION</div>
               {[["S (incomplete)", pred.S, SC.S], ["X (induced tolerant)", pred.T, SC.T], ["D (pre-existing)", pred.D, SC.D], ["Dead", pred.dead, SC.dead]].map(([lbl, v, c]) => (
                 <div key={lbl} style={{ display: "flex", justifyContent: "space-between" }}>
                   <span style={{ color: c }}>{lbl}</span>
-                  <span style={{ color: "#CCC" }}>{(v * 100).toFixed(3)}%</span>
+                  <span style={{ color: TXT }}>{(v * 100).toFixed(3)}%</span>
                 </div>
               ))}
               <div style={{ borderTop: `1px solid ${BORDER}`, marginTop: 3, paddingTop: 3, display: "flex", justifyContent: "space-between", color: DIM }}>
@@ -1082,7 +1086,7 @@ export default function App() {
             <div style={{ display: "flex", gap: 3 }}>
               {[1, 2, 3, 4, 5].map(k => (
                 <button key={k} onClick={() => setP("k_lag", k)}
-                  style={{ flex: 1, background: params.k_lag === k ? "#64FFDA22" : "none", border: `1px solid ${params.k_lag === k ? ACCENT : BORDER}`, color: params.k_lag === k ? ACCENT : DIM, fontSize: 12, padding: "3px", cursor: "pointer", borderRadius: 2, fontFamily: "monospace" }}>
+                  style={{ flex: 1, background: params.k_lag === k ? ACCENT_SOFT_BG : "none", border: `1px solid ${params.k_lag === k ? ACCENT : BORDER}`, color: params.k_lag === k ? ACCENT : DIM, fontSize: 12, padding: "3px", cursor: "pointer", borderRadius: 2, fontFamily: "monospace" }}>
                   {k}
                 </button>
               ))}
@@ -1140,10 +1144,10 @@ export default function App() {
                     setScaleCfg={(axis, value) => setPhaseScale("age", axis, value)}
                   />
                 </div>
-                <div style={{ marginTop: 10, fontSize: 10.5, color: DIM, lineHeight: 1.7, background: "#0A0A12", border: `1px solid ${BORDER}`, borderRadius: 3, padding: "6px 10px" }}>
-                  <strong style={{ color: "#9999BB" }}>Left:</strong> Composition as τ increases at fixed C = {cond.C} μg/mL, age = {cond.age}h. &nbsp;
-                  <strong style={{ color: "#9999BB" }}>Centre:</strong> Composition over the concentration range at τ = {cond.tau}h, age = {cond.age}h. &nbsp;
-                  <strong style={{ color: "#9999BB" }}>Right:</strong> Composition as culture age increases at C = {cond.C} μg/mL, τ = {cond.tau}h (stress-memory effect via m(a)).
+                <div style={{ marginTop: 10, fontSize: 10.5, color: DIM, lineHeight: 1.7, background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 3, padding: "6px 10px" }}>
+                  <strong style={{ color: MUTED }}>Left:</strong> Composition as τ increases at fixed C = {cond.C} μg/mL, age = {cond.age}h. &nbsp;
+                  <strong style={{ color: MUTED }}>Centre:</strong> Composition over the concentration range at τ = {cond.tau}h, age = {cond.age}h. &nbsp;
+                  <strong style={{ color: MUTED }}>Right:</strong> Composition as culture age increases at C = {cond.C} μg/mL, τ = {cond.tau}h (stress-memory effect via m(a)).
                   Each panel sums to 1; stacked areas show fractions of initial N₀.
                 </div>
               </div>
@@ -1153,17 +1157,17 @@ export default function App() {
             {tab === "heatmap" && (
               <div>
                 <div style={{ display: "flex", gap: 12, alignItems: "center", marginBottom: 10, flexWrap: "wrap" }}>
-                  <div style={{ fontSize: 11, color: "#8888AA" }}>
-                    Hue: <span style={{ color: "#00CBCB" }}>■ D</span>·
-                    <span style={{ color: "#C900C9" }}> ■ S</span>·
-                    <span style={{ color: "#F7BB25" }}> ■ X</span> (CMY colorspace)
+                  <div style={{ fontSize: 11, color: MUTED }}>
+                    Hue: <span style={{ color: SC.D }}>■ D</span>·
+                    <span style={{ color: SC.S }}> ■ S</span>·
+                    <span style={{ color: SC.T }}> ■ X</span> (CMY colorspace)
                   </div>
-                  <label style={{ fontSize: 11, color: "#8888AA", display: "flex", alignItems: "center", gap: 4, cursor: "pointer" }}>
+                  <label style={{ fontSize: 11, color: MUTED, display: "flex", alignItems: "center", gap: 4, cursor: "pointer" }}>
                     <input type="checkbox" checked={useK} onChange={e => setUseK(e.target.checked)} style={{ accentColor: ACCENT }} />
                     Brightness encodes total survivors
                   </label>
                   {useK && (
-                    <div style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 11, color: "#8888AA" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 11, color: MUTED }}>
                       γ:
                       <input type="range" min={0.1} max={2} step={0.05} value={kGamma}
                         onChange={e => setKGamma(Number(e.target.value))}
@@ -1175,13 +1179,13 @@ export default function App() {
 
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 140px", gap: 20, alignItems: "start" }}>
                   <div>
-                    <div style={{ fontSize: 11, color: "#7788AA", fontFamily: "monospace", marginBottom: 4 }}>
+                    <div style={{ fontSize: 11, color: MUTED, fontFamily: "monospace", marginBottom: 4 }}>
                       Composition map · age = {cond.age.toFixed(0)}h
                     </div>
                     <CMYKHeatmap p={params} age={cond.age} kGamma={kGamma} useK={useK} nC={80} nTau={80} />
                   </div>
                   <div>
-                    <div style={{ fontSize: 11, color: "#7788AA", fontFamily: "monospace", marginBottom: 4 }}>
+                    <div style={{ fontSize: 11, color: MUTED, fontFamily: "monospace", marginBottom: 4 }}>
                       Total survivor fraction  S(τ,C) = π_S + π_X + π_D
                     </div>
                     <SurvivalHeatmap p={params} age={cond.age} nC={80} nTau={80} />
@@ -1190,14 +1194,14 @@ export default function App() {
                   <TernaryKey size={120} />
                 </div>
 
-                <div style={{ marginTop: 10, fontSize: 10.5, color: DIM, lineHeight: 1.7, background: "#0A0A12", border: `1px solid ${BORDER}`, borderRadius: 3, padding: "6px 10px" }}>
+                <div style={{ marginTop: 10, fontSize: 10.5, color: DIM, lineHeight: 1.7, background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 3, padding: "6px 10px" }}>
                   X-axis: concentration C, log₁₀ scale 0.3–1000 μg/mL. Y-axis: treatment duration τ, 0–8h. Age = {cond.age.toFixed(0)}h (adjust via sidebar).
                   {useK ? " Darkness encodes 1 − survivors^γ." : " Pure hue only; all brightnesses equal."}
                 </div>
 
                 <div style={{ marginTop: 18, borderTop: `1px solid ${BORDER}`, paddingTop: 12 }}>
                   <div style={{ display: "flex", gap: 16, alignItems: "center", marginBottom: 10 }}>
-                    <div style={{ fontSize: 11, color: "#8888AA" }}>Post-treatment time u:</div>
+                    <div style={{ fontSize: 11, color: MUTED }}>Post-treatment time u:</div>
                     <input type="range" min={1} max={200} step={1} value={u}
                       onChange={e => setU(Number(e.target.value))}
                       style={{ width: 120, accentColor: ACCENT }} />
@@ -1211,10 +1215,10 @@ export default function App() {
                     <RegrowthMass p={params} C={cond.C} age={cond.age} u={u} />
                   </div>
 
-                  <div style={{ marginTop: 10, fontSize: 10.5, color: DIM, lineHeight: 1.7, background: "#0A0A12", border: `1px solid ${BORDER}`, borderRadius: 3, padding: "6px 10px" }}>
-                    <strong style={{ color: "#9999BB" }}>Left:</strong> Fractional contribution to the regrown population at time u, as a function of τ.
+                  <div style={{ marginTop: 10, fontSize: 10.5, color: DIM, lineHeight: 1.7, background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 3, padding: "6px 10px" }}>
+                    <strong style={{ color: MUTED }}>Left:</strong> Fractional contribution to the regrown population at time u, as a function of τ.
                     S: incomplete-treatment survivors (grew exponentially from τ). X: induced tolerant survivors. D: deep persisters — delayed by residual lag before contributing. <br />
-                    <strong style={{ color: "#9999BB" }}>Right:</strong> Total regrown mass N(u)/N₀ on log scale. Minima arise because intermediate τ kills many cells before persisters dominate.
+                    <strong style={{ color: MUTED }}>Right:</strong> Total regrown mass N(u)/N₀ on log scale. Minima arise because intermediate τ kills many cells before persisters dominate.
                     g = ln 2 ≈ 0.693 h⁻¹ (1h doubling). Varying u shows how D-lineage dominance emerges over time.
                   </div>
                 </div>
@@ -1229,11 +1233,11 @@ export default function App() {
                 <div style={{ gridColumn: "1/-1" }}>
                   <SwitchingAgeLines p={params} />
                 </div>
-                <div style={{ gridColumn: "1/-1", fontSize: 10.5, color: DIM, lineHeight: 1.7, background: "#0A0A12", border: `1px solid ${BORDER}`, borderRadius: 3, padding: "6px 10px" }}>
-                  <strong style={{ color: "#9999BB" }}>Top-left:</strong> Dose-response curves hS(C), hX(C), rS→X(C) — all in log(1+x) form. Constraint: κT {"<"} κS with shared K,n ensures h_X {"<"} h_S ∀C. &nbsp;
-                  <strong style={{ color: "#9999BB" }}>Top-right:</strong> Erlang(k_lag, λ) lag distribution for current age.
+                <div style={{ gridColumn: "1/-1", fontSize: 10.5, color: DIM, lineHeight: 1.7, background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 3, padding: "6px 10px" }}>
+                  <strong style={{ color: MUTED }}>Top-left:</strong> Dose-response curves hS(C), hX(C), rS→X(C) — all in log(1+x) form. Constraint: κT {"<"} κS with shared K,n ensures h_X {"<"} h_S ∀C. &nbsp;
+                  <strong style={{ color: MUTED }}>Top-right:</strong> Erlang(k_lag, λ) lag distribution for current age.
                   λ = k_lag / (μ₀ + age/24·μ₂₄′). &nbsp;
-                  <strong style={{ color: "#9999BB" }}>Bottom:</strong> rS→X at multiple ages — illustrates the m(a) = a/(a+a₅₀) stress-memory saturation.
+                  <strong style={{ color: MUTED }}>Bottom:</strong> rS→X at multiple ages — illustrates the m(a) = a/(a+a₅₀) stress-memory saturation.
                 </div>
               </div>
             )}
