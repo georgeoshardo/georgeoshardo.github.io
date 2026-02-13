@@ -380,13 +380,13 @@ function StackedArea({
         {(onToggleLogX || onToggleLogY) && (
           <div style={{ display: "flex", gap: 10, fontSize: 10, color: MUTED }}>
             {onToggleLogX && (
-              <label style={{ display: "flex", alignItems: "center", gap: 4, cursor: "pointer" }}>
+              <label style={{ display: "flex", alignItems: "center", gap: 4, cursor: "pointer", color: DIM }}>
                 <input type="checkbox" checked={logX} onChange={e => onToggleLogX(e.target.checked)} style={{ accentColor: ACCENT }} />
                 log x
               </label>
             )}
             {onToggleLogY && (
-              <label style={{ display: "flex", alignItems: "center", gap: 4, cursor: "pointer" }}>
+              <label style={{ display: "flex", alignItems: "center", gap: 4, cursor: "pointer", color: DIM }}>
                 <input type="checkbox" checked={logY} onChange={e => onToggleLogY(e.target.checked)} style={{ accentColor: ACCENT }} />
                 log y
               </label>
