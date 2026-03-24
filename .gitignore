@@ -21,3 +21,6 @@ vendor/
 .DS_Store
 .DS_Store
 .DS_Store
+.playwright-cli/
+output/playwright/
+output-playwright-*.png
