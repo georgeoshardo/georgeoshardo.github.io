@@ -1,7 +1,7 @@
 import * as zarr from "https://cdn.jsdelivr.net/npm/zarrita@0.6.1/+esm";
 
 const DEFAULT_MASK_SOURCE =
-  "https://huggingface.co/datasets/ghardo/scientific_data_2026/resolve/main/20260307_SB7_exit_snake_V4_1.segmentation_masks_multi_epoch_uint8_masks_only.zarr/data";
+  "https://huggingface.co/datasets/ghardo/scientific_data_2026_masks/resolve/main/20260307_SB7_exit_snake_V4_1.segmentation_masks_multi_epoch_uint8_masks_only.zarr/data";
 const DEFAULT_IMAGE_SOURCE =
   "https://huggingface.co/datasets/ghardo/scientific_data_2026_images/resolve/main/20260307_SB7_exit_snake_V4_1_with_metadata.trenches.zarr/data";
 const DEFAULT_MASK_ALPHA = 0.45;
