@@ -262,6 +262,7 @@
         font-family: "IBM Plex Mono", monospace;
         font-size: 0.9rem;
         color: var(--muted);
+        min-height: 1.2em;
       }
 
       @media (max-width: 1080px) {
@@ -298,9 +299,13 @@
         <aside class="panel sidebar">
           <section class="section">
             <h2>Dataset</h2>
-            <label for="source-input">
-              Zarr array URL
-              <input id="source-input" type="text" spellcheck="false" />
+            <label for="mask-source-input">
+              Mask zarr URL
+              <input id="mask-source-input" type="text" spellcheck="false" />
+            </label>
+            <label for="image-source-input">
+              Image zarr URL
+              <input id="image-source-input" type="text" spellcheck="false" />
             </label>
             <div class="row">
               <button id="load-button" type="button">Load Array</button>
@@ -328,6 +333,13 @@
                 <input id="zoom-number" type="number" min="1" max="18" step="1" value="4" />
               </div>
             </label>
+            <label for="mask-alpha-range">
+              Mask alpha
+              <div class="row">
+                <input id="mask-alpha-range" type="range" min="0" max="1" step="0.05" value="0.45" />
+                <input id="mask-alpha-number" type="number" min="0" max="1" step="0.05" value="0.45" />
+              </div>
+            </label>
           </section>
         </aside>
 
@@ -336,7 +348,7 @@
             <div>
               <p id="view-summary">Preparing viewer...</p>
             </div>
-            <p class="hover" id="hover-readout">Hover over the mask to inspect a pixel label.</p>
+            <p class="hover" id="hover-readout"></p>
           </div>
           <div class="viewer-stage" id="viewer-stage">
             <div class="canvas-wrap">
