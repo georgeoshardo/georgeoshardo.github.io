@@ -1,0 +1,3 @@
+[     538ms] [ERROR] Failed to load resource: the server responded with a status of 404 (File not found) @ http://127.0.0.1:8123/favicon.ico:0
+[     639ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://huggingface.co/datasets/ghardo/scientific_data_2026/resolve/main/20260307_SB7_exit_snake_V4_1.segmentation_masks_multi_epoch_uint8_masks_only.zarr/data/.zattrs:0
+[     873ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://huggingface.co/datasets/ghardo/scientific_data_2026/resolve/main/20260307_SB7_exit_snake_V4_1.segmentation_masks_multi_epoch_uint8_masks_only.zarr/data/.zarray:0

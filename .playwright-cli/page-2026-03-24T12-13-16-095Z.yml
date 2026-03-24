@@ -1,0 +1,34 @@
+- main [ref=e2]:
+  - generic [ref=e3]:
+    - generic [ref=e4]: Peer Review Viewer
+    - heading "Interactive Label Masks from a Plain Zarr Array" [level=1] [ref=e5]
+    - paragraph [ref=e6]: This page loads a remote Zarr array directly in the browser and renders it as categorical labels, not grayscale intensity. It is meant for browsing segmentation masks where each integer ID should read as a separate region.
+  - generic [ref=e7]:
+    - complementary [ref=e8]:
+      - generic [ref=e9]:
+        - heading "Dataset" [level=2] [ref=e10]
+        - generic [ref=e11]:
+          - text: Zarr array URL
+          - textbox "Zarr array URL" [ref=e12]: https://huggingface.co/datasets/ghardo/scientific_data_2026/resolve/main/20260307_SB7_exit_snake_V4_1.segmentation_masks_multi_epoch_uint8_masks_only.zarr/data
+        - generic [ref=e13]:
+          - button "Load Array" [disabled] [ref=e14]
+          - button "Copy View Link" [ref=e15] [cursor=pointer]
+        - generic [ref=e16]: Opening remote Zarr array...
+      - heading "Metadata" [level=2] [ref=e18]
+      - heading "Axes" [level=2] [ref=e20]
+      - generic [ref=e21]:
+        - heading "Display" [level=2] [ref=e22]
+        - generic [ref=e23]:
+          - text: Zoom
+          - generic [ref=e24]:
+            - slider "Zoom 4" [ref=e25]: "4"
+            - spinbutton [ref=e26]: "4"
+        - paragraph [ref=e27]:
+          - text: Background label
+          - code [ref=e28]: "0"
+          - text: is transparent. Nonzero labels are assigned a deterministic categorical palette for legibility.
+    - generic [ref=e29]:
+      - generic [ref=e30]:
+        - paragraph [ref=e32]: Loading array metadata...
+        - paragraph [ref=e33]: Hover over the mask to inspect a pixel label.
+      - generic "Mask viewer" [ref=e36]

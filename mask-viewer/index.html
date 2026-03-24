@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Mask Array Viewer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #f4efe4;
+        --panel: rgba(255, 251, 244, 0.88);
+        --panel-strong: rgba(255, 248, 238, 0.96);
+        --ink: #1e2b2b;
+        --muted: #576565;
+        --line: rgba(30, 43, 43, 0.12);
+        --accent: #0f766e;
+        --accent-strong: #115e59;
+        --accent-soft: rgba(15, 118, 110, 0.1);
+        --warn: #9a3412;
+        --shadow: 0 24px 60px rgba(31, 41, 55, 0.12);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: "IBM Plex Sans", sans-serif;
+        color: var(--ink);
+        background:
+          radial-gradient(circle at top left, rgba(15, 118, 110, 0.14), transparent 28%),
+          radial-gradient(circle at top right, rgba(217, 119, 6, 0.12), transparent 24%),
+          linear-gradient(180deg, #fbf7ef 0%, var(--bg) 100%);
+      }
+
+      a {
+        color: var(--accent-strong);
+      }
+
+      .shell {
+        width: min(1400px, calc(100vw - 32px));
+        margin: 24px auto 40px;
+      }
+
+      .layout {
+        display: grid;
+        grid-template-columns: minmax(320px, 430px) minmax(0, 1fr);
+        gap: 20px;
+        align-items: start;
+      }
+
+      .panel {
+        border: 1px solid var(--line);
+        border-radius: 24px;
+        background: var(--panel);
+        backdrop-filter: blur(18px);
+        box-shadow: var(--shadow);
+      }
+
+      .sidebar {
+        padding: 18px;
+        display: grid;
+        gap: 18px;
+        position: sticky;
+        top: 18px;
+      }
+
+      .section {
+        display: grid;
+        gap: 12px;
+      }
+
+      .section h2 {
+        margin: 0;
+        font-size: 0.95rem;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+      }
+
+      .section p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.55;
+      }
+
+      label {
+        display: grid;
+        gap: 8px;
+        font-size: 0.92rem;
+        font-weight: 600;
+      }
+
+      input[type="text"],
+      input[type="number"] {
+        width: 100%;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 12px 14px;
+        font: inherit;
+        color: var(--ink);
+        background: rgba(255, 255, 255, 0.82);
+      }
+
+      input[type="range"] {
+        width: 100%;
+        accent-color: var(--accent);
+      }
+
+      button {
+        border: 0;
+        border-radius: 14px;
+        padding: 12px 16px;
+        font: inherit;
+        font-weight: 600;
+        color: white;
+        background: linear-gradient(135deg, var(--accent) 0%, var(--accent-strong) 100%);
+        cursor: pointer;
+      }
+
+      button.secondary {
+        color: var(--ink);
+        background: rgba(255, 255, 255, 0.82);
+        border: 1px solid var(--line);
+      }
+
+      button:disabled {
+        opacity: 0.55;
+        cursor: progress;
+      }
+
+      .row {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .row > * {
+        flex: 1 1 140px;
+      }
+
+      .status {
+        padding: 12px 14px;
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.72);
+        border: 1px solid var(--line);
+        color: var(--muted);
+        min-height: 52px;
+        line-height: 1.45;
+      }
+
+      .status.error {
+        color: var(--warn);
+        border-color: rgba(154, 52, 18, 0.25);
+        background: rgba(254, 242, 242, 0.95);
+      }
+
+      .chips {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      .chip {
+        padding: 8px 10px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.9);
+        border: 1px solid var(--line);
+        color: var(--muted);
+        font-size: 0.84rem;
+      }
+
+      .control-list {
+        display: grid;
+        gap: 12px;
+      }
+
+      .control-card {
+        display: grid;
+        gap: 10px;
+        padding: 14px;
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.76);
+        border: 1px solid var(--line);
+      }
+
+      .control-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        align-items: baseline;
+      }
+
+      .control-head strong {
+        font-size: 1rem;
+      }
+
+      .control-head span,
+      .control-meta {
+        color: var(--muted);
+        font-size: 0.88rem;
+      }
+
+      .viewer {
+        display: grid;
+        gap: 14px;
+        padding: 18px;
+      }
+
+      .viewer-top {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+
+      .viewer-top p {
+        margin: 0;
+        color: var(--muted);
+      }
+
+      .viewer-stage {
+        border-radius: 22px;
+        border: 1px solid var(--line);
+        background:
+          linear-gradient(45deg, rgba(30, 43, 43, 0.04) 25%, transparent 25%) 0 0 / 24px 24px,
+          linear-gradient(-45deg, rgba(30, 43, 43, 0.04) 25%, transparent 25%) 0 0 / 24px 24px,
+          linear-gradient(45deg, transparent 75%, rgba(30, 43, 43, 0.04) 75%) 0 0 / 24px 24px,
+          linear-gradient(-45deg, transparent 75%, rgba(30, 43, 43, 0.04) 75%) 0 0 / 24px 24px,
+          #fbfaf7;
+        min-height: 70vh;
+        overflow: auto;
+        padding: 18px;
+      }
+
+      .canvas-wrap {
+        width: 100%;
+        min-height: calc(70vh - 36px);
+        display: flex;
+        justify-content: center;
+        align-items: start;
+      }
+
+      canvas {
+        display: block;
+        image-rendering: pixelated;
+        image-rendering: crisp-edges;
+        background: transparent;
+        border-radius: 12px;
+        box-shadow: 0 16px 30px rgba(30, 43, 43, 0.12);
+      }
+
+      .hover {
+        margin: 0;
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 0.9rem;
+        color: var(--muted);
+      }
+
+      @media (max-width: 1080px) {
+        .layout {
+          grid-template-columns: 1fr;
+        }
+
+        .sidebar {
+          position: static;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .shell {
+          width: min(100vw - 18px, 1400px);
+          margin-top: 12px;
+        }
+
+        .viewer,
+        .sidebar {
+          padding: 14px;
+        }
+
+        .viewer-stage {
+          min-height: 60vh;
+          padding: 12px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="shell">
+      <section class="layout">
+        <aside class="panel sidebar">
+          <section class="section">
+            <h2>Dataset</h2>
+            <label for="source-input">
+              Zarr array URL
+              <input id="source-input" type="text" spellcheck="false" />
+            </label>
+            <div class="row">
+              <button id="load-button" type="button">Load Array</button>
+              <button id="copy-link-button" class="secondary" type="button">Copy View Link</button>
+            </div>
+            <div id="status" class="status" aria-live="polite">Loading metadata...</div>
+          </section>
+
+          <section class="section">
+            <h2>Metadata</h2>
+            <div id="metadata" class="chips"></div>
+          </section>
+
+          <section class="section">
+            <h2>Axes</h2>
+            <div id="controls" class="control-list"></div>
+          </section>
+
+          <section class="section">
+            <h2>Display</h2>
+            <label for="zoom-range">
+              Zoom
+              <div class="row">
+                <input id="zoom-range" type="range" min="1" max="18" step="1" value="4" />
+                <input id="zoom-number" type="number" min="1" max="18" step="1" value="4" />
+              </div>
+            </label>
+          </section>
+        </aside>
+
+        <section class="panel viewer">
+          <div class="viewer-top">
+            <div>
+              <p id="view-summary">Preparing viewer...</p>
+            </div>
+            <p class="hover" id="hover-readout">Hover over the mask to inspect a pixel label.</p>
+          </div>
+          <div class="viewer-stage" id="viewer-stage">
+            <div class="canvas-wrap">
+              <canvas id="mask-canvas" width="34" height="164" aria-label="Mask viewer"></canvas>
+            </div>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <script type="module" src="/assets/js/zarr-mask-viewer.js"></script>
+  </body>
+</html>

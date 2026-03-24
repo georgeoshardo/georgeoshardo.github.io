@@ -1,0 +1,63 @@
+- main [ref=e2]:
+  - generic [ref=e3]:
+    - generic [ref=e4]: Peer Review Viewer
+    - heading "Interactive Label Masks from a Plain Zarr Array" [level=1] [ref=e5]
+    - paragraph [ref=e6]: This page loads a remote Zarr array directly in the browser and renders it as categorical labels, not grayscale intensity. It is meant for browsing segmentation masks where each integer ID should read as a separate region.
+  - generic [ref=e7]:
+    - complementary [ref=e8]:
+      - generic [ref=e9]:
+        - heading "Dataset" [level=2] [ref=e10]
+        - generic [ref=e11]:
+          - text: Zarr array URL
+          - textbox "Zarr array URL" [ref=e12]: https://huggingface.co/datasets/ghardo/scientific_data_2026/resolve/main/20260307_SB7_exit_snake_V4_1.segmentation_masks_multi_epoch_uint8_masks_only.zarr/data
+        - generic [ref=e13]:
+          - button "Load Array" [disabled] [ref=e14]
+          - button "Copy View Link" [ref=e15] [cursor=pointer]
+        - generic [ref=e16]: Fetching mask data...
+      - generic [ref=e17]:
+        - heading "Metadata" [level=2] [ref=e18]
+        - generic [ref=e19]:
+          - generic [ref=e20]: shape 17 x 2795 x 721 x 164 x 34
+          - generic [ref=e21]: chunks 1 x 1 x 721 x 164 x 34
+          - generic [ref=e22]: axes hypothesis, trench, time, y, x
+          - generic [ref=e23]: dtype uint8
+      - generic [ref=e24]:
+        - heading "Axes" [level=2] [ref=e25]
+        - generic [ref=e26]:
+          - generic [ref=e27]:
+            - generic [ref=e28]:
+              - strong [ref=e29]: hypothesis
+              - generic [ref=e30]: 16 of 16
+            - slider [ref=e31]: "16"
+            - spinbutton [ref=e32]: "16"
+            - generic [ref=e33]: Changing this axis fetches a different chunk.
+          - generic [ref=e34]:
+            - generic [ref=e35]:
+              - strong [ref=e36]: trench
+              - generic [ref=e37]: 0 of 2794
+            - slider [ref=e38]: "0"
+            - spinbutton [ref=e39]: "0"
+            - generic [ref=e40]: Changing this axis fetches a different chunk.
+          - generic [ref=e41]:
+            - generic [ref=e42]:
+              - strong [ref=e43]: time
+              - generic [ref=e44]: 0 of 720
+            - slider [ref=e45]: "0"
+            - spinbutton [ref=e46]: "0"
+            - generic [ref=e47]: This axis is cached in one browser fetch.
+      - generic [ref=e48]:
+        - heading "Display" [level=2] [ref=e49]
+        - generic [ref=e50]:
+          - text: Zoom
+          - generic [ref=e51]:
+            - slider "Zoom 4" [ref=e52]: "4"
+            - spinbutton [ref=e53]: "4"
+        - paragraph [ref=e54]:
+          - text: Background label
+          - code [ref=e55]: "0"
+          - text: is transparent. Nonzero labels are assigned a deterministic categorical palette for legibility.
+    - generic [ref=e56]:
+      - generic [ref=e57]:
+        - paragraph [ref=e59]: Loading array metadata...
+        - paragraph [ref=e60]: Hover over the mask to inspect a pixel label.
+      - generic "Mask viewer" [ref=e63]
