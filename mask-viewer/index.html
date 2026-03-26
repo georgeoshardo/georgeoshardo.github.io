@@ -7,22 +7,26 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,500;6..96,700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
       rel="stylesheet"
     />
     <style>
       :root {
-        --bg: #f4efe4;
-        --panel: rgba(255, 251, 244, 0.88);
-        --panel-strong: rgba(255, 248, 238, 0.96);
-        --ink: #1e2b2b;
-        --muted: #576565;
-        --line: rgba(30, 43, 43, 0.12);
-        --accent: #0f766e;
-        --accent-strong: #115e59;
-        --accent-soft: rgba(15, 118, 110, 0.1);
-        --warn: #9a3412;
-        --shadow: 0 24px 60px rgba(31, 41, 55, 0.12);
+        --bg: #ffffff;
+        --paper: #ffffff;
+        --paper-strong: #ffffff;
+        --paper-shadow: #d9d9d9;
+        --ink: #111111;
+        --ink-soft: rgba(17, 17, 17, 0.66);
+        --viewer-bg: #ffffff;
+        --viewer-surface: #ffffff;
+        --viewer-line: rgba(17, 17, 17, 0.14);
+        --line: rgba(17, 17, 17, 0.14);
+        --accent: #111111;
+        --accent-soft: rgba(17, 17, 17, 0.08);
+        --metal: #111111;
+        --warn: #8a1f1f;
+        --shadow: none;
       }
 
       * {
@@ -30,104 +34,134 @@
       }
 
       body {
+        position: relative;
         margin: 0;
         min-height: 100vh;
-        font-family: "IBM Plex Sans", sans-serif;
         color: var(--ink);
-        background:
-          radial-gradient(circle at top left, rgba(15, 118, 110, 0.14), transparent 28%),
-          radial-gradient(circle at top right, rgba(217, 119, 6, 0.12), transparent 24%),
-          linear-gradient(180deg, #fbf7ef 0%, var(--bg) 100%);
+        background: var(--bg);
+        font-family: "IBM Plex Mono", monospace;
+      }
+
+      body::before {
+        content: none;
       }
 
       a {
-        color: var(--accent-strong);
+        color: var(--accent);
       }
 
       .shell {
+        position: relative;
         width: min(1400px, calc(100vw - 32px));
-        margin: 24px auto 40px;
+        margin: 0 auto;
+        padding: 28px 0 40px;
       }
 
       .layout {
         display: grid;
-        grid-template-columns: minmax(320px, 430px) minmax(0, 1fr);
-        gap: 20px;
+        grid-template-columns: minmax(320px, 400px) minmax(0, 1fr);
+        gap: 24px;
         align-items: start;
       }
 
       .panel {
-        border: 1px solid var(--line);
-        border-radius: 24px;
-        background: var(--panel);
-        backdrop-filter: blur(18px);
-        box-shadow: var(--shadow);
+        position: relative;
       }
 
       .sidebar {
-        padding: 18px;
+        padding: 22px;
         display: grid;
-        gap: 18px;
+        gap: 20px;
         position: sticky;
-        top: 18px;
+        top: 20px;
+        background: transparent;
       }
 
       .section {
         display: grid;
-        gap: 12px;
+        gap: 14px;
+      }
+
+      .section + .section {
+        padding-top: 18px;
+        border-top: 1px solid rgba(31, 23, 19, 0.12);
       }
 
       .section h2 {
         margin: 0;
-        font-size: 0.95rem;
-        letter-spacing: 0.03em;
+        font-family: "Bodoni Moda", serif;
+        font-size: 1.15rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
         text-transform: uppercase;
+        color: var(--ink);
       }
 
       .section p {
         margin: 0;
-        color: var(--muted);
+        color: var(--ink-soft);
         line-height: 1.55;
       }
 
       label {
         display: grid;
         gap: 8px;
-        font-size: 0.92rem;
+        font-size: 0.78rem;
         font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--ink-soft);
       }
 
       input[type="text"],
       input[type="number"] {
         width: 100%;
-        border: 1px solid var(--line);
-        border-radius: 14px;
-        padding: 12px 14px;
+        border: 0;
+        border-bottom: 1px solid rgba(31, 23, 19, 0.28);
+        border-radius: 0;
+        padding: 12px 0;
         font: inherit;
         color: var(--ink);
-        background: rgba(255, 255, 255, 0.82);
+        background: transparent;
+        box-shadow: none;
       }
 
       input[type="range"] {
+        -webkit-appearance: none;
+        appearance: none;
         width: 100%;
-        accent-color: var(--accent);
+        height: 22px;
+        background: transparent;
       }
 
       button {
-        border: 0;
-        border-radius: 14px;
+        border: 1px solid rgba(31, 23, 19, 0.18);
+        border-radius: 0;
         padding: 12px 16px;
         font: inherit;
         font-weight: 600;
-        color: white;
-        background: linear-gradient(135deg, var(--accent) 0%, var(--accent-strong) 100%);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--paper-strong);
+        background: #111111;
+        box-shadow: none;
         cursor: pointer;
+        transition:
+          transform 180ms ease,
+          border-color 180ms ease,
+          box-shadow 180ms ease;
       }
 
       button.secondary {
         color: var(--ink);
-        background: rgba(255, 255, 255, 0.82);
-        border: 1px solid var(--line);
+        background: transparent;
+        border: 1px solid rgba(31, 23, 19, 0.2);
+      }
+
+      button:hover {
+        transform: translateY(-1px);
+        border-color: rgba(17, 17, 17, 0.55);
+        box-shadow: none;
       }
 
       button:disabled {
@@ -146,19 +180,20 @@
       }
 
       .status {
-        padding: 12px 14px;
-        border-radius: 16px;
-        background: rgba(255, 255, 255, 0.72);
-        border: 1px solid var(--line);
-        color: var(--muted);
+        padding: 12px 0 0;
+        border-radius: 0;
+        background: transparent;
+        border: 0;
+        border-top: 1px solid rgba(31, 23, 19, 0.14);
+        color: var(--ink-soft);
         min-height: 52px;
         line-height: 1.45;
+        box-shadow: none;
       }
 
       .status.error {
         color: var(--warn);
-        border-color: rgba(154, 52, 18, 0.25);
-        background: rgba(254, 242, 242, 0.95);
+        border-color: rgba(161, 63, 39, 0.24);
       }
 
       .chips {
@@ -169,11 +204,12 @@
 
       .chip {
         padding: 8px 10px;
-        border-radius: 999px;
-        background: rgba(255, 255, 255, 0.9);
-        border: 1px solid var(--line);
-        color: var(--muted);
-        font-size: 0.84rem;
+        border-radius: 0;
+        background: transparent;
+        border: 1px solid rgba(31, 23, 19, 0.12);
+        color: var(--ink-soft);
+        font-size: 0.76rem;
+        letter-spacing: 0.05em;
       }
 
       .control-list {
@@ -184,10 +220,12 @@
       .control-card {
         display: grid;
         gap: 10px;
-        padding: 14px;
-        border-radius: 18px;
-        background: rgba(255, 255, 255, 0.76);
-        border: 1px solid var(--line);
+        padding: 10px 0 0;
+        border-radius: 0;
+        background: transparent;
+        border: 0;
+        border-top: 1px solid rgba(31, 23, 19, 0.12);
+        box-shadow: none;
       }
 
       .control-head {
@@ -198,19 +236,36 @@
       }
 
       .control-head strong {
-        font-size: 1rem;
+        font-family: "Bodoni Moda", serif;
+        font-size: 1.08rem;
+        font-weight: 700;
       }
 
       .control-head span,
       .control-meta {
-        color: var(--muted);
-        font-size: 0.88rem;
+        color: var(--ink-soft);
+        font-size: 0.82rem;
       }
 
       .viewer {
         display: grid;
         gap: 14px;
-        padding: 18px;
+        padding: 20px;
+        background: transparent;
+        border-left: 1px solid rgba(17, 17, 17, 0.12);
+      }
+
+      .viewer-main {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 280px;
+        gap: 24px;
+        align-items: start;
+      }
+
+      .axes-panel {
+        display: grid;
+        gap: 14px;
+        align-content: start;
       }
 
       .viewer-top {
@@ -223,21 +278,26 @@
 
       .viewer-top p {
         margin: 0;
-        color: var(--muted);
+        color: var(--ink-soft);
+      }
+
+      #view-summary {
+        font-family: "Bodoni Moda", serif;
+        font-size: clamp(1rem, 1.5vw, 1.25rem);
+        letter-spacing: 0.02em;
       }
 
       .viewer-stage {
-        border-radius: 22px;
-        border: 1px solid var(--line);
+        border-radius: 0;
+        border: 0;
         background:
-          linear-gradient(45deg, rgba(30, 43, 43, 0.04) 25%, transparent 25%) 0 0 / 24px 24px,
-          linear-gradient(-45deg, rgba(30, 43, 43, 0.04) 25%, transparent 25%) 0 0 / 24px 24px,
-          linear-gradient(45deg, transparent 75%, rgba(30, 43, 43, 0.04) 75%) 0 0 / 24px 24px,
-          linear-gradient(-45deg, transparent 75%, rgba(30, 43, 43, 0.04) 75%) 0 0 / 24px 24px,
-          #fbfaf7;
+          linear-gradient(rgba(17, 17, 17, 0.06) 1px, transparent 1px) 0 0 / 100% 28px,
+          linear-gradient(90deg, rgba(17, 17, 17, 0.06) 1px, transparent 1px) 0 0 / 28px 100%,
+          #ffffff;
         min-height: 70vh;
         overflow: auto;
         padding: 18px;
+        box-shadow: none;
       }
 
       .canvas-wrap {
@@ -253,16 +313,48 @@
         image-rendering: pixelated;
         image-rendering: crisp-edges;
         background: transparent;
-        border-radius: 12px;
-        box-shadow: 0 16px 30px rgba(30, 43, 43, 0.12);
+        border-radius: 0;
+        border: 0;
+        box-shadow: none;
       }
 
       .hover {
         margin: 0;
         font-family: "IBM Plex Mono", monospace;
         font-size: 0.9rem;
-        color: var(--muted);
+        color: var(--ink-soft);
         min-height: 1.2em;
+      }
+
+      input[type="range"]::-webkit-slider-runnable-track {
+        height: 2px;
+        background: linear-gradient(90deg, rgba(17, 17, 17, 0.22), rgba(17, 17, 17, 0.64));
+      }
+
+      input[type="range"]::-moz-range-track {
+        height: 2px;
+        background: linear-gradient(90deg, rgba(17, 17, 17, 0.22), rgba(17, 17, 17, 0.64));
+      }
+
+      input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 14px;
+        height: 14px;
+        margin-top: -6px;
+        border-radius: 50%;
+        border: 2px solid #ffffff;
+        background: var(--accent);
+        box-shadow: 0 0 0 3px rgba(17, 17, 17, 0.08);
+      }
+
+      input[type="range"]::-moz-range-thumb {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        border: 2px solid #ffffff;
+        background: var(--accent);
+        box-shadow: 0 0 0 3px rgba(17, 17, 17, 0.08);
       }
 
       @media (max-width: 1080px) {
@@ -273,12 +365,21 @@
         .sidebar {
           position: static;
         }
+
+        .viewer {
+          border-left: 0;
+          border-top: 1px solid rgba(17, 17, 17, 0.12);
+        }
+
+        .viewer-main {
+          grid-template-columns: 1fr;
+        }
       }
 
       @media (max-width: 640px) {
         .shell {
           width: min(100vw - 18px, 1400px);
-          margin-top: 12px;
+          padding-top: 14px;
         }
 
         .viewer,
@@ -315,16 +416,6 @@
           </section>
 
           <section class="section">
-            <h2>Metadata</h2>
-            <div id="metadata" class="chips"></div>
-          </section>
-
-          <section class="section">
-            <h2>Axes</h2>
-            <div id="controls" class="control-list"></div>
-          </section>
-
-          <section class="section">
             <h2>Display</h2>
             <label for="zoom-range">
               Zoom
@@ -350,10 +441,18 @@
             </div>
             <p class="hover" id="hover-readout"></p>
           </div>
-          <div class="viewer-stage" id="viewer-stage">
-            <div class="canvas-wrap">
-              <canvas id="mask-canvas" width="34" height="164" aria-label="Mask viewer"></canvas>
+          <div class="viewer-main">
+            <div class="viewer-stage" id="viewer-stage">
+              <div class="canvas-wrap">
+                <canvas id="mask-canvas" width="34" height="164" aria-label="Mask viewer"></canvas>
+              </div>
             </div>
+            <aside class="axes-panel">
+              <section class="section">
+                <h2>Axes</h2>
+                <div id="controls" class="control-list"></div>
+              </section>
+            </aside>
           </div>
         </section>
       </section>

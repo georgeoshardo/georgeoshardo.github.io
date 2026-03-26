@@ -16,7 +16,6 @@ const elements = {
   loadButton: document.getElementById("load-button"),
   copyLinkButton: document.getElementById("copy-link-button"),
   status: document.getElementById("status"),
-  metadata: document.getElementById("metadata"),
   controls: document.getElementById("controls"),
   zoomRange: document.getElementById("zoom-range"),
   zoomNumber: document.getElementById("zoom-number"),
@@ -122,7 +121,6 @@ async function loadDatasets(maskSourceInput, imageSourceInput) {
   elements.maskSourceInput.value = maskSource;
   elements.imageSourceInput.value = imageSource;
   elements.controls.innerHTML = "";
-  elements.metadata.innerHTML = "";
   elements.viewSummary.textContent = "Loading array metadata...";
 
   state.maskCache.clear();
@@ -333,6 +331,10 @@ function initialiseViewSelection(maskAxisInfo, params) {
 }
 
 function renderMetadata() {
+  if (!elements.metadata) {
+    return;
+  }
+
   const chips = [
     `mask ${state.maskAxisInfo.map((axis) => axis.length).join(" x ")}`,
     `image ${state.imageAxisInfo.map((axis) => axis.length).join(" x ")}`,
