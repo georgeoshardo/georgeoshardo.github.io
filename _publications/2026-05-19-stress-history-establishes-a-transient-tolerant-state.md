@@ -3,7 +3,7 @@ title: "Stress History Establishes a Transient Tolerant State That Shapes Antibi
 collection: publications
 category: manuscripts
 permalink: /publication/2026-05-19-stress-history-establishes-a-transient-tolerant-state
-excerpt: 'Published version of the bioRxiv preprint showing that starvation history can prime resuscitating bacteria into a transiently tolerant state during beta-lactam exposure.'
+excerpt: 'Single-cell tracking shows that starvation history can prime resuscitating bacteria into a transiently tolerant state during beta-lactam exposure.'
 date: 2026-05-19
 venue: 'Advanced Science'
 paperurl: 'https://doi.org/10.1002/advs.202521993'
