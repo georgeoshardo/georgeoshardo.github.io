@@ -123,6 +123,13 @@
   "references": [],
   "publications": [
     {
+      "name": "Stress History Establishes a Transient Tolerant State That Shapes Antibiotic Survival Upon Resuscitation",
+      "publisher": "Advanced Science",
+      "releaseDate": "2026-05-19",
+      "website": "https://doi.org/10.1002/advs.202521993",
+      "summary": "Published version of the bioRxiv preprint showing that starvation history can prime resuscitating bacteria into a transiently tolerant state during beta-lactam exposure."
+    },
+    {
       "name": "GEFF: Graph Exchange File Format",
       "publisher": "Journal of Open Source Software",
       "releaseDate": "2026-04-13",
