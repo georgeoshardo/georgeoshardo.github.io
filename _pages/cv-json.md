@@ -1,32 +1,11 @@
 ---
 layout: archive
 title: "CV"
+eyebrow: "Background & experience"
 permalink: /cv-json/
-author_profile: false
+author_profile: true
 redirect_from:
   - /resume-json
 ---
-
-{% include base_path %}
-
-<link rel="stylesheet" href="{{ base_path }}/assets/css/cv-style.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-
-<style>
-  .archive {
-    width: 80%;
-    margin: 0 auto;
-    float: none;
-    padding-right: 0;
-  }
-  
-  @media (min-width: 80em) {
-    .archive {
-      width: 70%;
-    }
-  }
-</style>
-
+<p class="page-intro print-hint">A record of my education, research, and teaching. <button class="text-button" type="button" onclick="window.print()">Print this CV</button></p>
 {% include cv-template.html %}
-
-

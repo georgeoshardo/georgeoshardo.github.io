@@ -159,6 +159,10 @@ include:
   - _pages
   - files
 exclude:
+  - design-studies
+  - docs
+  - tools
+  - logs
   - "*.sublime-project"
   - "*.sublime-workspace"
   - .asset-cache

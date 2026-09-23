@@ -1,0 +1,17 @@
+<aside class="profile" aria-label="Profile and navigation">
+  <div class="identity"><a class="name" href="{{ '/' | relative_url }}">Georgeos<br> Hardo</a><p class="affiliation">Assistant Professor<br>{{ site.author.employer }}</p></div>
+  <img class="vignette" src="{{ '/assets/images/desk/bacterial-vignette.png' | relative_url }}" width="1254" height="1254" alt="" aria-hidden="true">
+  <nav class="navigation" aria-label="Main navigation">
+    <a href="{{ '/' | relative_url }}"{% if page.url == '/' %} aria-current="page"{% endif %}>About</a>
+    <a href="{{ '/#research' | relative_url }}">Research</a>
+    {% for item in site.data.navigation.main %}
+      {% assign active = false %}
+      {% if page.url == item.url %}{% assign active = true %}{% endif %}
+      {% if item.url == '/publications/' and page.collection == 'publications' %}{% assign active = true %}{% endif %}
+      {% if item.url == '/teaching/' and page.collection == 'teaching' %}{% assign active = true %}{% endif %}
+      <a href="{{ item.url | relative_url }}"{% if active %} aria-current="page"{% endif %}>{{ item.title }}</a>
+    {% endfor %}
+  </nav>
+  <div class="contact"><span class="eyebrow">Elsewhere</span><a href="mailto:{{ site.author.email }}">Email <span aria-hidden="true">↗</span></a><a href="https://github.com/{{ site.author.github }}">GitHub <span aria-hidden="true">↗</span></a><a href="{{ site.author.googlescholar }}">Google Scholar <span aria-hidden="true">↗</span></a></div>
+  <span class="profile-note">Quantitative microbiology</span>
+</aside>

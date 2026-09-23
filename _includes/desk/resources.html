@@ -1,0 +1,12 @@
+{% assign resource_item = include.item %}
+{% if resource_item.paperurl or resource_item.slidesurl or resource_item.bibtexurl %}
+<nav class="resource-links" aria-label="Resources for {{ resource_item.title | strip_html | escape }}">
+{% assign resource_keys = 'paperurl,slidesurl,bibtexurl' | split: ',' %}
+{% for key in resource_keys %}{% if resource_item[key] %}
+  {% assign resource_url = resource_item[key] | strip | replace: 'https://georgeoshardo.github.io', '' | replace: 'http://georgeoshardo.github.io', '' %}
+  {% assign resource_start = resource_url | slice: 0, 1 %}
+  {% if resource_start == '/' %}{% assign resource_url = resource_url | relative_url %}{% endif %}
+  <a href="{{ resource_url }}">{% case key %}{% when 'paperurl' %}Paper{% when 'slidesurl' %}Slides{% when 'bibtexurl' %}BibTeX{% endcase %}<span aria-hidden="true"> ↗</span></a>
+{% endif %}{% endfor %}
+</nav>
+{% endif %}

@@ -1,5 +1,6 @@
 ---
 permalink: /
+layout: home
 title: "About"
 author_profile: true
 redirect_from:
@@ -11,6 +12,6 @@ Hello! My name is Georgeos, and I'm an assistant professor working in quantitati
 
 My research focusses on the use of widefield microscopy for the study of single cell behaviour, specifically that of bacteria, and even more specifically, antibiotic persistence. I like widefield microscopy as a tool because of its (relatively) low cost, its simplicity, and ability to generate large volumes of timelapse data when combined with microfludic devices such as the mother machine.
 
-Thusfar my research has focussed on gaining accurate and precise insights from widefield (in my case fluorescence and phase contrast) microscopy data. To achieve this I've been building and maintaining a tool called [SyMBac](https://georgeoshardo.github.io/publication/2022-11-30-symbac), which generates synthetic images of cells growing and dividing under the microscope under arbitrary conditions. Using SyMBac generated images to train AI based segmentation models leads to vastly enhanced precision - this allowed us to reveal a novel width regulation behaviour in *E. coli* as it enters and exits stationary phase.
+Thusfar my research has focussed on gaining accurate and precise insights from widefield (in my case fluorescence and phase contrast) microscopy data. To achieve this I've been building and maintaining a tool called [SyMBac]({{ '/publication/2022-11-30-symbac' | relative_url }}), which generates synthetic images of cells growing and dividing under the microscope under arbitrary conditions. Using SyMBac generated images to train AI based segmentation models leads to vastly enhanced precision - this allowed us to reveal a novel width regulation behaviour in *E. coli* as it enters and exits stationary phase.
 
-My aim is to expand SyMBac into a full virtual microscopy platform, allowing researchers to fully simulate their single-cell microbioogy experiments end-to-end, from the biophysics of bacterial growth, to their metabolic kinetics, to image formation as cells are observed under the microscope. We have [demonstrated this capability](https://georgeoshardo.github.io/publication/2024-09-02-quantitative-microbio-artefacts), and quantified many sources of error which can be introduced by the image formation process which could skew or corrupt biological conclusions.
+My aim is to expand SyMBac into a full virtual microscopy platform, allowing researchers to fully simulate their single-cell microbioogy experiments end-to-end, from the biophysics of bacterial growth, to their metabolic kinetics, to image formation as cells are observed under the microscope. We have [demonstrated this capability]({{ '/publication/2024-09-02-quantitative-microbio-artefacts' | relative_url }}), and quantified many sources of error which can be introduced by the image formation process which could skew or corrupt biological conclusions.

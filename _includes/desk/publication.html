@@ -1,0 +1,7 @@
+<article class="publication-entry" itemscope itemtype="https://schema.org/ScholarlyArticle">
+<h3 itemprop="headline"><a href="{{ include.paper.url | relative_url }}">{{ include.paper.title | markdownify | remove: '<p>' | remove: '</p>' }}</a></h3>
+{% if include.paper.citation %}<p class="publication-authors">{{ include.paper.citation | split: '(' | first | strip }}</p>{% endif %}
+<p class="publication-venue"><em>{{ include.paper.venue }}</em></p>
+{% include desk/resources.html item=include.paper %}
+{% if include.paper.citation %}<details class="citation"><summary>Citation</summary><p>{{ include.paper.citation }}</p></details>{% endif %}
+</article>
