@@ -81,3 +81,7 @@ The user approved the stronger feeding-lane preview with a final 20% opacity inc
 ## Approved stronger pencil-line overview
 
 The stronger pencil preview is installed on the left-hand mother-machine schematic, including the full-size composition. The original 956 channel path definitions are unchanged. The treatment uses coarser graphite grain, stronger pressure variation and more visible faint companion strokes. Existing pending captions/layout edits and the other two panels are preserved. This remains local to the makeover branch; it is not a deployment.
+
+## Approved cell panel with nutrient medium
+
+The user-approved cell close-up is installed in both the independent panel and full-size composition. It has regular rod-shaped cells, cleaned borders, stronger scientific-pencil hatching, and a deeper yellow nutrient-medium tint around cells inside trenches and in the broad feeding lane. Solid material above and between trenches remains lighter. The normalized PNG has identical decoded RGB pixels to the approved image. Other pending content/layout changes are preserved, and nothing has been published.
