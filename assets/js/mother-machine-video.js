@@ -1,82 +1,88 @@
-/* One native player, loaded on approach and played only while visible. */
+/* One native loop; defer loading and stop decoding while out of view. */
 (() => {
   const figure = document.querySelector('[data-mother-machine]');
   if (!figure) return;
   const video = figure.querySelector('video');
-  const button = figure.querySelector('.mother-machine-toggle');
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   const connection = navigator.connection;
-  let near = false;
-  let visible = false;
-  let userPaused = false;
-  let optedIn = false;
-  let blocked = false;
-  let pendingPlay = false;
-
+  let near = false, visible = false, pendingPlay = false;
+  let retryTimer = null, retries = 0, source = '';
+  let autoplayBlocked = false;
+  let pageHidden = false;
+  const allowed = () => !reducedMotion.matches && !connection?.saveData;
+  const active = () => visible && !document.hidden && !pageHidden && allowed();
   video.muted = true;
-  button.hidden = false;
-
-  const allowed = () => optedIn || (!reducedMotion.matches && !connection?.saveData);
-  const shouldPlay = () => visible && !document.hidden && allowed() && !userPaused && !blocked;
-  const updateButton = () => {
-    button.textContent = shouldPlay() ? 'Pause animation' : 'Play animation';
-  };
+  video.defaultMuted = true;
+  video.loop = true;
+  video.autoplay = false;
 
   function load() {
-    if (video.hasAttribute('src')) return;
-    // Choose once at first use: resizing must not fetch a second movie or
-    // restart playback. Both sources have sufficient detail for their slots.
-    const pixels = video.getBoundingClientRect().width * Math.min(window.devicePixelRatio || 1, 2);
-    video.src = pixels > 720 ? video.dataset.srcLarge : video.dataset.srcSmall;
-    video.preload = 'auto';
-    video.load();
+    if (!source) {
+      const pixels = video.getBoundingClientRect().width * Math.min(window.devicePixelRatio || 1, 2);
+      source = pixels > 720 ? video.dataset.srcLarge : video.dataset.srcSmall;
+    }
+    if (!video.hasAttribute('src')) {
+      video.src = source;
+      video.preload = 'auto';
+      video.load();
+    }
+  }
+
+  function retry(reload = false) {
+    if (!active() || retryTimer !== null || retries >= 2) return;
+    retries++;
+    retryTimer = setTimeout(() => {
+      retryTimer = null;
+      if (!active()) return;
+      if (reload || video.error) {
+        video.removeAttribute('src');
+        load();
+      }
+      sync();
+    }, 750 * retries);
   }
 
   function sync() {
-    if (near && allowed() && !userPaused && !blocked && !document.hidden) load();
-    if (shouldPlay()) {
-      load();
-      if (video.paused && !pendingPlay) {
-        pendingPlay = true;
-        video.play().catch(error => {
-          // Pausing during a pending request is expected on scroll/tab changes.
-          if (error.name !== 'AbortError') blocked = true;
-        }).finally(() => {
-          pendingPlay = false;
-          if (!shouldPlay()) video.pause();
-          updateButton();
-          // A quick scroll out and back can abort a pending play request.
-          if (shouldPlay() && video.paused) sync();
-        });
-      }
-    } else {
+    video.autoplay = active();
+    if (near && allowed() && !document.hidden) load();
+    if (!active()) {
       video.pause();
+      return;
     }
-    updateButton();
+    load();
+    if (!video.paused || pendingPlay || autoplayBlocked) return;
+    pendingPlay = true;
+    video.play().catch(error => {
+      if (error.name === 'NotAllowedError') autoplayBlocked = true;
+      else retry(error.name !== 'AbortError');
+    }).finally(() => {
+      pendingPlay = false;
+      if (!active()) video.pause();
+    });
   }
 
-  button.addEventListener('click', () => {
-    if (shouldPlay()) {
-      userPaused = true;
-    } else {
-      userPaused = false;
-      optedIn = true;
-      blocked = false;
-    }
-    sync();
+  video.addEventListener('error', () => retry(true));
+  video.addEventListener('canplay', sync);
+  video.addEventListener('playing', () => {
+    retries = 0;
+    if (retryTimer !== null) clearTimeout(retryTimer);
+    retryTimer = null;
   });
-
-  video.addEventListener('error', () => {
-    blocked = true;
-    video.removeAttribute('src');
-    video.load(); // Restore the poster; the play button permits an explicit retry.
-    updateButton();
+  // Native loop normally handles this. Recover if an embedded player ends it.
+  video.addEventListener('ended', () => {
+    if (active()) { video.currentTime = 0; sync(); }
   });
-  document.addEventListener('visibilitychange', sync);
-  window.addEventListener('pagehide', () => video.pause());
-  window.addEventListener('pageshow', sync);
-  reducedMotion.addEventListener('change', () => { optedIn = false; sync(); });
-  connection?.addEventListener('change', () => { optedIn = false; sync(); });
+  video.addEventListener('pause', () => { if (active() && !autoplayBlocked) retry(); });
+  function resume() { autoplayBlocked = false; retries = 0; sync(); }
+  document.addEventListener('visibilitychange', resume);
+  window.addEventListener('pagehide', () => { pageHidden = true; video.pause(); });
+  window.addEventListener('pageshow', () => { pageHidden = false; resume(); });
+  window.addEventListener('focus', resume);
+  // If the browser requires a gesture, any normal page interaction unlocks it.
+  document.addEventListener('pointerdown', () => { if (autoplayBlocked) resume(); }, { passive: true });
+  document.addEventListener('keydown', () => { if (autoplayBlocked) resume(); });
+  reducedMotion.addEventListener('change', resume);
+  connection?.addEventListener('change', resume);
 
   if ('IntersectionObserver' in window) {
     new IntersectionObserver(entries => {
@@ -85,12 +91,10 @@
     }, { rootMargin: '200px' }).observe(video);
     new IntersectionObserver(entries => {
       visible = entries[0].isIntersecting && entries[0].intersectionRatio >= 0.1;
-      sync();
+      if (visible) resume(); else sync();
     }, { threshold: [0, 0.1] }).observe(video);
   } else {
-    // Keep the poster and manual playback if visibility observation is absent.
-    visible = true;
-    blocked = true;
-    updateButton();
+    near = visible = true;
+    sync();
   }
 })();
