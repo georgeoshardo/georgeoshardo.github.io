@@ -5,11 +5,12 @@
     "website": "https://georgeoshardo.github.io",
     "summary": "Assistant Professor in single-cell quantitative microbiology at UAE University",
     "location": {
-      "address": "",
+      "address": "UAE University",
       "postalCode": "",
       "city": "Al Ain",
       "countryCode": "AE",
-      "region": "Abu Dhabi"
+      "region": "Abu Dhabi",
+      "countryName": "UAE"
     },
     "profiles": [
       {
@@ -22,7 +23,9 @@
         "username": "academicpages",
         "url": "https://github.com/georgeoshardo"
       }
-    ]
+    ],
+    "startDate": "2025",
+    "endDate": "present"
   },
   "work": [
     {
@@ -31,10 +34,9 @@
       "startDate": "January 2020",
       "endDate": "Present (PhD completed in April 2025)",
       "highlights": [
-        "I used smart microscopy combined with advanced deep-learning based bioimage analysis to do ultra-high-throughput single-cell imaging of bacteria in microfluidic devices.",
-        "I use these techniques to investigate heterogeneity in bacteria at the single-cell level, with applications pertaining to antibiotic resistance, persistence, and phage therapy, but also to enhance the throughput and efficacy of genetic engineering and synthetic biology techniques.",
-        "Built deep learning based systems that can image over ~10e6 cell lineages across time, building datasets of millions division events in a single experiment.",
-        "I built and maintain custom software packages that use machine-learning based methods to handle, analyse, and track cells in these huge datasets"
+        "High-throughput bacterial imaging in microfluidic devices.",
+        "Deep-learning tools for cell segmentation, tracking, and analysis.",
+        "Single-cell studies of antibiotic persistence and phage infection."
       ]
     },
     {
@@ -43,10 +45,8 @@
       "startDate": "January 2022",
       "endDate": "April 2022",
       "highlights": [
-        "I took a 4 month break during my PhD to work in a phage therapy startup.",
-        "Developed deep learning based models to classify phage proteins.",
-        "Used bioinformatic techniques to optimise the design of custom-built phages.",
-        "As of 2024, continued collaboration to bring Nemesis’ technology to help tackle the antibiotic resistance crisis."
+        "Deep-learning models for phage protein classification.",
+        "Bioinformatic design and optimisation of therapeutic phages."
       ]
     },
     {
@@ -55,8 +55,8 @@
       "startDate": "June 2019",
       "endDate": "September 2019",
       "highlights": [
-        "Engineered 5’ and 3’ mRNA UTRs to enhance in vivo stability and protein expression, using deep learning to predict and optimise mRNA expression/stability from UTR sequences.",
-        "Developed generative AI models to design high-expression 5’ UTRs, identifying key regulatory motifs, and validating through successful in vivo transfection in human cell lines."
+        "Designed mRNA UTRs using deep learning.",
+        "Validated model-designed UTRs in human cell lines."
       ]
     },
     {
@@ -65,8 +65,8 @@
       "startDate": "September 2018",
       "endDate": "June 2019",
       "highlights": [
-        "Developed graph-theory based tools and algorithms to model and search the entire organic chemistry literature as a network.",
-        "Created an all-in-one toolkit for efficient selection of reaction synthesis pathways, optimising for yield, conditions, feasibility, and other parameters.."
+        "Graph-based modelling of chemical reaction literature.",
+        "Tools for selecting and optimising synthesis pathways."
       ]
     }
   ],
@@ -101,25 +101,39 @@
   ],
   "skills": [],
   "languages": [],
-"interests": [
-  {
-    "name": "Bioimage analysis",
-    "keywords": ["Deep Learning", "Segmentation", "Tracking"]
-  },
-  {
-    "name": "Systems Biology",
-    "keywords": ["Antibiotic persistence", "Antibiotic resistance", "Modelling biophysics of cell growth"]
-  },
-  {
-    "name": "Microscopy",
-    "keywords": ["Widefield microscopy", "Virtual microscopy", "High throughput single-cell imaging"]
-  },
-  {
-    "name": "Microfluidics",
-    "keywords": ["The mother machine", "Single cell chemostats"]
-  }
-]
-  ,
+  "interests": [
+    {
+      "name": "Bioimage analysis",
+      "keywords": [
+        "Deep Learning",
+        "Segmentation",
+        "Tracking"
+      ]
+    },
+    {
+      "name": "Systems Biology",
+      "keywords": [
+        "Antibiotic persistence",
+        "Antibiotic resistance",
+        "Modelling biophysics of cell growth"
+      ]
+    },
+    {
+      "name": "Microscopy",
+      "keywords": [
+        "Widefield microscopy",
+        "Virtual microscopy",
+        "High throughput single-cell imaging"
+      ]
+    },
+    {
+      "name": "Microfluidics",
+      "keywords": [
+        "The mother machine",
+        "Single cell chemostats"
+      ]
+    }
+  ],
   "references": [],
   "publications": [
     {
@@ -127,59 +141,198 @@
       "publisher": "Advanced Science",
       "releaseDate": "2026-05-19",
       "website": "https://doi.org/10.1002/advs.202521993",
-      "summary": "Single-cell tracking shows that starvation history can prime resuscitating bacteria into a transiently tolerant state during beta-lactam exposure."
+      "authors": [
+        {
+          "name": "Abbott, K.",
+          "self": false,
+          "equalContribution": true
+        },
+        {
+          "name": "Hardo, G.",
+          "self": true,
+          "equalContribution": true
+        },
+        {
+          "name": "Li, R.",
+          "self": false,
+          "equalContribution": false
+        }
+      ],
+      "authors_truncated": true,
+      "contribution_note": "* Equal contribution (co-first authors)."
     },
     {
       "name": "GEFF: Graph Exchange File Format",
       "publisher": "Journal of Open Source Software",
       "releaseDate": "2026-04-13",
       "website": "https://doi.org/10.21105/joss.10143",
-      "summary": "GEFF defines a strict exchange format for graph-based tracking data, improving interoperability across life-science tools and programming languages."
+      "authors": [
+        {
+          "name": "Schwartz, M.",
+          "self": false,
+          "equalContribution": false
+        },
+        {
+          "name": "Malin-Mayor, C.",
+          "self": false,
+          "equalContribution": false
+        },
+        {
+          "name": "Lambert, T.",
+          "self": false,
+          "equalContribution": false
+        }
+      ],
+      "authors_truncated": true
     },
     {
       "name": "Metabolic control of porin permeability influences antibiotic resistance in Escherichia coli",
       "publisher": "Nature Microbiology",
       "releaseDate": "2025-11-24",
       "website": "https://doi.org/10.1038/s41564-025-02175-5",
-      "summary": "Using single-cell imaging, this paper shows that porin permeability in E. coli is controlled by periplasmic H+ and K+ concentrations. This metabolic control explains ciprofloxacin resistance in lipid-catabolising bacteria and identifies Kch as a therapeutic target."
+      "authors": [
+        {
+          "name": "Caño Muñiz, S.E.",
+          "self": false,
+          "equalContribution": false
+        },
+        {
+          "name": "Trigg, S.",
+          "self": false,
+          "equalContribution": false
+        },
+        {
+          "name": "Hardo, G.",
+          "self": true,
+          "equalContribution": false
+        }
+      ],
+      "authors_truncated": true
     },
     {
       "name": "Glycogen phase-separation drives macromolecular rearrangement and asymmetric division in E. coli",
       "publisher": "The EMBO Journal",
       "releaseDate": "2025-11-03",
       "website": "https://doi.org/10.1038/s44318-025-00621-y",
-      "summary": "Using quantitative cell imaging, it is shown that glycogen accumulation at the old cell pole causes asymmetric nucleoid positioning and cell division during nutrient limitation. Glycogen phase-separates into soft condensates, allowing cells to store glucose reserves without affecting perceived cytoplasmic space."
+      "authors": [
+        {
+          "name": "Thappeta, Y.",
+          "self": false,
+          "equalContribution": false
+        },
+        {
+          "name": "Cañas-Duarte, S.J.",
+          "self": false,
+          "equalContribution": false
+        },
+        {
+          "name": "Wang, H.",
+          "self": false,
+          "equalContribution": false
+        }
+      ],
+      "authors_truncated": true
     },
     {
       "name": "Single-cell imaging of the lytic phage life cycle in bacteria",
       "publisher": "bioRxiv - currently in review in Cell Systems",
       "releaseDate": "2024-10-22",
       "website": "https://www.biorxiv.org/content/10.1101/2024.04.11.588870v3.full",
-      "summary": "Single-cell imaging reveals heterogeneous kinetics and physiological coupling in bacteriophage T7 infection dynamics."
+      "authors": [
+        {
+          "name": "Wedd, C.",
+          "self": false,
+          "equalContribution": false
+        },
+        {
+          "name": "Yunusov, T.",
+          "self": false,
+          "equalContribution": false
+        },
+        {
+          "name": "Smith, A.",
+          "self": false,
+          "equalContribution": false
+        }
+      ],
+      "authors_truncated": true
     },
     {
       "name": "Quantitative microbiology with widefield microscopy: navigating optical artefacts for accurate interpretations",
       "publisher": "npj Imaging",
       "releaseDate": "2024-08-02",
       "website": "https://www.nature.com/articles/s44303-024-00024-4",
-      "summary": "Addresses systematic errors in quantitative widefield microscopy of microbes (size, intensity, single-molecule counting) due to projection and diffraction, proposing synthetic data and machine learning for accurate interpretation."
+      "authors": [
+        {
+          "name": "Hardo, G.",
+          "self": true,
+          "equalContribution": false
+        },
+        {
+          "name": "Li, R.",
+          "self": false,
+          "equalContribution": false
+        },
+        {
+          "name": "Bakshi, S.",
+          "self": false,
+          "equalContribution": false
+        }
+      ],
+      "authors_truncated": false
     },
     {
       "name": "Synthetic Micrographs of Bacteria (SyMBac) allows accurate segmentation of bacterial cells using deep neural networks",
       "publisher": "BMC Biology",
       "releaseDate": "2022-11-30",
       "website": "https://bmcbiol.biomedcentral.com/articles/10.1186/s12915-022-01453-6",
-      "summary": "Developed SyMBac, a novel method for accurate bacterial cell segmentation using deep neural networks trained with synthetically generated micrographs, outperforming human-annotated data."
+      "authors": [
+        {
+          "name": "Hardo, G.",
+          "self": true,
+          "equalContribution": false
+        },
+        {
+          "name": "Noka, M.",
+          "self": false,
+          "equalContribution": false
+        },
+        {
+          "name": "Bakshi, S.",
+          "self": false,
+          "equalContribution": false
+        }
+      ],
+      "authors_truncated": false
     },
     {
       "name": "Challenges of analysing stochastic gene expression in bacteria using single-cell time-lapse experiments",
       "publisher": "Essays in Biochemistry",
       "releaseDate": "2021-04-16",
       "website": "https://doi.org/10.1042/EBC20200015",
-      "summary": "We outline a rigorous framework for single-cell time-lapse experiments to analyze stochastic gene expression in bacteria."
+      "authors": [
+        {
+          "name": "Hardo, G.",
+          "self": true,
+          "equalContribution": false
+        },
+        {
+          "name": "Bakshi, S.",
+          "self": false,
+          "equalContribution": false
+        }
+      ],
+      "authors_truncated": false
     }
   ],
   "presentations": [
+    {
+      "name": "Synthetic microscopy enables high-throughput cell-fate modelling of transient antibiotic tolerance during bacterial resuscitation",
+      "event": "8th International Symposium on Image-based Systems Biology",
+      "date": "2026",
+      "location": "Jena, Germany",
+      "description": ""
+    },
     {
       "name": "Optical illusions in quantitative microbiology with widefield microscopy",
       "event": "Warwick-Cambridge Quantitative Cell Biology Symposium",

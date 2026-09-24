@@ -1,6 +1,6 @@
 <aside class="profile" aria-label="Profile and navigation">
   <div class="identity"><a class="name" href="{{ '/' | relative_url }}">Georgeos<br> Hardo</a><p class="affiliation">Assistant Professor<br>{{ site.author.employer }}</p></div>
-  <img class="vignette" src="{{ '/assets/images/desk/bacterial-vignette.png' | relative_url }}" width="1254" height="1254" alt="" aria-hidden="true">
+  <img class="vignette" src="{{ '/assets/images/desk/lineage-vignette-transparent.png' | relative_url }}" width="1254" height="1254" alt="" aria-hidden="true">
   <nav class="navigation" aria-label="Main navigation">
     <a href="{{ '/' | relative_url }}"{% if page.url == '/' %} aria-current="page"{% endif %}>About</a>
     <a href="{{ '/#research' | relative_url }}">Research</a>
@@ -12,6 +12,17 @@
       <a href="{{ item.url | relative_url }}"{% if active %} aria-current="page"{% endif %}>{{ item.title }}</a>
     {% endfor %}
   </nav>
-  <div class="contact"><span class="eyebrow">Elsewhere</span><a href="mailto:{{ site.author.email }}">Email <span aria-hidden="true">↗</span></a><a href="https://github.com/{{ site.author.github }}">GitHub <span aria-hidden="true">↗</span></a><a href="{{ site.author.googlescholar }}">Google Scholar <span aria-hidden="true">↗</span></a></div>
-  <span class="profile-note">Quantitative microbiology</span>
+  <div class="contact" aria-labelledby="elsewhere-title">
+    <h2 class="eyebrow" id="elsewhere-title">Elsewhere</h2>
+    <ul class="elsewhere-list">
+      {% if site.author.location %}<li><span class="elsewhere-item">{% include desk/icons/location.svg %}<span>{{ site.author.location }}</span></span></li>{% endif %}
+      {% if site.author.employer %}<li><span class="elsewhere-item">{% include desk/icons/university.svg %}<span>{{ site.author.employer }}</span></span></li>{% endif %}
+      {% if site.author.email %}<li><a class="elsewhere-item" href="mailto:{{ site.author.email | escape }}">{% include desk/icons/email.svg %}<span>Email</span></a></li>{% endif %}
+      {% if site.author.googlescholar %}<li><a class="elsewhere-item" href="{{ site.author.googlescholar | escape }}">{% include desk/icons/scholar.svg %}<span>Google Scholar</span></a></li>{% endif %}
+      {% if site.author.orcid %}<li><a class="elsewhere-item" href="{{ site.author.orcid | escape }}">{% include desk/icons/orcid.svg %}<span>ORCID</span></a></li>{% endif %}
+      {% if site.author.pubmed %}<li><a class="elsewhere-item" href="{{ site.author.pubmed | escape }}">{% include desk/icons/pubmed.svg %}<span>PubMed</span></a></li>{% endif %}
+      {% if site.author.github %}<li><a class="elsewhere-item" href="https://github.com/{{ site.author.github | escape }}">{% include desk/icons/github.svg %}<span>GitHub</span></a></li>{% endif %}
+      {% if site.author.linkedin %}<li><a class="elsewhere-item" href="https://www.linkedin.com/in/{{ site.author.linkedin | escape }}">{% include desk/icons/linkedin.svg %}<span>LinkedIn</span></a></li>{% endif %}
+    </ul>
+  </div>
 </aside>

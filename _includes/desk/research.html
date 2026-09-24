@@ -29,8 +29,14 @@
             <title id="simulation-title">Schematic comparison of simulated bacterial cells and outlined cell measurements</title>
             <g fill="none" stroke="#b4a880" stroke-width="1"><rect x="24" y="20" width="112" height="108"/><rect x="189" y="20" width="112" height="108"/></g>
             <g stroke="#575449" stroke-width="1.1"><rect x="44" y="41" width="38" height="17" rx="8.5" fill="#78a79b" transform="rotate(-35 63 49)"/><rect x="80" y="73" width="39" height="17" rx="8.5" fill="#c6a661" transform="rotate(35 99 81)"/><rect x="46" y="97" width="34" height="17" rx="8.5" fill="#9c849c" transform="rotate(-10 63 105)"/></g>
-            <g fill="none" stroke-width="1.5"><rect x="209" y="41" width="38" height="17" rx="8.5" stroke="#438880" transform="rotate(-35 228 49)"/><rect x="245" y="73" width="39" height="17" rx="8.5" stroke="#a98238" transform="rotate(35 264 81)"/><rect x="211" y="97" width="34" height="17" rx="8.5" stroke="#8e708c" transform="rotate(-10 228 105)"/></g>
-            <g stroke="#827963" fill="none" stroke-width="1.1"><path d="M149 74 H176 M171 70 L176 74 171 78"/><path d="M205 64 L245 34 M204 61 L207 67 M242 31 L248 37"/></g>
+            <g fill="none" stroke-width="1.5"><g transform="rotate(-35 228 49)">
+              <rect x="209" y="41" width="38" height="17" rx="8.5" stroke="#438880"/>
+              <g class="cell-length-measurement" stroke="#827963" stroke-width="1" stroke-linecap="round">
+                <path d="M209 49.5 V30 M247 49.5 V30" opacity=".7"/>
+                <path d="M209 33 H247"/>
+              </g>
+            </g><rect x="245" y="73" width="39" height="17" rx="8.5" stroke="#a98238" transform="rotate(35 264 81)"/><rect x="211" y="97" width="34" height="17" rx="8.5" stroke="#8e708c" transform="rotate(-10 228 105)"/></g>
+            <g stroke="#827963" fill="none" stroke-width="1.1"><path d="M149 74 H176 M171 70 L176 74 171 78"/></g>
           </svg>
           <span class="figure-caption">From simulation to measurement</span>
         </div>

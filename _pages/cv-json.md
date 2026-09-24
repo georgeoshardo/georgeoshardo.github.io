@@ -7,5 +7,5 @@ author_profile: true
 redirect_from:
   - /resume-json
 ---
-<p class="page-intro print-hint">A record of my education, research, and teaching. <button class="text-button" type="button" onclick="window.print()">Print this CV</button></p>
+<p class="page-intro">A record of my education, research, and teaching.</p>
 {% include cv-template.html %}
