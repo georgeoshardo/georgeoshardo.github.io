@@ -3,7 +3,8 @@ layout: default
 ---
 <article class="document" itemscope itemtype="https://schema.org/CreativeWork">
   <header class="page-heading">
-    {% if page.collection == 'publications' %}<a class="eyebrow back-link" href="{{ '/publications/' | relative_url }}">← Publications</a>
+    {% if page.back_url %}<a class="eyebrow back-link" href="{{ page.back_url | relative_url }}">← {{ page.back_label }}</a>
+    {% elsif page.collection == 'publications' %}<a class="eyebrow back-link" href="{{ '/publications/' | relative_url }}">← Publications</a>
     {% elsif page.collection == 'teaching' %}<a class="eyebrow back-link" href="{{ '/teaching/' | relative_url }}">← Teaching</a>
     {% else %}<span class="eyebrow">{{ site.author.name }}</span>{% endif %}
     <h1 itemprop="headline">{{ page.title | markdownify | remove: '<p>' | remove: '</p>' }}</h1>
