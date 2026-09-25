@@ -1,0 +1,61 @@
+/* Shared look of the course's interactive pages: the night palette, DM Sans with Instrument Serif
+   headings, the brand mark, eyebrows, pill buttons, dark glass panels and the orbit loader. Pages add
+   their own layout on top. Mirrors the transcription film (../transcription_3d/style.css). */
+@font-face{font-family:'DM Sans';font-style:normal;font-weight:400 500;font-display:swap;src:url('fonts/dm_sans_regular.ttf') format('truetype')}
+@font-face{font-family:'DM Sans';font-style:normal;font-weight:600 700;font-display:swap;src:url('fonts/dm_sans_semibold.ttf') format('truetype')}
+@font-face{font-family:'Instrument Serif';font-style:normal;font-weight:400;font-display:swap;src:url('fonts/instrument_serif.ttf') format('truetype')}
+:root{
+  color-scheme:dark;
+  --night:#070e17;--night-2:#0b1520;--panel:#0e1823e8;--panel-solid:#101a25;
+  --ink:#f0f3f0;--ink-2:#d6e1e2;--muted:#a1afb8;--faint:#7e919d;--line:#ffffff1f;--line-2:#b7cdd526;
+  --accent:#ecba82;--accent-2:#e5bf8d;--accent-ink:#1b211f;
+  /* Molecule colours, as in the film (proteins: the assembly tints; nucleic acids: strand colours). */
+  --alpha:#d6c496;--beta:#56c2b1;--beta-prime:#7fa3e3;--omega:#c2bdb2;--sigma:#f094ae;
+  --nusa:#b9d56b;--nusg:#c08a4c;--rho:#9d7cc0;--template:#72cdeb;--coding:#e9e1cf;--rna:#ffa45e;
+  --serif:'Instrument Serif',Georgia,serif;--sans:'DM Sans',-apple-system,BlinkMacSystemFont,sans-serif;
+  --radius:10px;--gutter:clamp(16px,4vw,48px);
+}
+*{box-sizing:border-box}
+html{background:var(--night)}
+body{margin:0;font-family:var(--sans);color:var(--ink);background:var(--night);-webkit-font-smoothing:antialiased}
+button,a,input,select{-webkit-tap-highlight-color:transparent}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none;padding:0}
+a{color:inherit}
+:is(button,a,input,select,[tabindex]):focus-visible{outline:2px solid var(--accent);outline-offset:4px;border-radius:4px}
+.sr-only{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+
+/* Brand: the course mark and name, top left of every page. */
+.brand{display:flex;align-items:center;gap:12px;text-decoration:none;letter-spacing:.13em;font-size:9px;line-height:1.6;color:#cad4d8;text-transform:uppercase}
+.brand b{font-weight:500;letter-spacing:.27em}
+.brand-mark{font-family:Georgia,serif;font-size:26px;font-weight:400;line-height:1;border:1px solid #b4c5ca40;border-radius:50%;width:41px;height:41px;display:grid;place-items:center;letter-spacing:-.2em;padding-right:5px;color:var(--accent);text-transform:none}
+
+/* Type */
+.eyebrow{display:flex;align-items:center;gap:12px;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:500;margin:0 0 12px}
+.eyebrow i{height:1px;width:27px;background:#af956c60}
+.display{font-family:var(--serif);font-weight:400;letter-spacing:-.022em;line-height:.99;margin:0;text-wrap:balance}
+.lede{font-size:14px;line-height:1.7;color:#adbac4;max-width:62ch;margin:0;text-wrap:pretty}
+
+/* Pills and buttons */
+.pill{text-decoration:none;display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line-2);background:#15222c80;border-radius:999px;padding:9px 14px;font-size:11px;color:#cfdbe0;backdrop-filter:blur(12px);transition:background .2s,border-color .2s}
+.pill[aria-pressed=true]{background:#cfe7e21a;border-color:#bbd6d663}
+@media(hover:hover){.pill:hover{background:#cfe7e21a;border-color:#bbd6d663}}
+.pill .dot,.dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--c,var(--accent));box-shadow:0 0 9px color-mix(in srgb,var(--c,var(--accent)),transparent 60%);flex:none}
+.button{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:40px;padding:0 18px;border-radius:4px;background:var(--accent-2);color:var(--accent-ink);font-size:11px;font-weight:600}
+@media(hover:hover){.button:hover{background:#f3cfa1}}
+.icon-button{display:grid;place-items:center;width:38px;height:38px;border-radius:50%;border:1px solid var(--line-2);background:#15222c80;color:#cfdbe0;font-size:18px;line-height:1;backdrop-filter:blur(12px)}
+@media(hover:hover){.icon-button:hover{background:#cfe7e21a}}
+
+/* Panels */
+.glass{background:var(--panel);border:1px solid #91a8b02e;border-radius:var(--radius);backdrop-filter:blur(22px);box-shadow:0 30px 120px #0007}
+
+/* Loader: two tilted orbits. */
+.loader{position:fixed;z-index:60;inset:0;background:var(--night);display:flex;align-items:center;justify-content:center;flex-direction:column;transition:opacity .7s}
+.loader.hidden{opacity:0;pointer-events:none}
+.loader p{font-family:var(--serif);font-size:27px;margin:22px 0 8px;color:var(--ink-2)}
+.loader span{font-size:11px;color:#7e969f}
+.loader-orbit{position:relative;width:75px;height:75px}
+.loader-orbit i{position:absolute;inset:0;border:1px solid #668c884a;border-top-color:#a4c5bc;border-radius:50%;animation:orbit 2.5s linear infinite;transform:rotateX(55deg)}
+.loader-orbit i:nth-child(2){inset:12px;border-top-color:#e6bc84;animation-direction:reverse;animation-duration:1.8s}
+@keyframes orbit{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}.loader-orbit i{animation:none}}

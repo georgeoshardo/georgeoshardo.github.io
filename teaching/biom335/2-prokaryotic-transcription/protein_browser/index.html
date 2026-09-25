@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Proteins of bacterial transcription</title>
+<meta name="description" content="Explore the three-dimensional structures of the proteins of bacterial transcription: RNA polymerase and its subunits, the sigma factors, NusA, NusG and Rho.">
+<meta name="theme-color" content="#070e17">
+<link rel="preload" href="../shared/fonts/instrument_serif.ttf" as="font" type="font/ttf" crossorigin>
+<link rel="stylesheet" href="../shared/course.css">
+<link rel="stylesheet" href="browser.css">
+<script type="importmap">{"imports":{"three":"../shared/vendor/three/three.module.min.js","three/addons/":"../shared/vendor/three/addons/"}}</script>
+</head>
+<body>
+<div class="loader" id="loader" role="status" aria-live="polite">
+  <div class="loader-orbit" aria-hidden="true"><i></i><i></i></div>
+  <p>Proteins of transcription</p>
+  <span id="load-detail">Loading structures</span>
+</div>
+
+<header class="top">
+  <a class="brand" href="../transcription_3d/index.html"><span class="brand-mark" aria-hidden="true">II</span><span>Molecular biology<br><b>of genes</b></span></a>
+  <nav class="top-links" aria-label="Course">
+    <a class="pill" href="../transcription_3d/index.html">The transcription cycle</a>
+  </nav>
+</header>
+
+<main id="main">
+  <section class="intro" aria-labelledby="page-title">
+    <p class="eyebrow"><i></i>Prokaryotic transcription</p>
+    <h1 class="display" id="page-title">The proteins that<br>make RNA.</h1>
+    <p class="lede">RNA polymerase, the sigma factors that direct it to promoters, and the factors that regulate elongation and end transcription.</p>
+    <div class="filters" role="toolbar" aria-label="Show">
+      <button class="pill" data-filter="all" aria-pressed="true">All</button>
+    </div>
+  </section>
+  <div id="groups"></div>
+</main>
+
+<div class="detail" id="detail" role="dialog" aria-modal="true" aria-labelledby="detail-title" hidden>
+  <div class="detail-stage">
+    <div class="detail-view" id="detail-view" tabindex="0" role="application" aria-roledescription="3D structure" aria-label="Three-dimensional structure. Drag, or use the arrow keys, to turn it; scroll, pinch or press + and − to zoom."></div>
+    <ul class="parts" id="parts" aria-label="Parts"></ul>
+    <button class="pill context" id="context" aria-pressed="false" hidden><span class="dot"></span><span id="context-label">In the core enzyme</span></button>
+    <p class="view-hint" id="view-hint" aria-hidden="true">Drag to rotate · scroll to zoom</p>
+    <div class="hover-tag" id="hover-tag" hidden></div>
+  </div>
+  <article class="detail-text" id="detail-text">
+    <div class="detail-bar">
+      <button class="icon-button" id="prev" aria-label="Previous protein">‹</button>
+      <button class="icon-button" id="next" aria-label="Next protein">›</button>
+      <button class="icon-button" id="close" aria-label="Close">×</button>
+    </div>
+    <p class="eyebrow" id="detail-group"><i></i><span></span></p>
+    <h2 class="display" id="detail-title"></h2>
+    <p class="detail-meta" id="detail-meta"></p>
+    <p class="detail-short" id="detail-short"></p>
+    <dl class="facts-table" id="detail-table" hidden></dl>
+    <ul class="facts" id="detail-facts"></ul>
+    <section class="detail-links" id="detail-film" hidden>
+      <h3>In the transcription cycle</h3>
+      <div class="chips" id="film-links"></div>
+    </section>
+    <section class="detail-links" id="detail-related" hidden>
+      <h3>Related</h3>
+      <div class="chips" id="related"></div>
+    </section>
+    <p class="detail-notes"><a id="notes-link" target="_blank" rel="noopener">Read this section of the notes ↗</a></p>
+    <p class="source" id="detail-source"></p>
+  </article>
+</div>
+
+<canvas id="stage" aria-hidden="true"></canvas>
+<div class="load-error" id="load-error" hidden role="alert">
+  <h2 class="display">This page needs a web server</h2>
+  <p>Its structures load over HTTP. From the repository root, run</p>
+  <code>pixi run python -m http.server 8080 --bind 127.0.0.1 --directory course_material/drawings</code>
+  <p>then open <b>http://127.0.0.1:8080/protein_browser/</b>.</p>
+</div>
+<script type="module" src="browser.mjs"></script>
+<script>if(location.protocol==='file:'){document.getElementById('loader').classList.add('hidden');document.getElementById('load-error').hidden=false}</script>
+</body>
+</html>

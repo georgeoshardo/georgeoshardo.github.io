@@ -284,3 +284,5 @@ body.presenting .tag{height:24px;line-height:24px;font-size:15px}
    guided camera frames centre to right and often near the top. */
 @media(min-width:781px){.compass{left:auto;right:36px;transform:none;top:76px;align-items:flex-end}}
 @media(min-width:781px){.orbit-hint{top:112px}}
+/* σ factor subscripts (σ<sub>70</sub>) and Unicode subscripts, set by ../shared/text.mjs. */
+sub{font-size:.72em;vertical-align:-.22em;line-height:0}
