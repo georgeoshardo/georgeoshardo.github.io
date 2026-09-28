@@ -1,0 +1,36 @@
+/* Screen-space labels (labels.mjs), the same on every page: leader callouts, pill tags and brackets, drawn in
+   #annotations over a 3D view that fills the window (a page can place the layer over its own view instead). Leaders
+   carry a dark halo so they read on any molecule; callouts and leaders are clipped to the screen, so a label near
+   the edge never widens the page. */
+#annotations{position:absolute;inset:0;z-index:3;pointer-events:none;overflow:hidden}
+#leaders{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.annotation{position:absolute;left:0;top:0;max-width:260px;color:#e1ebef;font-size:13px;line-height:1.4;padding:8px 11px;border:1px solid #a8c5d325;border-radius:4px;background:#0a1522df;backdrop-filter:blur(12px);white-space:nowrap;opacity:0;transition:opacity .2s;will-change:transform}
+.annotation.show{opacity:1}
+.annotation b{font-weight:500}
+.annotation small{display:block;color:#aac1cc;font-size:12px;margin-top:3px;letter-spacing:.02em;white-space:normal}
+.annotation .dot{display:inline-block;width:6px;height:6px;background:var(--accent);border-radius:50%;margin-right:7px;vertical-align:1px;box-shadow:none}
+.leader-halo,.leader-line,.leader-ring{fill:none;opacity:0;transition:opacity .2s}
+.leader-halo{stroke:#050b14cc;stroke-width:3.2}
+.leader-line,.leader-ring{stroke:#dbe8ee;stroke-width:1.25}
+.leader-halo.show,.leader-line.show,.leader-ring.show{opacity:1}
+.leader-line.dashed,.leader-ring.dashed{stroke-dasharray:4 3}
+/* Tags are small dark pills: white text on a backplate reads over any protein (pink σ tags on pink σ), and the
+   molecule's colour stays in the dot and a faint ring. */
+.tag{position:absolute;left:0;top:0;height:20px;line-height:20px;padding:0 8px 0 7px;border-radius:10px;font-size:12px;font-weight:500;color:#f1f5f6;white-space:nowrap;opacity:0;transition:opacity .25s;will-change:transform;
+ background:#060e17e0;box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--c) 55%,transparent),0 1px 6px #0008}
+.tag::before{content:'';display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--c);margin-right:6px;vertical-align:.5px}
+.tag.show{opacity:1}
+.tag.flip{padding:0 7px 0 8px}
+.tag.flip::before{display:none}
+.tag.flip::after{content:'';display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--c);margin-left:6px;vertical-align:.5px}
+/* Brackets read clearly over molecules: a bold line and caption on a dark halo. */
+.bracket{opacity:0;transition:opacity .25s}
+.bracket.show{opacity:1}
+.bracket-halo{fill:none;stroke:#050b14cc;stroke-width:5.5}
+.bracket-line{fill:none;stroke:#eef4f5;stroke-width:2.2}
+.bracket text{fill:#eef4f5;font-size:13px;font-weight:500;paint-order:stroke;stroke:#050b14;stroke-width:4.5px;stroke-linejoin:round}
+/* Phones: titles only. The Low tier draws solid panels (backdrop blur is costly on integrated graphics). */
+@media(max-width:600px){.annotation{max-width:calc(100vw - 32px);font-size:12px}.annotation small{display:none}}
+.low-power .annotation{backdrop-filter:none;background:#0a1522f0}
+@media(prefers-contrast:more){.annotation{backdrop-filter:none;background:#050b12}.annotation small{color:#e4ecf0}.tag{background:#02060b;color:#fff}}
+@media(forced-colors:active){.annotation .dot,.tag::before,.tag.flip::after{forced-color-adjust:none}.leader-line,.leader-ring,.bracket-line{stroke:CanvasText}.annotation{forced-color-adjust:auto}.tag{forced-color-adjust:auto;background:Canvas;color:CanvasText;box-shadow:inset 0 0 0 1px CanvasText}}

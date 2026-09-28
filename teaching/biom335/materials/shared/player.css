@@ -1,0 +1,228 @@
+/* The chrome of the course's animated pages, as the transcription film has it: header and controls, the chapter (or
+   step) list, the narration with its notes link and reading chip, the transport, settings, notes panel, dialogs,
+   toast and loader, for every screen size. Loaded after course.css and labels.css by the film and by every scene
+   (shared/scene_player.mjs); each page adds only its own parts. */
+:root{color-scheme:dark;--ink:#f0f3f0;--muted:#a1afb8;--line:#ffffff24;--accent:#ecba82;--night:#070e17}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--night)}
+body{font-family:'DM Sans',-apple-system,sans-serif;color:var(--ink)}
+button,a,input,select{-webkit-tap-highlight-color:transparent}
+button,input,select{font:inherit}
+button{cursor:pointer}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:5px}
+button{color:inherit;border:0;background:none}
+a{color:inherit}
+#viewport{position:absolute;inset:0}
+canvas{display:block;touch-action:none}
+.vignette{position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,#030a148c,transparent 19%,transparent 63%,#040a13d9 96%),linear-gradient(90deg,#050b1470,transparent 24%,transparent 85%,#050b1420)}
+header{position:absolute;z-index:4;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;padding:25px 34px}
+.brand{display:flex;align-items:center;gap:12px;text-decoration:none;letter-spacing:.13em;font-size:9px;line-height:1.6;color:#cad4d8}
+.brand b{font-weight:500;letter-spacing:.27em}
+.brand-mark{font-family:Georgia,serif;font-size:26px;font-weight:400;line-height:1;border:1px solid #b4c5ca40;border-radius:50%;width:41px;height:41px;display:grid;place-items:center;letter-spacing:-.2em;padding-right:5px;color:var(--accent)}
+.top-controls{display:flex;align-items:center;gap:8px}
+.top-controls button,.top-controls a{border:1px solid #b7cdd526;background:#15222c65;border-radius:999px;padding:10px 14px;font-size:11px;backdrop-filter:blur(12px);transition:.2s;text-decoration:none}
+.top-controls button:hover,.top-controls a:hover,.top-controls button[aria-pressed=true]{background:#cfe7e21a;border-color:#bbd6d663}
+.top-controls #fullscreen{font-size:19px;width:37px;height:37px;padding:0}
+.chapters{position:absolute;z-index:4;left:35px;top:calc(50% - 174px);display:flex;flex-direction:column;gap:5px;width:163px}
+.chapters button{display:flex;align-items:center;gap:15px;min-height:36px;padding:8px 0;text-align:left;color:#80919f;position:relative}
+.chapters button span{font-size:10px;font-variant-numeric:tabular-nums}
+.chapters button b{font-size:11px;font-weight:400;letter-spacing:.01em;opacity:.7}
+.chapters button[aria-current=step]{color:#f2c997}
+.chapters button[aria-current=step] b{opacity:1}
+.chapters button[aria-current=step]::before{content:'';position:absolute;left:-14px;width:3px;height:17px;background:var(--accent);border-radius:3px}
+.narration{position:absolute;z-index:4;left:56px;bottom:127px;max-width:600px;pointer-events:none}
+.eyebrow{display:flex;align-items:center;gap:12px;font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:500;margin:0 0 12px}
+.eyebrow i{height:1px;width:27px;background:#af956c60}
+.narration h1{font-family:'Instrument Serif',Georgia,serif;font-weight:400;font-size:clamp(37px,4.3vw,67px);letter-spacing:-.022em;line-height:.99;margin:0 0 13px;text-wrap:balance;text-shadow:0 2px 18px #03091460}
+.narration>p:last-child{font-size:13px;line-height:1.65;color:#adbac4;max-width:540px;margin:0;text-wrap:pretty}
+.narration::before{content:'';position:absolute;z-index:-1;inset:-28px -22px -24px -55px;background:radial-gradient(ellipse at 20% 70%,#040a13b0,#040a1380 42%,transparent 75%);filter:blur(16px)}
+.transport{position:absolute;z-index:5;bottom:29px;left:36px;right:36px;display:flex;gap:16px;align-items:center;height:57px;border-top:1px solid #d1e3e221;padding-top:14px}
+.play{display:flex;align-items:center;justify-content:center;gap:10px;min-width:148px;height:40px;border-radius:4px;background:#e5bf8d;color:#1b211f;font-size:11px;font-weight:600}
+.play:hover{background:#f3cfa1}
+.restart{font-size:25px;font-weight:300;color:#b2c2c9;width:30px}
+.scrubber{position:relative;flex:1;min-width:80px}
+.scrubber input{display:block;position:relative;z-index:2;width:100%;height:20px;margin:0;accent-color:#dcb680;cursor:ew-resize;opacity:.85}
+.ticks{position:absolute;left:7px;right:7px;top:16px;pointer-events:none}
+.ticks i{position:absolute;width:1px;height:4px;background:#aababc50}
+.clock{font-size:10px;color:#aab6c0;white-space:nowrap;font-variant-numeric:tabular-nums}
+.clock em{font-style:normal;padding:0 6px;opacity:.35}
+.transport select,.transport #labels{font-size:11px;color:#aab7c0;background:transparent;border:0;padding:10px 4px}
+.transport select option{background:#18232e}
+.transport #labels[aria-pressed=false]{opacity:.5}
+.orbit-hint{position:absolute;z-index:4;top:84px;right:36px;color:#839aa9;font-size:10px;margin:0;opacity:0;transition:opacity .3s;pointer-events:none}
+body.exploring .orbit-hint{opacity:1}
+body.exploring .narration{opacity:.25}
+body.exploring .chapters{opacity:.3}
+.loader{position:absolute;z-index:50;inset:0;background:#070e17;display:flex;align-items:center;justify-content:center;flex-direction:column;transition:opacity .7s}
+.loader.hidden{opacity:0;pointer-events:none}
+.loader p{font-family:'Instrument Serif',Georgia,serif;font-size:27px;margin:22px 0 8px;color:#d6e1e2}
+.loader span{font-size:11px;color:#7e969f}
+.loader-orbit{position:relative;width:75px;height:75px}
+.loader-orbit i{position:absolute;inset:0;border:1px solid #668c884a;border-top-color:#a4c5bc;border-radius:50%;animation:orbit 2.5s linear infinite;transform:rotateX(55deg)}
+.loader-orbit i:nth-child(2){inset:12px;border-top-color:#e6bc84;animation-direction:reverse;animation-duration:1.8s}
+@keyframes orbit{to{transform:rotate(360deg)}}
+dialog{color:#dbe3e6;background:#101a25f5;max-width:600px;width:calc(100% - 40px);padding:38px;border:1px solid #91a8b02e;border-radius:11px;box-shadow:0 30px 120px #0008;backdrop-filter:blur(25px)}
+dialog::backdrop{background:#02060ba8;backdrop-filter:blur(8px)}
+dialog h2{font-family:'Instrument Serif',Georgia,serif;font-weight:400;font-size:43px;line-height:1.03;margin:10px 0 22px}
+dialog p{font-size:13px;line-height:1.65;color:#a6b7c3}
+dialog a{color:#d9b882;text-underline-offset:3px}
+.close{position:absolute;right:15px;top:10px;font-size:28px;color:#8096a4}
+.sr-only{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+@media(max-width:1100px){header{padding:20px 24px}.chapters{left:24px;width:120px}.chapters button{gap:10px}.chapters button b{font-size:10px}.narration{left:32px;bottom:118px;max-width:490px}.narration h1{font-size:48px}.narration>p:last-child{max-width:460px;font-size:12px}.transport{left:24px;right:24px;gap:10px}}
+@media(max-width:780px){.brand{font-size:7px}.brand-mark{width:32px;height:32px;font-size:20px}.top-controls button,.top-controls a{font-size:10px;padding:9px 11px}.top-controls #fullscreen{display:none}.chapters{top:105px;left:22px;right:22px;display:flex;flex-direction:row;width:auto;gap:14px}.chapters button{min-height:28px}.chapters button b{display:none}.chapters button[aria-current=step]::before{left:0;bottom:0;height:1px;width:15px}.narration{left:25px;right:25px;bottom:142px;max-width:520px}.narration h1{font-size:43px}.narration>p:last-child{font-size:11px;max-width:450px}.transport{bottom:24px}.play{min-width:42px;width:42px}.play #play-text{display:none}.restart{width:20px}.transport #labels{display:none}.clock{font-size:9px}.orbit-hint{top:150px;font-size:9px;right:22px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}.loader-orbit i{animation:none}}
+.chapters{top:124px;bottom:300px;gap:0;overflow-y:auto;width:168px;scrollbar-width:thin;scrollbar-color:#516777 transparent}
+.chapters button{min-height:27px;padding:6px 0;gap:11px}
+.chapters button b{font-size:10px}
+.chapters button span{font-size:9px}
+.chapters button[aria-current=step]::before{height:13px}
+.narration{max-width:650px;bottom:138px}
+.narration h1{font-size:clamp(34px,3.8vw,58px)}
+.narration>p:last-child{max-width:610px}
+.section-notes{pointer-events:auto;color:#d4b17e;font-size:10px;letter-spacing:.02em;padding:0;margin-top:12px;border-bottom:1px solid #ad8d633c}
+.notes-panel{position:absolute;right:0;top:0;bottom:0;width:min(560px,65vw);z-index:30;background:#f8f7f2;box-shadow:-20px 0 100px #0007;border-left:1px solid #9ab0b54d}
+.notes-panel[hidden]{display:none}
+.notes-bar{height:58px;display:flex;justify-content:space-between;align-items:center;padding:0 25px;background:#eaece4;color:#5b6d69;font-size:10px;letter-spacing:.12em}
+.notes-bar button{font-size:27px;color:#334d4d}
+.notes-panel iframe{border:0;width:100%;height:calc(100% - 58px);display:block;background:#f8f7f2}
+body.reading .top-controls{visibility:hidden}
+#figure-dialog{max-width:1120px;width:94vw;padding:34px 24px 20px;background:#faf9f5;color:#33464a}
+#figure-image{display:block;max-width:100%;max-height:74svh;width:auto;height:auto;margin:auto}
+#figure-caption{font-size:12px;line-height:1.5;color:#4d666c;max-width:900px;margin:18px auto 0}
+.narration>p:not(.eyebrow){font-size:13px;line-height:1.65;color:#adbbc5;max-width:620px;margin:0}
+@media(max-width:1100px){.narration{max-width:510px}.narration h1{font-size:42px}.narration p{font-size:11px;max-width:480px}.chapters{width:132px}.top-controls button,.top-controls a{padding:9px 11px;font-size:10px}}
+@media(max-width:780px){.chapters{top:102px;left:20px;right:20px;bottom:auto;width:auto;flex-direction:row;gap:11px;overflow-x:auto;overflow-y:hidden;max-width:calc(100% - 40px)}.chapters button{flex:0 0 auto}.chapters button b{display:none}.top-controls button,.top-controls a{padding:8px 10px}.brand span:last-child{display:none}.narration{left:25px;bottom:158px;max-width:calc(100% - 50px)}.narration h1{font-size:37px}.narration p{max-width:480px}.notes-panel{width:100%;max-width:560px}}
+/* Display options, toasts and failure states */
+.settings{position:absolute;z-index:30;top:74px;right:36px;width:280px;padding:16px;border:1px solid #a4c0d433;border-radius:8px;background:#081420f2;box-shadow:0 20px 60px #0009;backdrop-filter:blur(15px)}
+.setting{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:12px;color:#c9d6dc}
+.setting select{min-width:130px}
+.setting-note{margin:6px 0 0;font-size:11px;color:#8ea4ae}
+.toast{position:absolute;z-index:40;left:50%;bottom:120px;transform:translateX(-50%);max-width:min(480px,calc(100% - 32px));padding:10px 16px;border:1px solid #a4c0d433;border-radius:6px;background:#0b1a28f2;color:#e1ebef;font-size:13px;box-shadow:0 10px 40px #0008}
+.gl-lost{position:absolute;z-index:45;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:#070e17cc;color:#e1ebef;font-size:15px}
+.gl-lost[hidden]{display:none}
+.gl-lost a{color:#9fd8e8}
+.load-track{width:220px;height:3px;margin-top:16px;border-radius:2px;background:#ffffff14;overflow:hidden}
+.load-track i{display:block;height:100%;width:0;background:#74bcb2;transition:width .2s}
+.load-error{max-width:520px;margin:20px 16px 0;padding:22px 24px;border:1px solid #ff8c8c40;border-radius:10px;background:#101a25;text-align:left}
+.load-error h2{margin:4px 0 8px;font-size:22px}
+.load-error p{font-size:14px!important;font-family:inherit!important;line-height:1.5;color:#c9d6dc}
+.load-error code{display:block;margin:10px 0;padding:10px;border-radius:6px;background:#050b12;color:#bfe7ef;font-size:12px;white-space:pre-wrap;word-break:break-all;user-select:all}
+.load-actions{display:flex;gap:12px;align-items:center;margin-top:14px}
+.load-actions a{color:#9fd8e8;font-size:13px}
+.loader.failed .loader-orbit,.loader.failed .load-track,.loader.failed #load-detail{display:none}
+/* Low tier: solid panels instead of backdrop blur, which is costly on integrated graphics. */
+.low-power .top-controls button,.low-power .top-controls a,.low-power .settings,.low-power dialog,.low-power dialog::backdrop{backdrop-filter:none}
+.low-power .settings{background:#0a1522f0}
+.low-power .top-controls button,.low-power .top-controls a{background:#15222cee}
+/* ---------- Interface: legible type, panels, presenting and every screen size ---------- */
+:root{--gutter:36px;--panel:#081420f2;--edge:#a4c0d433;--text:#e1ebef;--soft:#b4c2cc}
+kbd{display:inline-block;min-width:18px;padding:1px 5px;border:1px solid #a4c0d455;border-bottom-width:2px;border-radius:4px;font:500 11px/1.4 'DM Sans',sans-serif;color:#d6e2e7;text-align:center;background:#ffffff0d}
+.l{display:block}
+/* Type floor: 12 px for informative text, 11 px for letter-spaced capitals. */
+.eyebrow{font-size:11px}
+.chapters button b{font-size:12px;opacity:1}
+.chapters button span{font-size:11px}
+.chapters button{color:var(--soft)}
+.narration>p:not(.eyebrow){font-size:14px;color:#c3cfd7;text-shadow:0 1px 10px #040a13}
+.clock{font-size:12px}
+.transport select,.transport button:not(.play):not(.restart){font-size:12px;color:#c0ccd3}
+.orbit-hint{font-size:12px;color:#a1b4bf}
+.top-controls button,.top-controls a{font-size:12px}
+dialog p{font-size:14px}
+.section-notes{font-size:12px}
+.transport #labels[aria-pressed=false]{opacity:1;color:#8fa2ad}
+.transport #labels[aria-pressed=false]{text-decoration:line-through;text-decoration-color:#8fa2ad80}
+/* Scrims keep the chapter list and narration readable over bright molecules. */
+.chapters::before{content:'';position:fixed;z-index:-1;left:0;top:0;bottom:0;width:260px;background:linear-gradient(90deg,#050b14b3,#050b1466 60%,transparent);pointer-events:none}
+.narration::before{inset:-40px -40px -34px -70px;background:radial-gradient(ellipse at 25% 65%,#040a13d9,#040a13a6 45%,transparent 76%)}
+/* The chapter list ends 16 px above the narration, whatever its height, and shows its focus ring. */
+.chapters{top:124px;bottom:calc(154px + var(--narr,220px));padding-left:18px;margin-left:-18px;width:190px}
+.chapters button[aria-current=step]::before{left:-12px}
+.chapter-name,.chapter-pick,.show-text{display:none}
+/* Scrubber: chapter segments, ticks and a hover preview. */
+.ticks{top:15px;height:6px}
+.ticks b{position:absolute;top:1px;height:4px;border-radius:2px}
+.ticks b:nth-of-type(even){background:#ffffff0f}
+.ticks i{width:2px;height:6px;top:0;background:#aababc99}
+.scrub-tip{position:absolute;bottom:30px;transform:translateX(-50%);padding:5px 9px;border-radius:4px;background:#0b1a28f2;border:1px solid var(--edge);color:var(--text);font-size:12px;white-space:nowrap;pointer-events:none}
+.transport .step{font-size:20px;line-height:1;width:30px;height:36px;color:#c0ccd3;border-radius:4px}
+.transport .step:hover,.transport .help:hover,#loop:hover{background:#ffffff12}
+body.playing .transport .step{display:none}
+#loop,.transport .help{padding:9px 6px;border-radius:4px}
+#loop[aria-pressed=true]{color:#f2c997}
+.transport .help{width:30px;border:1px solid #b7cdd533;border-radius:50%;height:30px;padding:0}
+/* Explore: the copy gets out of the way, the title stays readable. */
+body.exploring .narration{opacity:1}
+body.exploring .narration>p:not(.eyebrow),body.exploring .section-notes{display:none}
+body.exploring .narration h1{opacity:.7}
+body.exploring .chapters{opacity:.55}
+/* More menu. */
+.settings{width:320px;max-height:calc(100vh - 100px);overflow:auto;display:flex;flex-direction:column;gap:10px}
+.setting kbd,.setting-buttons kbd{margin-left:6px}
+.setting.check{justify-content:flex-start;align-items:flex-start;gap:10px}
+.setting.check input{margin-top:3px;accent-color:#dcb680}
+.setting small{display:block;color:#8ea4ae;font-size:11px;margin-top:2px}
+.setting select{background:#10202b;color:#d2dde2;border:1px solid #809ca544;border-radius:4px;padding:6px}
+.setting-buttons{display:flex;flex-direction:column;gap:6px;padding-top:8px;border-top:1px solid #ffffff14}
+.setting-buttons button{display:flex;justify-content:space-between;align-items:center;padding:9px 10px;border-radius:5px;text-align:left;font-size:13px;color:#d6e2e7;background:#ffffff08}
+.setting-buttons button:hover{background:#ffffff14}
+.setting.small{font-size:12px;padding-left:4px}
+.shortcut-list{display:grid;grid-template-columns:1fr 1fr;gap:4px 18px;margin:0 0 16px}
+.shortcut-list div{display:flex;gap:10px;align-items:baseline;padding:4px 0;border-bottom:1px solid #ffffff0d}
+.shortcut-list dt{min-width:94px;white-space:nowrap}
+.shortcut-list dd{margin:0;font-size:13px;color:#b9c7cf}
+.shortcut-list small{font-size:11px;color:#8ea4ae}
+dialog#shortcuts{max-width:760px}
+canvas:focus-visible{outline:2px solid var(--accent);outline-offset:-4px}
+/* Reduced motion: no transitions; the loader stands still. */
+body.calm *{transition:none!important;animation:none!important}
+/* Touch: every control has at least a 44 × 44 px hit area. */
+@media(pointer:coarse){.top-controls button,.top-controls a,.transport button,.transport select,.chapters button,.setting-buttons button{min-height:44px}.transport .step,.transport .help,.top-controls #fullscreen{min-width:44px;min-height:44px}.scrubber input{height:44px}.ticks{top:27px}}
+@media(max-width:1100px){:root{--gutter:24px}.chapters{width:150px}}
+/* Up to 780 px wide: chapters are a row of numbered chips with the current name beneath. */
+@media(max-width:780px){:root{--gutter:20px}.chapters{top:74px;left:var(--gutter);right:var(--gutter);bottom:auto;margin:0;padding:0 0 4px;width:auto;max-width:none;flex-direction:row;gap:6px;overflow-x:auto;overflow-y:hidden;-webkit-mask-image:none;mask-image:none}.chapters::before{display:none}.chapters button.ch{flex:0 0 44px;min-height:44px;justify-content:center;border:1px solid #a4c0d455;border-radius:22px;padding:0;color:#c9d5dc}.chapters button.ch span{font-size:12px}.chapters button.ch b{display:none}.chapters button.ch[aria-current=step]{background:#e5bf8d;color:#1b211f;border-color:#e5bf8d}.chapters button.ch[aria-current=step]::before{display:none}.chapter-name{display:block;position:absolute;z-index:4;top:126px;left:var(--gutter);margin:0;font-size:12px;color:#f2c997}}
+/* Phones: title-only labels, compact narration and a slim transcript card. */
+@media(max-width:600px){:root{--gutter:16px}header{padding:calc(12px + env(safe-area-inset-top)) 16px 12px}.top-controls{gap:4px}.narration{left:16px;right:16px;bottom:calc(172px + env(safe-area-inset-bottom));max-width:none}.narration h1{font-size:32px}.narration>p:not(.eyebrow){font-size:13px}.transport{left:16px;right:16px;bottom:calc(12px + env(safe-area-inset-bottom));gap:6px}.transport #labels{display:block}#loop,.transport .help,.clock em,#duration{display:none}.settings{left:16px;right:16px;width:auto}}
+/* Short screens (including 200% zoom on laptops): title only, with a disclosure for the copy. */
+@media(max-height:560px){.narration>p:not(.eyebrow),.section-notes{display:none}body.show-text .narration>p:not(.eyebrow){display:block}.show-text{display:inline-block;pointer-events:auto;margin-top:8px;font-size:12px;color:#d4b17e;border-bottom:1px solid #ad8d633c;padding:0}.narration h1{font-size:clamp(26px,3.2vw,40px)}.chapters{display:none}.chapter-pick{display:block;position:absolute;z-index:4;left:var(--gutter);top:84px}.chapter-pick select{max-width:220px;padding:8px;border:1px solid #809ca544;border-radius:4px;background:#10202bd9;color:#d2dde2;font-size:12px}}
+@media(prefers-contrast:more){.settings,dialog,.top-controls button,.top-controls a{backdrop-filter:none;background:#050b12}.chapters button,.clock{color:#e4ecf0}.narration>p:not(.eyebrow){color:#eef3f5}}
+@media(forced-colors:active){.vignette,.chapters::before,.narration::before{display:none}button,select,.transport select{border:1px solid ButtonText}.chapters button[aria-current=step]{outline:2px solid Highlight}}
+[hidden]{display:none!important}
+.chapters{-webkit-mask-image:linear-gradient(#000 calc(100% - 28px),transparent);mask-image:linear-gradient(#000 calc(100% - 28px),transparent);padding-bottom:18px}
+@media(max-width:780px){.chapters{-webkit-mask-image:none;mask-image:none;padding-bottom:4px}}
+/* Review fixes: layout clearances, legibility, touch, forced colours. */
+@media(max-width:780px){.narration{bottom:calc(103px + var(--card,70px))}}
+@media(max-width:600px){.narration{bottom:calc(96px + var(--card,64px) + env(safe-area-inset-bottom))}}
+@media(min-width:781px) and (max-width:1100px){.narration{max-width:min(510px,calc(100vw - 370px))}}
+@media(pointer:coarse){.close,#notes-close,.section-notes,.restart,#labels{min-height:44px;min-width:44px}}
+@media(max-width:780px){.brand{font-size:10px}}
+@media(forced-colors:active){[aria-pressed=true],[aria-selected=true],.chapters button[aria-current=step]{forced-color-adjust:none;background:Highlight;color:HighlightText;border-color:Highlight}}
+/* Reading pause: a quiet chip in the narration card while playback waits for text to be read. */
+.narration-foot{display:flex;align-items:flex-end;gap:16px;min-height:28px}
+.narration-foot .section-notes{margin-top:0}
+.read-pause{position:relative;visibility:hidden;opacity:0;transition:opacity .25s,visibility 0s .25s;overflow:hidden;pointer-events:auto;display:inline-flex;align-items:center;gap:6px;padding:6px 12px 7px;border:1px solid #e5bf8d55;border-radius:999px;background:#0a1522d9;color:#e9c89b;font-size:12px;letter-spacing:.02em}
+.read-pause b{font-weight:600}
+.read-pause:hover{border-color:#e5bf8daa;color:#f6d7ab}
+.read-pause i{position:absolute;left:0;bottom:0;height:2px;width:calc(var(--p,0)*100%);background:#e5bf8d;transition:width .1s linear}
+.read-pause.on{visibility:visible;opacity:1;transition:opacity .25s}
+@media(forced-colors:active){.read-pause i{forced-color-adjust:none;background:Highlight}}
+/* Phones: the reading chip overlays the end of the footer (the notes link steps aside) so nothing overflows. */
+.narration-foot{max-width:100%;min-width:0}
+.narration-foot .section-notes{min-width:0}
+@media(max-width:600px){.narration-foot{position:relative;min-height:26px}.read-pause{position:absolute;right:0;bottom:0}.narration-foot:has(.read-pause.on) .section-notes{visibility:hidden}}
+/* The canvas always fills the viewport box: its drawing-buffer size (set in px by the renderer) must never
+   widen the page, or a phone that rotates back to portrait stays zoomed out around a too-wide canvas. */
+#viewport{overflow:hidden}
+#viewport canvas{width:100%!important;height:100%!important}
+/* Phones: touch-sized transport controls fit one row only without the step buttons (the chapter chips remain). */
+@media(max-width:600px){.transport .step{display:none}.transport .scrubber{min-width:72px;flex:1 1 72px}}
+/* On narrow screens the narration runs to the gutter, so its scrim must stop at the screen edge. */
+@media(max-width:780px){.narration::before{right:-16px}}
+@media(max-height:560px){.narration-foot{position:relative;min-height:0}.read-pause{position:absolute;right:0;bottom:0}}
+/* The smallest touch phones: the transport fits one row without the clock. */
+@media(max-width:360px){.transport{gap:4px}.transport .scrubber{min-width:40px;flex-basis:40px}.transport .clock{display:none}}
+@media(max-width:600px){.shortcut-list{grid-template-columns:1fr}.shortcut-list dt{white-space:normal}}
+@media(pointer:coarse) and (max-width:900px){.transport .scrubber{min-width:56px}}
+@media(min-width:781px){.orbit-hint{top:112px}}
+/* σ factor subscripts (σ<sub>70</sub>) and Unicode subscripts, set by ../shared/text.mjs. */
+sub{font-size:.72em;vertical-align:-.22em;line-height:0}

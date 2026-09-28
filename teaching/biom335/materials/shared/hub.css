@@ -1,0 +1,61 @@
+/* A hub page (the course's landing page, a chapter's opening page): a full-height hero with a 3D view under its
+   introduction, then titled sections of text columns and cards linking to the pages beyond. Builds on course.css
+   and labels.css. */
+body{background:radial-gradient(1100px 700px at 75% 10%,#12243160,transparent 62%),var(--night)}
+.top{position:absolute;z-index:6;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:22px var(--gutter)}
+.top-links{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+
+.hero{position:relative;height:100svh;min-height:560px;overflow:hidden}
+.hero-view{position:absolute;inset:0}
+.hero-view canvas{display:block;width:100%;height:100%;touch-action:pan-y}
+.hero #annotations{position:absolute}
+.hero::after{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,#070e17e6,#070e1799 30%,transparent 55%),linear-gradient(0deg,var(--night),transparent 22%)}
+.hero-text{position:absolute;z-index:5;left:var(--gutter);bottom:clamp(64px,13vh,140px);max-width:560px}
+.hero-text .display{font-size:clamp(44px,5.6vw,86px);margin:0 0 18px}
+.hero-text .lede{max-width:48ch}
+.hero-hint{position:absolute;z-index:5;right:var(--gutter);bottom:28px;margin:0;font-size:10px;color:#839aa9;pointer-events:none}
+
+.hub{max-width:1360px;margin:0 auto;padding:24px var(--gutter) 110px}
+.section-title{font-family:var(--serif);font-weight:400;font-size:clamp(30px,3.2vw,44px);margin:0 0 24px;letter-spacing:-.01em}
+.differences{border-top:1px solid var(--line);padding-top:28px}
+.columns{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(18px,3vw,42px)}
+.columns .n{display:block;font-size:10px;letter-spacing:.14em;color:var(--accent);margin-bottom:10px}
+.columns h3{font-family:var(--serif);font-weight:400;font-size:26px;margin:0 0 10px}
+.columns p{margin:0;font-size:13px;line-height:1.75;color:#b3c1ca;text-wrap:pretty}
+
+.scenes{margin-top:72px;border-top:1px solid var(--line);padding-top:28px}
+.scene-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.scene-card{position:relative;display:flex;flex-direction:column;min-height:230px;padding:22px 22px 20px;border-radius:var(--radius);border:1px solid #9fb6c01c;background:linear-gradient(180deg,#0f1b27cc,#0b141ecc);color:inherit;text-decoration:none;overflow:hidden;transition:border-color .25s,transform .25s,background .25s}
+.scene-card::before{content:'';position:absolute;right:-60px;top:-60px;width:180px;height:180px;border-radius:50%;background:radial-gradient(closest-side,color-mix(in srgb,var(--c),transparent 78%),transparent);pointer-events:none}
+.scene-card .kicker{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:color-mix(in srgb,var(--c),#fff 30%)}
+.scene-card h3{font-family:var(--serif);font-weight:400;font-size:28px;line-height:1.05;margin:14px 0 10px}
+.scene-card p{margin:0 0 18px;font-size:12px;line-height:1.65;color:#a8b6bf}
+.scene-card .go{margin-top:auto;font-size:11px;color:#d9b882}
+@media(hover:hover){.scene-card:hover{border-color:color-mix(in srgb,var(--c),transparent 55%);background:linear-gradient(180deg,#132230e0,#0c1621e0);transform:translateY(-2px)}}
+
+.load-error{position:fixed;inset:0;z-index:70;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:24px;text-align:center;background:var(--night)}
+.load-error[hidden]{display:none}
+.load-error .display{font-size:40px}
+.load-error p{color:var(--muted);font-size:13px;margin:0}
+.load-error code{font-size:11px;color:#dbe5e8;background:#101a25;border:1px solid var(--line);border-radius:6px;padding:10px 12px;max-width:100%;overflow-x:auto}
+
+@media(max-width:900px){.columns{grid-template-columns:1fr}}
+@media(max-width:780px){
+  .hero::after{background:linear-gradient(0deg,var(--night) 8%,#070e17cc 42%,transparent 70%)}
+  .hero-text{right:var(--gutter);bottom:48px}.hero-text .display{font-size:42px}.hero-hint{display:none}
+}
+@media(max-width:560px){.top{padding:18px 16px}.brand{font-size:7px}.brand-mark{width:32px;height:32px;font-size:20px}}
+
+/* Scroll cue (scroll_cue.mjs): a round glass button centred at the foot of the hero, its chevron bobbing slowly, that
+   glides to the content below. It fades once the visitor scrolls on (unless focused) and returns near the top. Its top
+   stays under the introduction's lowest place on wide screens; on narrow ones, where the introduction spans the
+   hero's foot, the introduction moves up just enough to make room (a 44px cue, tight margins: short phones have
+   little room between the 3D view and the introduction). */
+.scroll-cue{position:absolute;z-index:5;left:0;right:0;bottom:clamp(14px,2.8vh,24px);margin:0 auto;display:grid;place-items:center;width:46px;height:46px;border:1px solid var(--line-2);border-radius:50%;background:#15222c80;color:var(--accent);backdrop-filter:blur(12px);transition:opacity .45s,transform .45s,background .2s,border-color .2s,color .2s}
+.scroll-cue svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;animation:scroll-cue-bob 2.8s ease-in-out infinite}
+@media(hover:hover){.scroll-cue:hover{background:#cfe7e21a;border-color:#bbd6d663;color:#f3cfa1}}
+.scroll-cue:focus-visible{background:#cfe7e21a;border-color:#bbd6d663;color:#f3cfa1}
+.scroll-cue.away:not(:focus-visible){opacity:0;transform:translateY(8px);pointer-events:none}
+@keyframes scroll-cue-bob{0%,100%{transform:translateY(-2px)}50%{transform:translateY(2px)}}
+@media(max-width:780px){.hero:has(.scroll-cue) .hero-text{bottom:70px}.scroll-cue{width:44px;height:44px;bottom:12px}}
+@media(prefers-reduced-motion:reduce){.scroll-cue svg{animation:none}}

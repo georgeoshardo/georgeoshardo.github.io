@@ -1,0 +1,1916 @@
+{
+ "sets": [
+  {
+   "out": "assets/polymerases",
+   "center": "pol2",
+   "structures": [
+    {
+     "id": "pol2",
+     "file": "source/polymerases/9QEB.cif.gz",
+     "source": "9QEB",
+     "parts": [
+      {
+       "name": "Rpb1",
+       "chains": [
+        "A"
+       ],
+       "role": "beta-prime-like"
+      },
+      {
+       "name": "Rpb2",
+       "chains": [
+        "B"
+       ],
+       "role": "beta-like"
+      },
+      {
+       "name": "Rpb3",
+       "chains": [
+        "C"
+       ],
+       "role": "alpha-like"
+      },
+      {
+       "name": "Rpb4",
+       "chains": [
+        "D"
+       ],
+       "role": "specific"
+      },
+      {
+       "name": "Rpb5",
+       "chains": [
+        "E"
+       ],
+       "role": "shared"
+      },
+      {
+       "name": "Rpb6",
+       "chains": [
+        "F"
+       ],
+       "role": "shared"
+      },
+      {
+       "name": "Rpb7",
+       "chains": [
+        "G"
+       ],
+       "role": "specific"
+      },
+      {
+       "name": "Rpb8",
+       "chains": [
+        "H"
+       ],
+       "role": "shared"
+      },
+      {
+       "name": "Rpb9",
+       "chains": [
+        "I"
+       ],
+       "role": "specific"
+      },
+      {
+       "name": "Rpb10",
+       "chains": [
+        "J"
+       ],
+       "role": "shared"
+      },
+      {
+       "name": "Rpb11",
+       "chains": [
+        "K"
+       ],
+       "role": "alpha-like"
+      },
+      {
+       "name": "Rpb12",
+       "chains": [
+        "L"
+       ],
+       "role": "shared"
+      }
+     ],
+     "strands": [
+      {
+       "name": "template",
+       "chain": "T"
+      },
+      {
+       "name": "non-template",
+       "chain": "N"
+      },
+      {
+       "name": "RNA",
+       "chain": "R"
+      }
+     ],
+     "points": [
+      {
+       "name": "rpb1-end",
+       "chain": "A",
+       "residue": 1454
+      }
+     ]
+    },
+    {
+     "id": "pol1",
+     "file": "source/polymerases/6HKO.cif.gz",
+     "source": "6HKO",
+     "parts": [
+      {
+       "name": "A190",
+       "chains": [
+        "A"
+       ],
+       "role": "beta-prime-like"
+      },
+      {
+       "name": "A135",
+       "chains": [
+        "B"
+       ],
+       "role": "beta-like"
+      },
+      {
+       "name": "AC40",
+       "chains": [
+        "C"
+       ],
+       "role": "alpha-like"
+      },
+      {
+       "name": "A14",
+       "chains": [
+        "D"
+       ],
+       "role": "specific"
+      },
+      {
+       "name": "Rpb5",
+       "chains": [
+        "E"
+       ],
+       "role": "shared"
+      },
+      {
+       "name": "Rpb6",
+       "chains": [
+        "F"
+       ],
+       "role": "shared"
+      },
+      {
+       "name": "A43",
+       "chains": [
+        "G"
+       ],
+       "role": "specific"
+      },
+      {
+       "name": "Rpb8",
+       "chains": [
+        "H"
+       ],
+       "role": "shared"
+      },
+      {
+       "name": "A12.2",
+       "chains": [
+        "I"
+       ],
+       "role": "specific"
+      },
+      {
+       "name": "Rpb10",
+       "chains": [
+        "J"
+       ],
+       "role": "shared"
+      },
+      {
+       "name": "AC19",
+       "chains": [
+        "K"
+       ],
+       "role": "alpha-like"
+      },
+      {
+       "name": "Rpb12",
+       "chains": [
+        "L"
+       ],
+       "role": "shared"
+      },
+      {
+       "name": "A49",
+       "chains": [
+        "M"
+       ],
+       "role": "specific"
+      },
+      {
+       "name": "A34.5",
+       "chains": [
+        "N"
+       ],
+       "role": "specific"
+      }
+     ],
+     "align": {
+      "to": "pol2",
+      "pairs": [
+       [
+        "E",
+        "E"
+       ],
+       [
+        "F",
+        "F"
+       ],
+       [
+        "H",
+        "H"
+       ],
+       [
+        "J",
+        "J"
+       ],
+       [
+        "L",
+        "L"
+       ]
+      ]
+     }
+    },
+    {
+     "id": "pol3",
+     "file": "source/polymerases/7Z1M.cif.gz",
+     "source": "7Z1M",
+     "parts": [
+      {
+       "name": "C160",
+       "chains": [
+        "A"
+       ],
+       "role": "beta-prime-like"
+      },
+      {
+       "name": "C128",
+       "chains": [
+        "B"
+       ],
+       "role": "beta-like"
+      },
+      {
+       "name": "AC40",
+       "chains": [
+        "C"
+       ],
+       "role": "alpha-like"
+      },
+      {
+       "name": "C17",
+       "chains": [
+        "D"
+       ],
+       "role": "specific"
+      },
+      {
+       "name": "Rpb5",
+       "chains": [
+        "E"
+       ],
+       "role": "shared"
+      },
+      {
+       "name": "Rpb6",
+       "chains": [
+        "F"
+       ],
+       "role": "shared"
+      },
+      {
+       "name": "C25",
+       "chains": [
+        "G"
+       ],
+       "role": "specific"
+      },
+      {
+       "name": "Rpb8",
+       "chains": [
+        "H"
+       ],
+       "role": "shared"
+      },
+      {
+       "name": "C11",
+       "chains": [
+        "I"
+       ],
+       "role": "specific"
+      },
+      {
+       "name": "Rpb10",
+       "chains": [
+        "J"
+       ],
+       "role": "shared"
+      },
+      {
+       "name": "AC19",
+       "chains": [
+        "K"
+       ],
+       "role": "alpha-like"
+      },
+      {
+       "name": "Rpb12",
+       "chains": [
+        "L"
+       ],
+       "role": "shared"
+      },
+      {
+       "name": "C37",
+       "chains": [
+        "M"
+       ],
+       "role": "specific"
+      },
+      {
+       "name": "C53",
+       "chains": [
+        "N"
+       ],
+       "role": "specific"
+      },
+      {
+       "name": "C82",
+       "chains": [
+        "O"
+       ],
+       "role": "specific"
+      },
+      {
+       "name": "C34",
+       "chains": [
+        "P"
+       ],
+       "role": "specific"
+      },
+      {
+       "name": "C31",
+       "chains": [
+        "Q"
+       ],
+       "role": "specific"
+      }
+     ],
+     "align": {
+      "to": "pol2",
+      "pairs": [
+       [
+        "E",
+        "E"
+       ],
+       [
+        "F",
+        "F"
+       ],
+       [
+        "H",
+        "H"
+       ],
+       [
+        "J",
+        "J"
+       ],
+       [
+        "L",
+        "L"
+       ]
+      ]
+     }
+    },
+    {
+     "id": "bacteria",
+     "file": "../transcription_3d/source/8E6X.pdb",
+     "source": "8E6X",
+     "parts": [
+      {
+       "name": "β",
+       "chains": [
+        "A"
+       ],
+       "role": "beta-like"
+      },
+      {
+       "name": "β′",
+       "chains": [
+        "B"
+       ],
+       "role": "beta-prime-like"
+      },
+      {
+       "name": "α I",
+       "chains": [
+        "C"
+       ],
+       "role": "alpha-like"
+      },
+      {
+       "name": "α II",
+       "chains": [
+        "D"
+       ],
+       "role": "alpha-like"
+      },
+      {
+       "name": "ω",
+       "chains": [
+        "E"
+       ],
+       "role": "specific"
+      }
+     ],
+     "align": {
+      "to": "pol2",
+      "hybrid": {
+       "rna": "7",
+       "dna": [
+        "5",
+        "6"
+       ],
+       "to_rna": "R",
+       "to_dna": [
+        "T",
+        "N"
+       ],
+       "n": 8
+      }
+     }
+    },
+    {
+     "id": "sigma70",
+     "file": "../transcription_3d/source/4YLN.pdb",
+     "source": "4YLN",
+     "parts": [
+      {
+       "name": "σ70",
+       "chains": [
+        "F"
+       ],
+       "role": "sigma"
+      }
+     ],
+     "align": {
+      "to": "bacteria",
+      "pairs": [
+       [
+        "C",
+        "A"
+       ],
+       [
+        "D",
+        "B"
+       ]
+      ]
+     }
+    }
+   ],
+   "quantise": true,
+   "citations": {
+    "9QEB": "Li Q et al. Sub-2 Å cryo-EM structures of transcribing RNA polymerase II. Mol Cell 86 (2026). doi:10.1016/j.molcel.2026.04.007",
+    "6HKO": "Tafur L et al. The cryo-EM structure of a 12-subunit variant of RNA polymerase I. eLife 8, e43204 (2019). doi:10.7554/eLife.43204",
+    "7Z1M": "Girbig M et al. Architecture of the yeast Pol III pre-termination complex. Cell Rep 40, 111316 (2022). doi:10.1016/j.celrep.2022.111316",
+    "8E6X": "Molodtsov V et al. Structural basis of Rho-dependent transcription termination. Nature 614, 367–374 (2023). doi:10.1038/s41586-022-05658-1",
+    "4YLN": "Zuo Y, Steitz TA. Crystal structures of the E. coli transcription initiation complexes. Mol Cell 58, 534–540 (2015). doi:10.1016/j.molcel.2015.03.010"
+   },
+   "decimate": 0.5
+  },
+  {
+   "out": "assets/tbp",
+   "quantise": true,
+   "citations": {
+    "1C9B": "Tsai FT, Sigler PB. Structural basis of preinitiation complex assembly on human Pol II promoters. EMBO J 19, 25–36 (2000). doi:10.1093/emboj/19.1.25"
+   },
+   "structures": [
+    {
+     "id": "tbp",
+     "file": "source/initiation/1C9B.pdb.gz",
+     "source": "1C9B",
+     "parts": [
+      {
+       "name": "TBP",
+       "chains": [
+        "B"
+       ],
+       "role": "tbp"
+      }
+     ],
+     "strands": [
+      {
+       "name": "TATA strand",
+       "chain": "C"
+      },
+      {
+       "name": "complementary strand",
+       "chain": "D"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "out": "assets/library",
+   "quantise": true,
+   "decimate": 0.5,
+   "center": "pic",
+   "citations": {
+    "7EGB": "Chen X et al. Structural insights into preinitiation complex assembly on core promoters. Science 372, eaba8490 (2021). doi:10.1126/science.aba8490",
+    "5O7X": "Engel C et al. Structural basis of RNA polymerase I transcription initiation. Cell 169, 120–131 (2017). doi:10.1016/j.cell.2017.03.003",
+    "AF-P17480-F1": "AlphaFold DB model of UBF (UniProt P17480), residues 20–659. Jumper J et al. Nature 596, 583–589 (2021); Varadi M et al. Nucleic Acids Res 52, D368–D375 (2024). CC BY 4.0",
+    "8FFZ": "Talyzina A et al. Structural basis of TFIIIC-dependent RNA polymerase III transcription initiation. Mol Cell 83, 2641 (2023). doi:10.1016/j.molcel.2023.06.015",
+    "6F44": "Vorländer MK et al. Molecular mechanism of promoter opening by RNA polymerase III. Nature 553, 295–300 (2018). doi:10.1038/nature25440",
+    "1KX5": "Davey CA et al. Solvent mediated interactions in the structure of the nucleosome core particle at 1.9 Å resolution. J Mol Biol 319, 1097–1113 (2002). doi:10.1016/S0022-2836(02)00386-8",
+    "6X9I": "Pappalardi MB et al. Discovery of a first-in-class reversible DNMT1-selective inhibitor. Nat Cancer 2, 1002–1017 (2021)",
+    "5YX2": "Zhang ZM et al. Structural basis for DNMT3A-mediated de novo DNA methylation. Nature 554, 387–391 (2018). doi:10.1038/nature25477",
+    "4NM6": "Hu L et al. Crystal structure of TET2-DNA complex: insight into TET-mediated 5mC oxidation. Cell 155, 1545–1555 (2013). doi:10.1016/j.cell.2013.11.020"
+   },
+   "structures": [
+    {
+     "id": "pic",
+     "file": "source/initiation/7EGB.cif.gz",
+     "source": "7EGB",
+     "parts": [
+      {
+       "name": "TBP",
+       "chains": [
+        "P"
+       ],
+       "role": "tbp"
+      },
+      {
+       "name": "TAF1",
+       "chains": [
+        "A"
+       ],
+       "role": "tfiid"
+      },
+      {
+       "name": "TAF2",
+       "chains": [
+        "B"
+       ],
+       "role": "tfiid"
+      },
+      {
+       "name": "TAF3",
+       "chains": [
+        "c"
+       ],
+       "role": "tfiid"
+      },
+      {
+       "name": "TAF4",
+       "chains": [
+        "D",
+        "d"
+       ],
+       "role": "tfiid"
+      },
+      {
+       "name": "TAF5",
+       "chains": [
+        "E",
+        "e"
+       ],
+       "role": "tfiid"
+      },
+      {
+       "name": "TAF6",
+       "chains": [
+        "F",
+        "f"
+       ],
+       "role": "tfiid"
+      },
+      {
+       "name": "TAF7",
+       "chains": [
+        "G"
+       ],
+       "role": "tfiid"
+      },
+      {
+       "name": "TAF8",
+       "chains": [
+        "H"
+       ],
+       "role": "tfiid"
+      },
+      {
+       "name": "TAF9",
+       "chains": [
+        "I",
+        "i"
+       ],
+       "role": "tfiid"
+      },
+      {
+       "name": "TAF10",
+       "chains": [
+        "J",
+        "j"
+       ],
+       "role": "tfiid"
+      },
+      {
+       "name": "TAF11",
+       "chains": [
+        "k"
+       ],
+       "role": "tfiid"
+      },
+      {
+       "name": "TAF12",
+       "chains": [
+        "L",
+        "l"
+       ],
+       "role": "tfiid"
+      },
+      {
+       "name": "TAF13",
+       "chains": [
+        "m"
+       ],
+       "role": "tfiid"
+      },
+      {
+       "name": "TFIIA",
+       "chains": [
+        "Q",
+        "O"
+       ],
+       "role": "tfiia"
+      },
+      {
+       "name": "TFIIB",
+       "chains": [
+        "R"
+       ],
+       "role": "tfiib"
+      },
+      {
+       "name": "RAP74",
+       "chains": [
+        "S"
+       ],
+       "role": "tfiif"
+      },
+      {
+       "name": "RAP30",
+       "chains": [
+        "T"
+       ],
+       "role": "tfiif"
+      },
+      {
+       "name": "TFIIEα",
+       "chains": [
+        "U"
+       ],
+       "role": "tfiie"
+      },
+      {
+       "name": "TFIIEβ",
+       "chains": [
+        "V"
+       ],
+       "role": "tfiie"
+      },
+      {
+       "name": "XPB",
+       "chains": [
+        "6"
+       ],
+       "role": "tfiih"
+      },
+      {
+       "name": "XPD",
+       "chains": [
+        "7"
+       ],
+       "role": "tfiih"
+      },
+      {
+       "name": "p62",
+       "chains": [
+        "1"
+       ],
+       "role": "tfiih"
+      },
+      {
+       "name": "p52",
+       "chains": [
+        "4"
+       ],
+       "role": "tfiih"
+      },
+      {
+       "name": "p44",
+       "chains": [
+        "2"
+       ],
+       "role": "tfiih"
+      },
+      {
+       "name": "p34",
+       "chains": [
+        "3"
+       ],
+       "role": "tfiih"
+      },
+      {
+       "name": "p8",
+       "chains": [
+        "5"
+       ],
+       "role": "tfiih"
+      },
+      {
+       "name": "CDK7",
+       "chains": [
+        "8"
+       ],
+       "role": "cak"
+      },
+      {
+       "name": "Cyclin H",
+       "chains": [
+        "9"
+       ],
+       "role": "cak"
+      },
+      {
+       "name": "MAT1",
+       "chains": [
+        "0"
+       ],
+       "role": "cak"
+      },
+      {
+       "name": "RNAP II",
+       "chains": [
+        "o",
+        "p",
+        "q",
+        "r",
+        "s",
+        "t",
+        "u",
+        "v",
+        "w",
+        "x",
+        "y",
+        "z"
+       ],
+       "role": "rnap",
+       "decimate": 0.8
+      },
+      {
+       "name": "Promoter DNA",
+       "chains": [
+        "X",
+        "Y"
+       ],
+       "role": "dna"
+      }
+     ]
+    },
+    {
+     "id": "coreFactor",
+     "file": "source/library/5O7X.cif.gz",
+     "source": "5O7X",
+     "parts": [
+      {
+       "name": "Rrn6",
+       "chains": [
+        "A"
+       ],
+       "role": "sl1"
+      },
+      {
+       "name": "Rrn7",
+       "chains": [
+        "B"
+       ],
+       "role": "sl1"
+      },
+      {
+       "name": "Rrn11",
+       "chains": [
+        "C"
+       ],
+       "role": "sl1"
+      }
+     ]
+    },
+    {
+     "id": "ubf",
+     "file": "source/initiation/AF-P17480-F1-model_v6.pdb.gz",
+     "source": "AF-P17480-F1",
+     "parts": [
+      {
+       "name": "UBF",
+       "chains": [
+        "A"
+       ],
+       "role": "ubf",
+       "residues": [
+        20,
+        659
+       ]
+      }
+     ]
+    },
+    {
+     "id": "fiveS",
+     "file": "source/initiation/8FFZ.cif.gz",
+     "source": "8FFZ",
+     "parts": [
+      {
+       "name": "TFIIIA",
+       "chains": [
+        "A"
+       ],
+       "role": "tfiiia"
+      },
+      {
+       "name": "τ131",
+       "chains": [
+        "C"
+       ],
+       "role": "tfiiic"
+      },
+      {
+       "name": "τ95",
+       "chains": [
+        "D"
+       ],
+       "role": "tfiiic"
+      },
+      {
+       "name": "τ55",
+       "chains": [
+        "G"
+       ],
+       "role": "tfiiic"
+      },
+      {
+       "name": "τ138",
+       "chains": [
+        "B"
+       ],
+       "role": "tfiiic"
+      },
+      {
+       "name": "τ91",
+       "chains": [
+        "E"
+       ],
+       "role": "tfiiic"
+      },
+      {
+       "name": "τ60",
+       "chains": [
+        "F"
+       ],
+       "role": "tfiiic"
+      },
+      {
+       "name": "Brf1",
+       "chains": [
+        "H"
+       ],
+       "role": "tfiiib",
+       "residues": [
+        [
+         1,
+         382
+        ],
+        [
+         579,
+         736
+        ]
+       ]
+      },
+      {
+       "name": "TBP",
+       "chains": [
+        "H"
+       ],
+       "role": "tbp",
+       "residues": [
+        387,
+        566
+       ]
+      },
+      {
+       "name": "5S rRNA gene",
+       "chains": [
+        "I",
+        "J"
+       ],
+       "role": "dna"
+      }
+     ]
+    },
+    {
+     "id": "pol3pic",
+     "file": "source/initiation/6F44.cif.gz",
+     "source": "6F44",
+     "parts": [
+      {
+       "name": "TBP",
+       "chains": [
+        "U"
+       ],
+       "role": "tbp"
+      },
+      {
+       "name": "Brf1",
+       "chains": [
+        "V"
+       ],
+       "role": "tfiiib"
+      },
+      {
+       "name": "Bdp1",
+       "chains": [
+        "W"
+       ],
+       "role": "tfiiib"
+      },
+      {
+       "name": "RNAP III",
+       "chains": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F",
+        "G",
+        "H",
+        "I",
+        "J",
+        "K",
+        "L",
+        "M",
+        "N",
+        "O",
+        "P",
+        "Q"
+       ],
+       "role": "rnap",
+       "decimate": 0.8
+      },
+      {
+       "name": "Promoter DNA",
+       "chains": [
+        "X",
+        "Y"
+       ],
+       "role": "dna"
+      }
+     ]
+    },
+    {
+     "id": "nucleosome",
+     "file": "source/library/1KX5.cif.gz",
+     "source": "1KX5",
+     "parts": [
+      {
+       "name": "H3",
+       "chains": [
+        "A",
+        "E"
+       ],
+       "role": "histone"
+      },
+      {
+       "name": "H4",
+       "chains": [
+        "B",
+        "F"
+       ],
+       "role": "histone"
+      },
+      {
+       "name": "H2A",
+       "chains": [
+        "C",
+        "G"
+       ],
+       "role": "histone"
+      },
+      {
+       "name": "H2B",
+       "chains": [
+        "D",
+        "H"
+       ],
+       "role": "histone"
+      },
+      {
+       "name": "DNA",
+       "chains": [
+        "I",
+        "J"
+       ],
+       "role": "dna"
+      }
+     ]
+    },
+    {
+     "id": "dnmt1",
+     "file": "source/library/6X9I.cif.gz",
+     "source": "6X9I",
+     "parts": [
+      {
+       "name": "DNMT1",
+       "chains": [
+        "A"
+       ],
+       "role": "dnmt"
+      },
+      {
+       "name": "DNA",
+       "chains": [
+        "C",
+        "D"
+       ],
+       "role": "dna"
+      }
+     ]
+    },
+    {
+     "id": "dnmt3a",
+     "file": "source/library/5YX2.cif.gz",
+     "source": "5YX2",
+     "parts": [
+      {
+       "name": "DNMT3A",
+       "chains": [
+        "A",
+        "D"
+       ],
+       "role": "dnmt"
+      },
+      {
+       "name": "DNMT3L",
+       "chains": [
+        "B",
+        "C"
+       ],
+       "role": "dnmt"
+      },
+      {
+       "name": "DNA",
+       "chains": [
+        "E",
+        "F"
+       ],
+       "role": "dna"
+      }
+     ]
+    },
+    {
+     "id": "tet2",
+     "file": "source/library/4NM6.cif.gz",
+     "source": "4NM6",
+     "parts": [
+      {
+       "name": "TET2",
+       "chains": [
+        "A"
+       ],
+       "role": "tet"
+      },
+      {
+       "name": "DNA",
+       "chains": [
+        "B",
+        "C"
+       ],
+       "role": "dna"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "out": "assets/hub",
+   "quantise": true,
+   "decimate": 0.9,
+   "center": "pol2",
+   "citations": {
+    "9QEB": "Li Q et al. Sub-2 Å cryo-EM structures of transcribing RNA polymerase II. Mol Cell 86 (2026). doi:10.1016/j.molcel.2026.04.007",
+    "6HKO": "Tafur L et al. The cryo-EM structure of a 12-subunit variant of RNA polymerase I. eLife 8, e43204 (2019). doi:10.7554/eLife.43204",
+    "7Z1M": "Girbig M et al. Architecture of the yeast Pol III pre-termination complex. Cell Rep 40, 111316 (2022). doi:10.1016/j.celrep.2022.111316"
+   },
+   "structures": [
+    {
+     "id": "pol2",
+     "file": "source/polymerases/9QEB.cif.gz",
+     "source": "9QEB",
+     "parts": [
+      {
+       "name": "RNAP II",
+       "chains": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F",
+        "G",
+        "H",
+        "I",
+        "J",
+        "K",
+        "L"
+       ]
+      }
+     ]
+    },
+    {
+     "id": "pol1",
+     "file": "source/polymerases/6HKO.cif.gz",
+     "source": "6HKO",
+     "parts": [
+      {
+       "name": "RNAP I",
+       "chains": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F",
+        "G",
+        "H",
+        "I",
+        "J",
+        "K",
+        "L",
+        "M",
+        "N"
+       ]
+      }
+     ],
+     "align": {
+      "to": "pol2",
+      "pairs": [
+       [
+        "E",
+        "E"
+       ],
+       [
+        "F",
+        "F"
+       ],
+       [
+        "H",
+        "H"
+       ],
+       [
+        "J",
+        "J"
+       ],
+       [
+        "L",
+        "L"
+       ]
+      ]
+     }
+    },
+    {
+     "id": "pol3",
+     "file": "source/polymerases/7Z1M.cif.gz",
+     "source": "7Z1M",
+     "parts": [
+      {
+       "name": "RNAP III",
+       "chains": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F",
+        "G",
+        "H",
+        "I",
+        "J",
+        "K",
+        "L",
+        "M",
+        "N",
+        "O",
+        "P",
+        "Q"
+       ]
+      }
+     ],
+     "align": {
+      "to": "pol2",
+      "pairs": [
+       [
+        "E",
+        "E"
+       ],
+       [
+        "F",
+        "F"
+       ],
+       [
+        "H",
+        "H"
+       ],
+       [
+        "J",
+        "J"
+       ],
+       [
+        "L",
+        "L"
+       ]
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "out": "assets/enhancer",
+   "quantise": true,
+   "decimate": 0.5,
+   "center": "pic",
+   "citations": {
+    "7ENC": "Chen X et al. Structures of the human Mediator and Mediator-bound preinitiation complex. Science 372, eabg0635 (2021). doi:10.1126/science.abg0635",
+    "2O61": "Panne D, Maniatis T, Harrison SC. An atomic model of the interferon-β enhanceosome. Cell 129, 1111–1123 (2007). doi:10.1016/j.cell.2007.05.019",
+    "1T2K": "Panne D, Maniatis T, Harrison SC. Crystal structure of ATF-2/c-Jun and IRF-3 bound to the interferon-β enhancer. EMBO J 23, 4384–4393 (2004). doi:10.1038/sj.emboj.7600453",
+    "2LEF": "Love JJ et al. Structural basis for DNA bending by the architectural transcription factor LEF-1. Nature 376, 791–795 (1995). doi:10.1038/376791a0",
+    "4AWL": "Nardini M et al. Sequence-specific transcription factor NF-Y displays histone-like DNA binding and H2B-like ubiquitination. Cell 152, 132–143 (2013). doi:10.1016/j.cell.2012.11.047",
+    "1KX5": "Davey CA et al. Solvent mediated interactions in the structure of the nucleosome core particle at 1.9 Å resolution. J Mol Biol 319, 1097–1113 (2002). doi:10.1016/S0022-2836(02)00386-8",
+    "6GMH": "Vos SM, Farnung L, Boehning M et al. Structure of activated transcription complex Pol II–DSIF–PAF–SPT6. Nature 560, 607–612 (2018). doi:10.1038/s41586-018-0440-4"
+   },
+   "structures": [
+    {
+     "id": "pic",
+     "file": "source/enhancers/7ENC.cif.gz",
+     "source": "7ENC",
+     "parts": [
+      {
+       "name": "RNAP II",
+       "chains": [
+        "PA",
+        "PB",
+        "PC",
+        "PD",
+        "PE",
+        "PF",
+        "PG",
+        "PH",
+        "PI",
+        "PJ",
+        "PK",
+        "PL"
+       ],
+       "role": "rnap",
+       "decimate": 0.8
+      },
+      {
+       "name": "TFIID",
+       "chains": [
+        "DA",
+        "DB",
+        "Dc",
+        "DD",
+        "Dd",
+        "DE",
+        "De",
+        "DF",
+        "Df",
+        "DG",
+        "DH",
+        "DI",
+        "Di",
+        "DJ",
+        "Dj",
+        "Dk",
+        "DL",
+        "Dl",
+        "Dm"
+       ],
+       "role": "tfiid",
+       "decimate": 0.8
+      },
+      {
+       "name": "TBP",
+       "chains": [
+        "DP"
+       ],
+       "role": "tbp"
+      },
+      {
+       "name": "TFIIA",
+       "chains": [
+        "DO",
+        "DQ"
+       ],
+       "role": "gtf"
+      },
+      {
+       "name": "TFIIB",
+       "chains": [
+        "BA"
+       ],
+       "role": "gtf"
+      },
+      {
+       "name": "TFIIF",
+       "chains": [
+        "FA",
+        "FB"
+       ],
+       "role": "gtf"
+      },
+      {
+       "name": "TFIIE",
+       "chains": [
+        "EA",
+        "EB"
+       ],
+       "role": "gtf"
+      },
+      {
+       "name": "TFIIH",
+       "chains": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7"
+       ],
+       "role": "tfiih",
+       "decimate": 0.8
+      },
+      {
+       "name": "CAK",
+       "chains": [
+        "0",
+        "8",
+        "9"
+       ],
+       "role": "tfiih",
+       "decimate": 0.7
+      },
+      {
+       "name": "Mediator head",
+       "chains": [
+        "f",
+        "h",
+        "k",
+        "q",
+        "r",
+        "t",
+        "v",
+        "c",
+        "e",
+        "b",
+        "l"
+       ],
+       "role": "mediator",
+       "decimate": 0.8
+      },
+      {
+       "name": "Mediator middle",
+       "chains": [
+        "a",
+        "d",
+        "g",
+        "i",
+        "j",
+        "s",
+        "u",
+        "z",
+        "m",
+        "n"
+       ],
+       "role": "mediator",
+       "decimate": 0.8
+      },
+      {
+       "name": "Mediator tail",
+       "chains": [
+        "o",
+        "p",
+        "w",
+        "x"
+       ],
+       "role": "mediator",
+       "decimate": 0.8
+      }
+     ],
+     "strands": [
+      {
+       "name": "non-template",
+       "chain": "X"
+      },
+      {
+       "name": "template",
+       "chain": "Y"
+      }
+     ]
+    },
+    {
+     "id": "enh",
+     "file": "source/enhancers/2O61.cif.gz",
+     "source": "2O61",
+     "parts": [
+      {
+       "name": "p65",
+       "chains": [
+        "A"
+       ],
+       "role": "activator",
+       "residues": [
+        19,
+        291
+       ]
+      },
+      {
+       "name": "IRF-7",
+       "chains": [
+        "A"
+       ],
+       "role": "activator",
+       "residues": [
+        1008,
+        1132
+       ]
+      },
+      {
+       "name": "IRF-3 (2O61)",
+       "chains": [
+        "A"
+       ],
+       "role": "activator",
+       "residues": [
+        2009,
+        2111
+       ]
+      },
+      {
+       "name": "p50",
+       "chains": [
+        "B"
+       ],
+       "role": "activator"
+      }
+     ],
+     "strands": [
+      {
+       "name": "top",
+       "chain": "E"
+      },
+      {
+       "name": "bottom",
+       "chain": "F"
+      }
+     ]
+    },
+    {
+     "id": "enh2",
+     "file": "source/enhancers/1T2K.cif.gz",
+     "source": "1T2K",
+     "parts": [
+      {
+       "name": "IRF-3 a",
+       "chains": [
+        "A"
+       ],
+       "role": "activator"
+      },
+      {
+       "name": "IRF-3 b",
+       "chains": [
+        "B"
+       ],
+       "role": "activator"
+      },
+      {
+       "name": "c-Jun",
+       "chains": [
+        "C"
+       ],
+       "role": "activator"
+      },
+      {
+       "name": "ATF-2",
+       "chains": [
+        "D"
+       ],
+       "role": "activator"
+      }
+     ],
+     "strands": [
+      {
+       "name": "top",
+       "chain": "E"
+      },
+      {
+       "name": "bottom",
+       "chain": "F"
+      }
+     ],
+     "align": {
+      "to": "enh",
+      "nucleic": [
+       [
+        "E",
+        "E",
+        17
+       ],
+       [
+        "F",
+        "F",
+        -21
+       ]
+      ]
+     }
+    },
+    {
+     "id": "hmg",
+     "file": "source/enhancers/2LEF.cif.gz",
+     "source": "2LEF",
+     "parts": [
+      {
+       "name": "LEF-1",
+       "chains": [
+        "A"
+       ],
+       "role": "architectural"
+      }
+     ],
+     "strands": [
+      {
+       "name": "top",
+       "chain": "B"
+      },
+      {
+       "name": "bottom",
+       "chain": "C"
+      }
+     ]
+    },
+    {
+     "id": "nfy",
+     "file": "source/enhancers/4AWL.cif.gz",
+     "source": "4AWL",
+     "parts": [
+      {
+       "name": "NF-YA",
+       "chains": [
+        "A"
+       ],
+       "role": "ccaat"
+      },
+      {
+       "name": "NF-YB",
+       "chains": [
+        "B"
+       ],
+       "role": "ccaat"
+      },
+      {
+       "name": "NF-YC",
+       "chains": [
+        "C"
+       ],
+       "role": "ccaat"
+      }
+     ],
+     "strands": [
+      {
+       "name": "top",
+       "chain": "I"
+      },
+      {
+       "name": "bottom",
+       "chain": "J"
+      }
+     ]
+    },
+    {
+     "id": "nucleosome",
+     "file": "source/library/1KX5.cif.gz",
+     "source": "1KX5",
+     "parts": [
+      {
+       "name": "Histones",
+       "chains": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F",
+        "G",
+        "H"
+       ],
+       "role": "histone",
+       "decimate": 0.8
+      },
+      {
+       "name": "DNA",
+       "chains": [
+        "I",
+        "J"
+       ],
+       "role": "dna",
+       "decimate": 0.8
+      }
+     ],
+     "strands": [
+      {
+       "name": "top",
+       "chain": "I"
+      },
+      {
+       "name": "bottom",
+       "chain": "J"
+      }
+     ]
+    },
+    {
+     "id": "ec",
+     "file": "source/enhancers/6GMH.cif.gz",
+     "source": "6GMH",
+     "parts": [],
+     "strands": [
+      {
+       "name": "template",
+       "chain": "T"
+      },
+      {
+       "name": "non-template",
+       "chain": "N"
+      },
+      {
+       "name": "RNA",
+       "chain": "P"
+      }
+     ],
+     "align": {
+      "to": "pic",
+      "pairs": [
+       [
+        "A",
+        "PA"
+       ],
+       [
+        "B",
+        "PB"
+       ],
+       [
+        "C",
+        "PC"
+       ],
+       [
+        "D",
+        "PD"
+       ],
+       [
+        "E",
+        "PE"
+       ],
+       [
+        "F",
+        "PF"
+       ],
+       [
+        "G",
+        "PG"
+       ],
+       [
+        "H",
+        "PH"
+       ],
+       [
+        "I",
+        "PI"
+       ],
+       [
+        "J",
+        "PJ"
+       ],
+       [
+        "K",
+        "PK"
+       ],
+       [
+        "L",
+        "PL"
+       ]
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "out": "assets/methylation",
+   "quantise": true,
+   "decimate": 0.5,
+   "center": "dnmt1",
+   "citations": {
+    "9QEB": "Li Q et al. Sub-2 Å cryo-EM structures of transcribing RNA polymerase II. Mol Cell 86 (2026). doi:10.1016/j.molcel.2026.04.007",
+    "6X9I": "Pappalardi MB et al. Discovery of a first-in-class reversible DNMT1-selective inhibitor. Nat Cancer 2, 1002–1017 (2021)",
+    "5YX2": "Zhang ZM et al. Structural basis for DNMT3A-mediated de novo DNA methylation. Nature 554, 387–391 (2018). doi:10.1038/nature25477",
+    "4NM6": "Hu L et al. Crystal structure of TET2-DNA complex: insight into TET-mediated 5mC oxidation. Cell 155, 1545–1555 (2013). doi:10.1016/j.cell.2013.11.020",
+    "1DH3": "Schumacher MA, Goodman RH, Brennan RG. The structure of a CREB bZIP·somatostatin CRE complex. J Biol Chem 275, 35242–35247 (2000). doi:10.1074/jbc.M007293200",
+    "1C9B": "Tsai FT, Sigler PB. Structural basis of preinitiation complex assembly on human Pol II promoters. EMBO J 19, 25–36 (2000). doi:10.1093/emboj/19.1.25"
+   },
+   "structures": [
+    {
+     "id": "bdna",
+     "file": "source/polymerases/9QEB.cif.gz",
+     "source": "9QEB",
+     "parts": [],
+     "strands": [
+      {
+       "name": "template",
+       "chain": "T"
+      },
+      {
+       "name": "non-template",
+       "chain": "N"
+      }
+     ]
+    },
+    {
+     "id": "dnmt1",
+     "file": "source/library/6X9I.cif.gz",
+     "source": "6X9I",
+     "parts": [
+      {
+       "name": "DNMT1",
+       "chains": [
+        "A"
+       ],
+       "role": "dnmt"
+      }
+     ],
+     "strands": [
+      {
+       "name": "parental",
+       "chain": "C"
+      },
+      {
+       "name": "target",
+       "chain": "D"
+      }
+     ]
+    },
+    {
+     "id": "dnmt3a",
+     "file": "source/library/5YX2.cif.gz",
+     "source": "5YX2",
+     "parts": [
+      {
+       "name": "DNMT3A a",
+       "chains": [
+        "A"
+       ],
+       "role": "dnmt"
+      },
+      {
+       "name": "DNMT3A b",
+       "chains": [
+        "D"
+       ],
+       "role": "dnmt"
+      },
+      {
+       "name": "DNMT3L a",
+       "chains": [
+        "B"
+       ],
+       "role": "dnmt3l"
+      },
+      {
+       "name": "DNMT3L b",
+       "chains": [
+        "C"
+       ],
+       "role": "dnmt3l"
+      }
+     ],
+     "strands": [
+      {
+       "name": "top",
+       "chain": "E"
+      },
+      {
+       "name": "bottom",
+       "chain": "F"
+      }
+     ]
+    },
+    {
+     "id": "tet2",
+     "file": "source/library/4NM6.cif.gz",
+     "source": "4NM6",
+     "parts": [
+      {
+       "name": "TET2",
+       "chains": [
+        "A"
+       ],
+       "role": "tet"
+      }
+     ],
+     "strands": [
+      {
+       "name": "target",
+       "chain": "B"
+      },
+      {
+       "name": "other",
+       "chain": "C"
+      }
+     ]
+    },
+    {
+     "id": "creb",
+     "file": "source/methylation/1DH3.cif.gz",
+     "source": "1DH3",
+     "parts": [
+      {
+       "name": "CREB",
+       "chains": [
+        "A",
+        "C"
+       ],
+       "role": "tf"
+      }
+     ],
+     "strands": [
+      {
+       "name": "top",
+       "chain": "B"
+      },
+      {
+       "name": "bottom",
+       "chain": "D"
+      }
+     ]
+    },
+    {
+     "id": "tbp",
+     "file": "source/initiation/1C9B.pdb.gz",
+     "source": "1C9B",
+     "parts": [
+      {
+       "name": "TBP",
+       "chains": [
+        "B"
+       ],
+       "role": "tbp"
+      }
+     ],
+     "strands": [
+      {
+       "name": "TATA strand",
+       "chain": "C"
+      },
+      {
+       "name": "complementary strand",
+       "chain": "D"
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

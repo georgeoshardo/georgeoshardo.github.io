@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Eukaryotic transcription</title>
+<meta name="description" content="Eukaryotic transcription in 3D: the three RNA polymerases in the nucleus, how they differ from bacterial RNA polymerase, how TBP marks the promoter, how enhancers reach it, and DNA methylation.">
+<meta name="theme-color" content="#070e17">
+<link rel="preload" href="../shared/fonts/instrument_serif.ttf" as="font" type="font/ttf" crossorigin>
+<link rel="stylesheet" href="../shared/course.css">
+<link rel="stylesheet" href="../shared/labels.css">
+<link rel="stylesheet" href="../shared/hub.css">
+<script type="importmap">{"imports":{"three":"../shared/vendor/three/three.module.min.js","three/addons/":"../shared/vendor/three/addons/"}}</script>
+</head>
+<body>
+<div class="loader" id="loader" role="status" aria-live="polite"><div class="loader-orbit" aria-hidden="true"><i></i><i></i></div><p>Eukaryotic transcription</p><span id="load-detail">Loading structures</span></div>
+
+<header class="top">
+  <a class="brand" href="../"><span class="brand-mark" aria-hidden="true">II</span><span>Molecular biology<br><b>of genes</b></span></a>
+  <nav class="top-links" aria-label="Course">
+    <a class="pill" href="../protein_browser/?chapter=eukaryotic">Protein library</a>
+    <a class="pill" href="../transcription_3d/index.html">Bacterial transcription</a>
+  </nav>
+</header>
+
+<section class="hero" id="hero" aria-labelledby="hub-title">
+  <div class="hero-view" id="viewport" aria-hidden="true"></div>
+  <div id="annotations" aria-hidden="true"><svg id="leaders"></svg></div>
+  <div class="hero-text" id="hero-text">
+    <p class="eyebrow"><i></i>Eukaryotic transcription</p>
+    <h1 class="display" id="hub-title">Three polymerases<br>in one nucleus.</h1>
+    <p class="lede">Eukaryotes share the work of transcription between three RNA polymerases. RNAP I works in the nucleolus; RNAP II and RNAP III work in the nucleoplasm.</p>
+  </div>
+  <p class="hero-hint" aria-hidden="true">Drag to turn the nucleus</p>
+  <p class="sr-only" id="hub-now"></p>
+  <a class="scroll-cue" id="scroll-cue" href="#content" aria-label="Scroll down"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></a>
+</section>
+
+<main class="hub" id="content">
+  <section class="differences" aria-labelledby="diff-title">
+    <h2 class="section-title" id="diff-title">Unlike bacterial transcription</h2>
+    <div class="columns">
+      <article>
+        <span class="n">01</span>
+        <h3>A chromatin template</h3>
+        <p>In bacteria, transcription acts on a DNA template; in eukaryotes it acts on chromatin, whose structure must be opened before RNA polymerase can bind to the promoter.</p>
+      </article>
+      <article>
+        <span class="n">02</span>
+        <h3>Factors find the promoter</h3>
+        <p>Bacterial RNAP can read the DNA sequence to find the promoter; a eukaryotic RNAP cannot. Basal transcription factors bind first, and the polymerase then binds the factor–DNA complex at the core promoter.</p>
+      </article>
+      <article>
+        <span class="n">03</span>
+        <h3>Three polymerases</h3>
+        <p>Bacteria have a single type of RNAP. Eukaryotes have three: RNAP I makes rRNA (but not 5S rRNA), RNAP II mRNA and some small RNAs, and RNAP III tRNA, 5S rRNA and other small RNAs.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="scenes" aria-labelledby="scenes-title">
+    <h2 class="section-title" id="scenes-title">Explore</h2>
+    <div class="scene-cards">
+      <a class="scene-card" href="polymerases.html" style="--c:#9fb0b8">
+        <span class="kicker">Scene · 6 steps</span>
+        <h3>Three RNA polymerases</h3>
+        <p>Their many subunits, the ones they share, what RNAP II has in common with the bacterial enzyme, what it lacks, and its tail of repeats.</p>
+        <span class="go">Play ↗</span>
+      </a>
+      <a class="scene-card" href="gene_states.html" style="--c:#86b88f">
+        <span class="kicker">Scene · 6 steps</span>
+        <h3>Inactive, poised and active genes</h3>
+        <p>Closed chromatin opening, the basal apparatus assembling in order at a poised gene, a second signal from an enhancer, and RNAP II leaving the promoter to transcribe the gene.</p>
+        <span class="go">Play ↗</span>
+      </a>
+      <a class="scene-card" href="tbp.html" style="--c:#d9964a">
+        <span class="kicker">Scene · 6 steps</span>
+        <h3>TBP and the TATA box</h3>
+        <p>How the TATA-binding protein binds in the minor groove, sits astride the DNA like a saddle and bends it by about 80°.</p>
+        <span class="go">Play ↗</span>
+      </a>
+      <a class="scene-card" href="enhancers.html" style="--c:#f2a65a">
+        <span class="kicker">Scene · 7 steps</span>
+        <h3>Enhancers</h3>
+        <p>How the DNA loops so an enhancer's activators reach the promoter: from near or tens of kilobases away, upstream or downstream, either way round; and the factors involved.</p>
+        <span class="go">Play ↗</span>
+      </a>
+      <a class="scene-card" href="methylation.html" style="--c:#f2746b">
+        <span class="kicker">Scene · 7 steps</span>
+        <h3>DNA methylation</h3>
+        <p>5-methylcytosine at CpG sites, CpG islands at promoters, methylation kept through replication and added de novo, TET enzymes starting its removal, and the pattern of an active gene.</p>
+        <span class="go">Play ↗</span>
+      </a>
+      <a class="scene-card" href="../protein_browser/?chapter=eukaryotic" style="--c:#8fc2a0">
+        <span class="kicker">Library · 19 proteins</span>
+        <h3>The proteins, one by one</h3>
+        <p>The three polymerases, the basal transcription factors, the nucleosome and the DNA methylation enzymes, each in 3D with its facts.</p>
+        <span class="go">Open ↗</span>
+      </a>
+      <a class="scene-card" href="notes.html" style="--c:#d9b882">
+        <span class="kicker">Reading</span>
+        <h3>The notes</h3>
+        <p>Eukaryotic transcription in full: polymerases, promoters, the basal apparatus, TBP, enhancers and DNA methylation.</p>
+        <span class="go">Read ↗</span>
+      </a>
+    </div>
+  </section>
+</main>
+
+<div class="load-error" id="load-error" hidden role="alert">
+  <h2 class="display">This page needs a web server</h2>
+  <p>Its structures load over HTTP. From the repository root, run</p>
+  <code>pixi run serve-drawings</code>
+  <p>then open <b>http://127.0.0.1:8080/eukaryotic_transcription/</b>.</p>
+</div>
+<script type="module" src="hub.mjs"></script>
+<script type="module">import {scrollCue} from '../shared/scroll_cue.mjs'; scrollCue(document.getElementById('scroll-cue'), document.getElementById('content'));</script>
+<script>if(location.protocol==='file:'){document.getElementById('loader').classList.add('hidden');document.getElementById('load-error').hidden=false}</script>
+</body>
+</html>

@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Molecular Biology of Genes · Interactive 3D</title>
+<meta name="description" content="Molecular Biology of Genes (BIOM 335) in interactive 3D: how genetic information is decoded by transcription and translation to form proteins, and how organisms control these processes, chapter by chapter.">
+<meta name="theme-color" content="#070e17">
+<link rel="preload" href="shared/fonts/instrument_serif.ttf" as="font" type="font/ttf" crossorigin>
+<link rel="stylesheet" href="shared/course.css">
+<link rel="stylesheet" href="shared/hub.css">
+<link rel="stylesheet" href="home.css">
+<script type="importmap">{"imports":{"three":"./shared/vendor/three/three.module.min.js","three/addons/":"./shared/vendor/three/addons/"}}</script>
+</head>
+<body class="home">
+<header class="top">
+  <a class="brand" href="./" aria-current="page"><span class="brand-mark" aria-hidden="true">II</span><span>Molecular biology<br><b>of genes</b></span></a>
+  <nav class="top-links" aria-label="Explore">
+    <a class="pill" id="to-chapters" href="#chapters">Chapters</a>
+    <a class="pill" href="protein_browser/">Protein library</a>
+  </nav>
+</header>
+
+<section class="hero" id="hero" aria-labelledby="home-title">
+  <div class="hero-view" id="viewport" aria-hidden="true"></div>
+  <div class="hero-text" id="hero-text">
+    <p class="eyebrow"><i></i>BIOM 335 · Interactive 3D</p>
+    <h1 class="display" id="home-title">Molecular Biology<br>of Genes</h1>
+    <p class="lede">How genetic information is decoded by transcription and translation to form proteins, and how organisms control these processes.</p>
+  </div>
+  <a class="scroll-cue" id="scroll-cue" href="#chapters" aria-label="Scroll down"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></a>
+</section>
+
+<main class="hub" id="chapters">
+  <section class="outline" aria-labelledby="outline-title">
+    <h2 class="section-title" id="outline-title">Chapters</h2>
+
+    <div class="part">
+      <p class="part-label"><span class="part-n">I</span>Introduction</p>
+      <ol class="toc">
+        <li class="chapter" style="--c:#9fc3d2">
+          <span class="num">01</span>
+          <div class="body"><h3>Genes are DNA</h3><p>The genome carries an organism's hereditary information; its DNA directs the production of the cell's RNAs, which in turn are used to produce its proteins: the central dogma.</p></div>
+          <span class="state">In preparation</span>
+        </li>
+      </ol>
+    </div>
+
+    <div class="part">
+      <p class="part-label"><span class="part-n">II</span>Transcription and post-transcriptional mechanisms</p>
+      <ol class="toc">
+        <li class="chapter live" style="--c:#74bcb2">
+          <span class="num">02</span>
+          <div class="body">
+            <h3><a class="chapter-link" href="transcription_3d/">Prokaryotic transcription</a></h3>
+            <p>RNA polymerase binds a promoter and reads the template strand, making RNA 5′ → 3′ until it reaches a terminator.</p>
+            <ul class="inside">
+              <li><a href="transcription_3d/"><b>The complete transcription cycle</b><small>Film · from the promoter search to termination</small></a></li>
+              <li><a href="protein_browser/?chapter=bacterial"><b>Its proteins</b><small>Library · 16 proteins</small></a></li>
+            </ul>
+          </div>
+        </li>
+        <li class="chapter live" style="--c:#8fc2a0">
+          <span class="num">03</span>
+          <div class="body">
+            <h3><a class="chapter-link" href="eukaryotic_transcription/">Eukaryotic transcription</a></h3>
+            <p>Three RNA polymerases transcribe a chromatin template, placed at the promoter by basal transcription factors and boosted by enhancers that can lie far away.</p>
+            <ul class="inside">
+              <li><a href="eukaryotic_transcription/"><b>Three polymerases in one nucleus</b><small>Where each works</small></a></li>
+              <li><a href="eukaryotic_transcription/polymerases.html"><b>Three RNA polymerases</b><small>Scene · 6 steps</small></a></li>
+              <li><a href="eukaryotic_transcription/gene_states.html"><b>Inactive, poised and active genes</b><small>Scene · 6 steps</small></a></li>
+              <li><a href="eukaryotic_transcription/tbp.html"><b>TBP and the TATA box</b><small>Scene · 6 steps</small></a></li>
+              <li><a href="eukaryotic_transcription/enhancers.html"><b>Enhancers</b><small>Scene · 7 steps</small></a></li>
+              <li><a href="eukaryotic_transcription/methylation.html"><b>DNA methylation</b><small>Scene · 7 steps</small></a></li>
+              <li><a href="protein_browser/?chapter=eukaryotic"><b>Its proteins</b><small>Library · 19 proteins</small></a></li>
+            </ul>
+          </div>
+        </li>
+        <li class="chapter" style="--c:#c9a8d6">
+          <span class="num">04</span>
+          <div class="body"><h3>RNA splicing and processing</h3><p>Introns are transcribed along with the exons and then removed by splicing, as eukaryotic RNAs are processed to become mature and functional.</p></div>
+          <span class="state">In preparation</span>
+        </li>
+        <li class="chapter" style="--c:#e2b07a">
+          <span class="num">05</span>
+          <div class="body"><h3>mRNA stability and localisation</h3><p>An mRNA carries regulatory information that dictates how often it is translated, how stable it is and where in the cell translation occurs.</p></div>
+          <span class="state">In preparation</span>
+        </li>
+        <li class="chapter" style="--c:#f08aa6">
+          <span class="num">06</span>
+          <div class="body"><h3>Catalytic RNAs</h3><p>Ribozymes, from RNase P to self-splicing introns: RNAs that cleave and join phosphodiester bonds.</p></div>
+          <span class="state">In preparation</span>
+        </li>
+        <li class="chapter" style="--c:#ffa45e">
+          <span class="num">07</span>
+          <div class="body"><h3>Translation</h3><p>The information in a gene is read in nonoverlapping triplets, codons, from a fixed starting point, to assemble a polypeptide.</p></div>
+          <span class="state">In preparation</span>
+        </li>
+        <li class="chapter" style="--c:#d6c496">
+          <span class="num">08</span>
+          <div class="body"><h3>Using the genetic code</h3><p>Of the 64 codons, 61 specify amino acids and 3 are stop signals; the code is degenerate and nearly universal.</p></div>
+          <span class="state">In preparation</span>
+        </li>
+      </ol>
+    </div>
+
+    <div class="part">
+      <p class="part-label"><span class="part-n">III</span>Gene regulation</p>
+      <ol class="toc">
+        <li class="chapter" style="--c:#56c2b1">
+          <span class="num">09</span>
+          <div class="body"><h3>The operon</h3><p>Trans-acting factors recognise and bind cis-acting elements to switch a bacterium's genes on and off as its environment changes.</p></div>
+          <span class="state">In preparation</span>
+        </li>
+        <li class="chapter" style="--c:#9d7cc0">
+          <span class="num">10</span>
+          <div class="body"><h3>Phage strategies</h3><p>The lytic cycle and lysogeny: how a phage stages its gene expression, and chooses between the two.</p></div>
+          <span class="state">In preparation</span>
+        </li>
+        <li class="chapter" style="--c:#7fa3e3">
+          <span class="num">11</span>
+          <div class="body"><h3>Eukaryotic transcription regulation</h3><p>Chromosome structure and its modifications, and how chromatin regulates gene expression.</p></div>
+          <span class="state">In preparation</span>
+        </li>
+        <li class="chapter" style="--c:#f2746b">
+          <span class="num">12</span>
+          <div class="body"><h3>Epigenetic effects are inherited</h3><p>Changes in gene expression that do not change the DNA sequence itself, but are passed on.</p></div>
+          <span class="state">In preparation</span>
+        </li>
+        <li class="chapter" style="--c:#b9d56b">
+          <span class="num">13</span>
+          <div class="body"><h3>Regulatory RNAs</h3><p>RNAs that tune gene expression quickly and selectively by base pairing, without rewriting DNA or making new proteins.</p></div>
+          <span class="state">In preparation</span>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="library" aria-labelledby="library-title">
+    <a class="library-card" href="protein_browser/">
+      <span class="kicker">Protein library</span>
+      <h2 class="section-title" id="library-title">Every protein, in 3D.</h2>
+      <p>The proteins of each chapter, one by one: their structures, their parts and what they do, beside the scenes they appear in.</p>
+      <span class="go">Open the library ↗</span>
+    </a>
+  </section>
+</main>
+
+<footer class="foot">
+  <p>Structures from the Protein Data Bank and AlphaFold DB, drawn with Three.js.</p>
+</footer>
+<script type="module" src="home.mjs"></script>
+<script type="module">
+import {scrollCue, glide} from './shared/scroll_cue.mjs';
+const chapters = document.getElementById('chapters');
+scrollCue(document.getElementById('scroll-cue'), chapters);
+glide(document.getElementById('to-chapters'), chapters);
+</script>
+</body>
+</html>
