@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Genes are DNA</title>
+<meta name="description" content="Genes are DNA in 3D: a zoom from the human genome to one base pair, how genomes differ in size and shape, the central dogma, the experiments that showed genes are DNA, and scenes on nucleotides, the double helix, replication, DNA and RNA genomes, hybridisation and mutations.">
+<meta name="theme-color" content="#070e17">
+<link rel="preload" href="../shared/fonts/instrument_serif.ttf" as="font" type="font/ttf" crossorigin>
+<link rel="stylesheet" href="../shared/course.css">
+<link rel="stylesheet" href="../shared/labels.css">
+<link rel="stylesheet" href="../shared/hub.css">
+<link rel="stylesheet" href="hub.css">
+<script type="importmap">{"imports":{"three":"../shared/vendor/three/three.module.min.js","three/addons/":"../shared/vendor/three/addons/"}}</script>
+</head>
+<body>
+<div class="loader" id="loader" role="status" aria-live="polite"><div class="loader-orbit" aria-hidden="true"><i></i><i></i></div><p>Genes are DNA</p><span id="load-detail">Loading structures</span></div>
+
+<header class="top">
+  <a class="brand" href="../"><span class="brand-mark" aria-hidden="true">II</span><span>Molecular biology<br><b>of genes</b></span></a>
+  <nav class="top-links" aria-label="Course">
+    <a class="pill" href="../protein_browser/?chapter=genes">Protein library</a>
+    <a class="pill" href="../transcription_3d/index.html">Bacterial transcription</a>
+  </nav>
+</header>
+
+<section class="hero" id="hero" aria-labelledby="hub-title">
+  <div class="hero-view" id="viewport" aria-hidden="true"></div>
+  <div id="annotations" aria-hidden="true"><svg id="leaders"></svg></div>
+  <div class="hero-text" id="hero-text">
+    <p class="eyebrow"><i></i>Genes are DNA</p>
+    <h1 class="display" id="hub-title">From genome<br>to base pair.</h1>
+    <p class="lede">All the hereditary information in an organism is its genome. It is divided into chromosomes, each a very long molecule of duplex DNA carrying many genes.</p>
+    <div class="zoom" aria-label="Zoom from the genome to a base pair" role="group">
+      <div class="stations" id="stations"></div>
+      <button class="tour" id="tour" type="button" aria-pressed="false" aria-label="Play the zoom" data-state="paused"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="play" d="M8 5.5v13l10.5-6.5z"/><path class="pause" d="M7.5 5.5h3v13h-3zM13.5 5.5h3v13h-3z"/><path class="replay" d="M5.2 12a6.8 6.8 0 1 0 2-4.8M5 4.6v3.6h3.6"/></svg></button>
+    </div>
+    <p class="station-text" id="station-text" aria-live="polite"></p>
+  </div>
+  <p class="hero-hint" aria-hidden="true">Drag to turn the view</p>
+  <p class="sr-only" id="hub-now"></p>
+  <a class="scroll-cue" id="scroll-cue" href="#content" aria-label="Scroll down"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></a>
+</section>
+
+<main class="hub" id="content">
+  <section class="differences" aria-labelledby="genome-title">
+    <h2 class="section-title" id="genome-title">The genome</h2>
+    <div class="columns">
+      <article>
+        <span class="n">01</span>
+        <h3>Chromosomes</h3>
+        <p>The genome is physically divided into chromosomes, discrete units that each carry many genes. Each consists of a very long molecule of duplex DNA and, in eukaryotes, an approximately equal mass of proteins. A chromosome is visible as a morphological entity only during cell division.</p>
+      </article>
+      <article>
+        <span class="n">02</span>
+        <h3>Genes</h3>
+        <p>A gene is a sequence of DNA that encodes a single type of RNA, and that RNA may encode a polypeptide. While all genes are made up of DNA, not all DNA is part of a gene: about 98% of the human genome does not encode protein.</p>
+      </article>
+      <article>
+        <span class="n">03</span>
+        <h3>Alleles and loci</h3>
+        <p>The place on a chromosome at which a gene lies is its locus, and an allele is a variant form of a gene. In a diploid organism each gene has two alleles, one inherited from each parent, at the same locus on a pair of homologous chromosomes.</p>
+      </article>
+    </div>
+    <div class="columns">
+      <article>
+        <span class="n">04</span>
+        <h3>Kinds of gene</h3>
+        <p>Protein-coding genes encode RNAs that are translated into polypeptides; non-protein-coding genes encode RNAs that function without being translated. All genes code for an RNA, but not all genes code for a protein, and only one of a gene's two strands is used to code for its RNA.</p>
+      </article>
+      <article>
+        <span class="n">05</span>
+        <h3>Regulator genes</h3>
+        <p>Regulator genes encode products that regulate the expression of other genes, and may be protein-coding or encode a non-coding RNA. The final products of gene expression, RNAs or polypeptides, may themselves regulate the expression of other gene products.</p>
+      </article>
+      <article>
+        <span class="n">06</span>
+        <h3>Gene expression</h3>
+        <p>The genome carries information but plays no active role itself: cellular machinery acts on specific sequences in the DNA to produce products. Genes must be switched on and off as the cell needs, so the genome also carries regulatory elements.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="genomes" aria-labelledby="genomes-title">
+    <h2 class="section-title" id="genomes-title">Three genomes</h2>
+    <p class="section-lede">Neither the size of a genome nor its number of genes follows the complexity of an organism: rice has far fewer base pairs than humans, but more genes.</p>
+    <table class="genome-table">
+      <thead><tr><th scope="col">Organism</th><th scope="col">Genome size</th><th scope="col">Chromosomes</th><th scope="col">Genes</th></tr></thead>
+      <tbody id="genome-rows"></tbody>
+    </table>
+    <p class="table-note">In prokaryotes such as bacteria the genome is often a single, circular chromosome, often with plasmids beside it. In eukaryotes it is chromosomal DNA together with organellar DNA, in mitochondria and chloroplasts.</p>
+    <p class="table-note units">1 kb (kilobase) = 1,000 bases · 1 Mb (megabase) = 1,000,000 bases · 1 Gb (gigabase) = 1,000,000,000 bases. The human genome's 3,200 Mb is 3.2 Gb.</p>
+  </section>
+
+  <section class="dogma" aria-labelledby="dogma-title">
+    <h2 class="section-title" id="dogma-title">The central dogma</h2>
+    <div class="dogma-layout">
+      <figure class="dogma-figure" id="dogma-figure"></figure>
+      <div class="dogma-text">
+        <p>Through gene expression, the DNA sequence directs the production of all the RNAs in the cell, which in turn are used to produce its proteins. This flow of information, from DNA to RNA to protein, is the central dogma of molecular biology.</p>
+        <p>Information in nucleic acid can be perpetuated or transferred, but its transfer into a polypeptide is irreversible: information never passes from a polypeptide back to a nucleic acid.</p>
+        <p>No cellular organism has a genome made of anything other than double-stranded DNA; the genomes of some viruses are single-stranded DNA, or double- or single-stranded RNA.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="scenes" aria-labelledby="scenes-title">
+    <h2 class="section-title" id="scenes-title">Explore</h2>
+    <div class="scene-cards">
+      <a class="scene-card" href="griffith.html" style="--c:#9fd46e">
+        <span class="kicker">Experiment · 10 steps</span>
+        <h3>Griffith's experiment</h3>
+        <p>Smooth and rough pneumococci injected into mice, alone, heat-killed and mixed: predict each result, then watch the transforming principle and DNA from S cells turn R cells into S.</p>
+        <span class="go">Play ↗</span>
+      </a>
+      <a class="scene-card" href="hershey_chase.html" style="--c:#d98fc9">
+        <span class="kicker">Experiment · 10 steps</span>
+        <h3>The Hershey–Chase experiment</h3>
+        <p>Phage T2 infects <i>E. coli</i>, its DNA entering the cell while its coat stays outside; labelled with ³²P and ³⁵S, only the DNA's label goes in and on to the progeny.</p>
+        <span class="go">Play ↗</span>
+      </a>
+      <a class="scene-card" href="transfection.html" style="--c:#6fc7c0">
+        <span class="kicker">Experiment · 6 steps</span>
+        <h3>Transfection</h3>
+        <p>Cultured cells that lack thymidine kinase take up a plasmid carrying its gene; the cell whose plasmid joins a chromosome grows into a colony under selection.</p>
+        <span class="go">Play ↗</span>
+      </a>
+      <a class="scene-card" href="nucleotides.html" style="--c:#e8c46a">
+        <span class="kicker">Scene · 8 steps</span>
+        <h3>Nucleotides</h3>
+        <p>A base, a sugar and a phosphate atom by atom: the glycosidic bond, nucleosides and nucleotides, deoxyribose and ribose, purines and pyrimidines joined at N9 or N1, uracil in RNA, and a chain's 5′ and 3′ ends.</p>
+        <span class="go">Play ↗</span>
+      </a>
+      <a class="scene-card" href="double_helix.html" style="--c:#86d2ec">
+        <span class="kicker">Scene · 10 steps</span>
+        <h3>The double helix</h3>
+        <p>A crystal structure of B-DNA: G–C and A–T pairs, antiparallel strands, a constant width, flat base pairs about ten to a turn, the two grooves and the charged backbone.</p>
+        <span class="go">Play ↗</span>
+      </a>
+      <a class="scene-card" href="replication.html" style="--c:#e0937a">
+        <span class="kicker">Scene · 6 steps</span>
+        <h3>DNA replication</h3>
+        <p>A replication fork moving along a parental duplex, leaving two daughter duplexes that each keep one parental strand, the DNA helicase and the DNA polymerases at work, and the leading and lagging strands.</p>
+        <span class="go">Play ↗</span>
+      </a>
+      <a class="scene-card" href="meselson_stahl.html" style="--c:#7f9fe8">
+        <span class="kicker">Scene · 6 steps</span>
+        <h3>The Meselson–Stahl experiment</h3>
+        <p>Heavy DNA in a density gradient, one and then two generations in light medium, and why the bands fit semiconservative replication and not conservative or dispersive replication.</p>
+        <span class="go">Play ↗</span>
+      </a>
+      <a class="scene-card" href="dna_or_rna.html" style="--c:#f3cf97">
+        <span class="kicker">Scene · 7 steps</span>
+        <h3>DNA or RNA genomes</h3>
+        <p>Viral genomes of double- or single-stranded DNA or RNA, how DNA and RNA differ, and the central dogma, with an RNA-dependent RNA polymerase and a reverse transcriptase at work.</p>
+        <span class="go">Play ↗</span>
+      </a>
+      <a class="scene-card" href="hybridisation.html" style="--c:#c9a7e8">
+        <span class="kicker">Scene · 6 steps</span>
+        <h3>Denaturation and hybridisation</h3>
+        <p>A DNA duplex parted by heat and paired again, an RNA that pairs with itself and with another RNA, and a DNA–RNA heteroduplex atom by atom.</p>
+        <span class="go">Play ↗</span>
+      </a>
+      <a class="scene-card" href="mutations.html" style="--c:#ff8a6a">
+        <span class="kicker">Scene · 6 steps</span>
+        <h3>Mutations</h3>
+        <p>A base pair changed in a gene, cytosine turned into uracil by nitrous acid atom by atom, the change copied at replication into a transition, and transitions and transversions between purines and pyrimidines.</p>
+        <span class="go">Play ↗</span>
+      </a>
+      <a class="scene-card" href="frameshifts.html" style="--c:#b99be0">
+        <span class="kicker">Scene · 6 steps</span>
+        <h3>Frameshifts and reversion</h3>
+        <p>Insertions and deletions shifting a gene's reading frame codon by codon, and which mutations can revert: point mutations and insertions can, deletions cannot.</p>
+        <span class="go">Play ↗</span>
+      </a>
+      <a class="scene-card" href="../protein_browser/?chapter=genes" style="--c:#9fc3d2">
+        <span class="kicker">Library · 8 molecules</span>
+        <h3>The molecules, one by one</h3>
+        <p>The double helix, transfer RNA and a DNA–RNA hybrid, and the enzymes that replicate DNA, copy RNA genomes and, in transfection, rescue cells: thymidine kinase.</p>
+        <span class="go">Open ↗</span>
+      </a>
+      <a class="scene-card" href="notes.html" style="--c:#d9b882">
+        <span class="kicker">Reading</span>
+        <h3>The notes</h3>
+        <p>Genes are DNA in full: the genome, the evidence that genes are DNA, nucleotides, the double helix, replication, genomes of DNA or RNA, hybridisation and mutations.</p>
+        <span class="go">Read ↗</span>
+      </a>
+    </div>
+  </section>
+</main>
+
+<div class="load-error" id="load-error" hidden role="alert">
+  <h2 class="display">This page needs a web server</h2>
+  <p>Its structures load over HTTP. From the repository root, run</p>
+  <code>pixi run serve-drawings</code>
+  <p>then open <b>http://127.0.0.1:8080/genes_are_dna/</b>.</p>
+</div>
+<script type="module" src="hub.mjs"></script>
+<script type="module" src="panels.mjs"></script>
+<script type="module">import {scrollCue} from '../shared/scroll_cue.mjs'; scrollCue(document.getElementById('scroll-cue'), document.getElementById('content'));</script>
+<script>if(location.protocol==='file:'){document.getElementById('loader').classList.add('hidden');document.getElementById('load-error').hidden=false}</script>
+</body>
+</html>

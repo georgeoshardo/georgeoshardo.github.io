@@ -6,7 +6,7 @@ import {setRich,enrichTree} from '../shared/text.mjs';
 // Shared with every course page: materials and fades, the rendering pipeline, strands and bonds, camera moves and reading pauses.
 import {PROTEIN_TONE,baseMaterial,proteinMaterial,surfaceGeometry,fade,createRenderer,studio,restoreEnvironment} from '../shared/molecules.mjs';
 import {createPipeline,TIERS,pixelRatioFor} from '../shared/render.mjs';
-import {STRANDS,createTube,createRungs,bondGeometry,between,halfRung,point,finish,minRadius,outlineWidth} from '../shared/strands.mjs';
+import {STRANDS,BASES,createTube,createRungs,bondGeometry,between,halfRung,point,finish,minRadius,outlineWidth} from '../shared/strands.mjs';
 import {blendPose as blendCamera,screenAnchor,applyLens as setLens} from '../shared/camera.mjs';
 import {createReading,keyOf,wordCount} from '../shared/reading.mjs';
 import {quintic,wrap} from '../shared/ease.mjs';
@@ -47,7 +47,7 @@ let rutGlow,promoterGlow,bubbleGlow,terminatorGlow,strandOutlines=[],rnaOutline,
 let fragmentTube,fragmentStubs,ntp,ppi,ntpParts,mg,flash,ntpBeta=V(),rhoQuaternion=new THREE.Quaternion();
 const BASE_COLOR=new THREE.Color(0xf8b784),ERROR_RED=0xff4d6d,ERROR_COLOR=new THREE.Color(ERROR_RED);
 // Base identity (Sequence mode): a palette separable under colour-vision deficiency; letters always accompany it.
-const BASE_HEX={A:'#2fbf8f',T:'#e8743b',U:'#e8743b',G:'#f0e442',C:'#3d7fd6'},BASE_COL=Object.fromEntries(Object.entries(BASE_HEX).map(([k,v])=>[k,new THREE.Color(v)]));
+const BASE_HEX=Object.fromEntries(Object.entries(BASES).map(([k,v])=>[k,'#'+v.toString(16).padStart(6,'0')])),BASE_COL=Object.fromEntries(Object.entries(BASE_HEX).map(([k,v])=>[k,new THREE.Color(v)]));
 const RUNG_PLAIN=[new THREE.Color(STRANDS.rung.template),new THREE.Color(STRANDS.rung.coding)],_bc=new THREE.Color();
 // Extra detail beyond the lecture notes, each off by default: σ regions, active-site parts, subunit names with
 // the channel paths, and further mechanism (scrunching, NusG's two domains).
@@ -1282,9 +1282,9 @@ function partsOf(key){if(key==='rnap')return coreMeshes;const chain=Object.entri
  return {sigma:[sigmaMesh],nusA:[nusAMesh],nusG:[nusGMesh,nusGKow],ribosome:[ribSmall,ribLarge],rho:rhoMeshes,template:[dnaTubes[0].mesh,strandOutlines[0].mesh,polarity[0],rungs[0],templateStubs],coding:[dnaTubes[1].mesh,strandOutlines[1].mesh,polarity[1],rungs[1]],rna:[rnaTube.mesh,rnaOutline.mesh,polarity[2],rnaStubs],ntp:[ntp],ppi:[ppi],mg:[mg],bridgeHelix:[bridgeHelix],triggerLoop:[triggerLoop.mesh],hairpin:[stemTube.mesh],utract:[utract],error:[errorBead]}[key]||[]}
 // A soft rim on whatever is hovered, pinned or spotlit. It runs after updateMolecules, which rewrites emissive values.
 function applyHighlight(){
- for(const m of highlighted){const u=m.material?.userData?.uniforms;if(u?.uRim)u.uRim.value=.2}highlighted.clear();for(const [mat,v] of glowBase)mat.emissiveIntensity=v;glowBase.clear();
+ for(const m of highlighted)m.material.userData.uniforms.uRim.value=.2;highlighted.clear();for(const [mat,v] of glowBase)mat.emissiveIntensity=v;glowBase.clear();
  const keys=[hoverHit?.key,pinnedKey,spotlight&&performance.now()<spotlightUntil?spotlight:null].filter(Boolean);
- for(const key of keys)for(const m of partsOf(key)){const u=m.material?.userData?.uniforms;if(u){if(u.uRim){u.uRim.value=key===spotlight?1.1:.75;highlighted.add(m)}}else if(m.material){if(!glowBase.has(m.material))glowBase.set(m.material,m.material.emissiveIntensity);m.material.emissiveIntensity=Math.max(m.material.emissiveIntensity,.35)}}
+ for(const key of keys)for(const m of partsOf(key)){const u=m.material?.userData?.uniforms;if(u?.uRim){u.uRim.value=key===spotlight?1.1:.75;highlighted.add(m)}else if(m.material&&'emissiveIntensity' in m.material){if(!glowBase.has(m.material))glowBase.set(m.material,m.material.emissiveIntensity);m.material.emissiveIntensity=Math.max(m.material.emissiveIntensity,.35)}}
 }
 // Spotlight: the molecule keeps a strong rim and everything else fades to 35% for 2.5 s.
 function spot(key){spotlight=key;spotlightUntil=performance.now()+2500;invalidate();clearTimeout(spot.timer);spot.timer=setTimeout(()=>{spotlight=null;invalidate()},2550)}

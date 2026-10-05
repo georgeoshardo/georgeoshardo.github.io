@@ -17,6 +17,9 @@ export const STRANDS = {
   rung: {template: 0x7eaac2, coding: 0xcfc8b8, radius: .5},
   outline: 0x03080f,
 };
+// Base colours (the film's sequence card and letters, chapter 1's base plates): A green, T and U orange, G yellow,
+// C blue; distinct for colour-blind viewers.
+export const BASES = {A: 0x2fbf8f, T: 0xe8743b, U: 0xe8743b, G: 0xf0e442, C: 0x3d7fd6};
 // Wide shots keep strands at least ~1.6 px (DNA) or 2 px (RNA) wide, and their outlines visible: a strand's
 // radius and outline width (Å) for a view scale in px/Å (molecules.mjs viewScale).
 export const minRadius = (base, pxPerA, px = .8) => Math.max(base, px / pxPerA);
@@ -66,7 +69,10 @@ const capGeometry = new THREE.SphereGeometry(1, 14, 10);
 // page likes. Rounded end caps; `outline` adds the dark outline (its width set with tube.outline.width); `taper`
 // (Å, set on the tube) closes a sleeve in rounded ends over its last stretch, its normals leaning to match. A
 // custom `material` (a glow sleeve, say) has no caps unless asked. `axis`: the direction that seeds the first frame
-// when a tube starts along world y (the film passes its DNA axis).
+// when a tube starts along world y (the film passes its DNA axis). Tubes that continue one another (a strand's
+// stretches of different colours) join without a seam: update(count, {caps: [start, end], tangents: [start, end],
+// frame}) leaves out the caps where they meet, sets the tangent of the shared end ring on both sides, and starts the
+// second tube's frames from the first's last (frame: the first's tube.endNormal), so both draw the same ring there.
 export function createTube(group, {color = 0xffffff, radius = 1, max, sides = 8, glow = .035, material = null, outline = false, capped = !material, axis = EX} = {}) {
   const ring = sides + 1, position = new Float32Array(max * ring * 3), normal = new Float32Array(position.length);
   const index = new (max * ring < 65536 ? Uint16Array : Uint32Array)((max - 1) * sides * 6);
@@ -80,21 +86,25 @@ export function createTube(group, {color = 0xffffff, radius = 1, max, sides = 8,
   let hull = null;
   if (outline) {
     const hm = outlineMaterial(), hullMesh = new THREE.Mesh(g, hm), hullCaps = [0, 1].map(() => new THREE.Mesh(capGeometry, hm));
-    hullMesh.frustumCulled = false; hullCaps.forEach(c => { c.frustumCulled = false; }); group.add(hullMesh, ...hullCaps);
+    // Drawn before the strand, so a strand faded to transparent is not covered by its own outline.
+    [hullMesh, ...hullCaps].forEach(o => { o.frustumCulled = false; o.renderOrder = -1; }); group.add(hullMesh, ...hullCaps);
     hull = {mesh: hullMesh, material: hm, caps: hullCaps, get width() { return hm.userData.uniforms.uWidth.value; }, set width(w) { hm.userData.uniforms.uWidth.value = w; }};
   }
   const points = Array.from({length: max}, () => V()), t = V(), n = V(), b = V(), v = V(), arc = new Float32Array(max);
-  return {mesh, material: m, points, count: 0, radius, base: radius, taper: 0, outline: hull, update(count) {
+  return {mesh, caps, material: m, points, count: 0, radius, base: radius, taper: 0, outline: hull, endNormal: V(), update(count, {caps: ends = null, tangents = null, frame = null} = {}) {
     const radius = this.radius, taper = this.taper, show = count > 1;
     this.count = count; mesh.visible = show;
-    caps.forEach(c => { c.scale.setScalar(radius); c.visible = show && capped; });
-    if (hull) { hull.mesh.visible = show; hull.caps.forEach(c => { c.scale.setScalar(radius); c.visible = show; }); }
+    caps.forEach((c, e) => { c.scale.setScalar(radius); c.visible = show && capped && (!ends || ends[e]); });
+    if (hull) { hull.mesh.visible = show; hull.caps.forEach((c, e) => { c.scale.setScalar(radius); c.visible = show && (!ends || ends[e]); }); }
     if (!show) return;
     let total = 0;
     if (taper > 0) { arc[0] = 0; for (let i = 1; i < count; i++) arc[i] = arc[i - 1] + points[i].distanceTo(points[i - 1]); total = arc[count - 1]; }
     for (let i = 0; i < count; i++) {
-      const p = points[i]; t.subVectors(points[Math.min(count - 1, i + 1)], points[Math.max(0, i - 1)]); if (t.lengthSq() < 1e-12) t.copy(axis); t.normalize();
-      if (i > 0) n.addScaledVector(t, -n.dot(t)); if (i === 0 || n.lengthSq() < 1e-8) n.copy(Math.abs(t.y) < .9 ? UP : axis).cross(t);
+      const p = points[i]; t.subVectors(points[Math.min(count - 1, i + 1)], points[Math.max(0, i - 1)]);
+      if (i === 0 && tangents?.[0]) t.copy(tangents[0]); else if (i === count - 1 && tangents?.[1]) t.copy(tangents[1]);
+      if (t.lengthSq() < 1e-12) t.copy(axis); t.normalize();
+      if (i === 0 && frame) n.copy(frame);
+      if (i > 0 || frame) n.addScaledVector(t, -n.dot(t)); if ((i === 0 && !frame) || n.lengthSq() < 1e-8) n.copy(Math.abs(t.y) < .9 ? UP : axis).cross(t);
       n.normalize(); b.crossVectors(t, n);
       let r = radius, lean = 0;
       if (taper > 0) {
@@ -108,6 +118,7 @@ export function createTube(group, {color = 0xffffff, radius = 1, max, sides = 8,
         normal[k] = v.x; normal[k + 1] = v.y; normal[k + 2] = v.z;
       }
     }
+    this.endNormal.copy(n);
     caps[0].position.copy(points[0]); caps[1].position.copy(points[count - 1]);
     if (hull) { hull.caps[0].position.copy(points[0]); hull.caps[1].position.copy(points[count - 1]); }
     g.setDrawRange(0, (count - 1) * sides * 6);
@@ -119,18 +130,20 @@ export function createTube(group, {color = 0xffffff, radius = 1, max, sides = 8,
 // Instanced cylinders along a segment (bonds, base-pair halves, stubs): one unit cylinder scaled per instance.
 export const bondGeometry = new THREE.CylinderGeometry(1, 1, 1, 8);
 const dummy = new THREE.Object3D(), _d = V();
-// A cylinder of radius r from a to b (`visible` scales its width, 0 hides it).
+// A cylinder of radius r from a to b (`visible` scales its width, 0 hides it). One of no length is hidden: squashed
+// flat, its normals would be undefined and shade black (a nucleotide modelled without its base, say).
 export function between(inst, i, a, b, r, visible = 1) {
   _d.subVectors(b, a); const len = _d.length();
   dummy.position.copy(a).add(b).multiplyScalar(.5); dummy.quaternion.setFromUnitVectors(UP, len > 1e-6 ? _d.divideScalar(len) : UP);
-  dummy.scale.set(r * visible, len, r * visible); dummy.updateMatrix(); inst.setMatrixAt(i, dummy.matrix);
+  if (len > 1e-6) dummy.scale.set(r * visible, len, r * visible); else dummy.scale.setScalar(0);
+  dummy.updateMatrix(); inst.setMatrixAt(i, dummy.matrix);
 }
-// A cylinder from a towards b, shortened to the fraction k of that distance (k < .01 hides it).
+// A cylinder from a towards b, shortened to the fraction k of that distance (k < .01, or no length, hides it).
 export function halfRung(inst, i, a, b, r, k) {
-  if (k < .01) { dummy.position.copy(a); dummy.scale.setScalar(0); }
+  _d.subVectors(b, a).multiplyScalar(k); const len = _d.length();
+  if (k < .01 || len < 1e-6) { dummy.position.copy(a); dummy.scale.setScalar(0); }
   else {
-    _d.subVectors(b, a).multiplyScalar(k); const len = _d.length();
-    dummy.position.copy(a).addScaledVector(_d, .5); dummy.quaternion.setFromUnitVectors(UP, len > 1e-6 ? _d.divideScalar(len) : UP); dummy.scale.set(r, len, r);
+    dummy.position.copy(a).addScaledVector(_d, .5); dummy.quaternion.setFromUnitVectors(UP, _d.divideScalar(len)); dummy.scale.set(r, len, r);
   }
   dummy.updateMatrix(); inst.setMatrixAt(i, dummy.matrix);
 }

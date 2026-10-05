@@ -224,5 +224,38 @@ body.calm *{transition:none!important;animation:none!important}
 @media(max-width:600px){.shortcut-list{grid-template-columns:1fr}.shortcut-list dt{white-space:normal}}
 @media(pointer:coarse) and (max-width:900px){.transport .scrubber{min-width:56px}}
 @media(min-width:781px){.orbit-hint{top:112px}}
-/* σ factor subscripts (σ<sub>70</sub>) and Unicode subscripts, set by ../shared/text.mjs. */
+/* σ factor subscripts (σ<sub>70</sub>) and Unicode subscripts, set by ../shared/text.mjs; its superscripts (m<sup>7</sup>G). */
 sub{font-size:.72em;vertical-align:-.22em;line-height:0}
+sup{font-size:.72em;vertical-align:.42em;line-height:0}
+/* Predict, then watch (scene_player.mjs, a step's `predict`): where playback reaches a question it pauses on it in the
+   narration, in place of the narration's foot: the question, its choices (numbered as the keys that answer them) and
+   Just watch. The step after recalls the prediction under its caption. On phones the question takes the caption's
+   place. The scrubber marks each question with a small dot. */
+.ask{pointer-events:auto;margin:14px 0 0;max-width:620px;animation:ask-in .3s ease-out}
+.ask:focus{outline:none}
+.ask:focus-visible{outline:1px solid #e5bf8d80;outline-offset:9px;border-radius:6px}
+@keyframes ask-in{from{opacity:0}}
+.narration .ask-head{display:flex;align-items:center;gap:12px;margin:0 0 7px;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:500}
+.ask-head i{height:1px;width:27px;background:#af956c60}
+.ask-keys{letter-spacing:.02em;text-transform:none;font-weight:400;color:#a1b4bf}
+.narration .ask-question{margin:0 0 11px;max-width:none;font-size:16px;line-height:1.4;color:#eef3f5;text-wrap:pretty;text-shadow:0 1px 10px #040a13}
+.ask-row{display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px}
+.ask-choices{display:flex;flex-wrap:wrap;gap:8px}
+.ask-choices button{display:inline-flex;gap:10px;align-items:center;min-height:40px;padding:8px 15px 8px 10px;border:1px solid #a4c0d433;border-radius:6px;font-size:14px;color:#e1ebef;background:#0a1522e6;text-align:left}
+.ask-choices button:hover{border-color:#e5bf8daa;background:#132230f0}
+.ask-choices kbd{min-width:20px;color:#e9c89b;border-color:#e5bf8d55}
+.ask-watch{font-size:12px;color:#d4b17e;padding:0;text-decoration:underline;text-decoration-color:#ad8d6366;text-underline-offset:4px}
+.ask-watch:hover{color:#f2c997}
+.narration.asking .narration-foot{display:none}
+.narration>p.predicted{margin:10px 0 0;font-size:13px;line-height:1.5;color:#c9d5dc}
+.predicted b{font-weight:600;color:#f2c997}
+.predicted .right{font-weight:600;color:#8fe3b5}
+.predicted .wrong{font-weight:600;color:#ffb0a0}
+.ticks u.ask-tick{position:absolute;top:-1px;width:8px;height:8px;margin-left:-4px;border-radius:50%;background:#f0b35a;box-shadow:0 0 0 2px #070e17}
+@media(max-width:600px){.narration.asking>h1+p{display:none}.ask{margin-top:10px}.narration .ask-question{font-size:15px}.ask-choices button{font-size:13px}}
+@media(pointer:coarse){.ask-choices button,.ask-watch{min-height:44px}.ask-keys,.ask-choices kbd{display:none}.ask-choices button{padding-left:15px}}
+@media(forced-colors:active){.ticks u.ask-tick{forced-color-adjust:none;background:Highlight}}
+body.calm .ask{animation:none}
+/* The chapter list's scrim, drawn on the vignette where the list is masked (a mask clips its ::before to the list's
+   own box, leaving a hard edge over anything behind it). */
+@media(min-width:781px) and (min-height:561px){.chapters::before{display:none}.vignette{background:linear-gradient(90deg,#050b14b3,#050b1466 156px,transparent 260px),linear-gradient(180deg,#030a148c,transparent 19%,transparent 63%,#040a13d9 96%),linear-gradient(90deg,#050b1470,transparent 24%,transparent 85%,#050b1420)}}

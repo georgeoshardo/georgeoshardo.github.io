@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>RNA splicing and processing</title>
+<meta name="description" content="RNA splicing and processing in 3D: a gene's RNA capped, spliced and polyadenylated as it is made, interrupted genes in numbers, the spliceosome's mass, the modes of alternative splicing, and scenes on the cap, splice sites, the lariat, snRNPs, the spliceosome, U1, the commitment complex and alternative splicing.">
+<meta name="theme-color" content="#070e17">
+<link rel="preload" href="../shared/fonts/instrument_serif.ttf" as="font" type="font/ttf" crossorigin>
+<link rel="stylesheet" href="../shared/course.css">
+<link rel="stylesheet" href="../shared/labels.css">
+<link rel="stylesheet" href="../shared/hub.css">
+<link rel="stylesheet" href="hub.css">
+<script type="importmap">{"imports":{"three":"../shared/vendor/three/three.module.min.js","three/addons/":"../shared/vendor/three/addons/"}}</script>
+</head>
+<body>
+<div class="loader" id="loader" role="status" aria-live="polite"><div class="loader-orbit" aria-hidden="true"><i></i><i></i></div><p>RNA splicing and processing</p><span id="load-detail">Loading structures</span></div>
+
+<header class="top">
+  <a class="brand" href="../"><span class="brand-mark" aria-hidden="true">II</span><span>Molecular biology<br><b>of genes</b></span></a>
+  <nav class="top-links" aria-label="Course">
+    <a class="pill" href="../protein_browser/?chapter=rna">Protein library</a>
+    <a class="pill" href="../eukaryotic_transcription/index.html">Eukaryotic transcription</a>
+  </nav>
+</header>
+
+<section class="hero" id="hero" aria-labelledby="hub-title">
+  <div class="hero-view" id="viewport" aria-hidden="true"></div>
+  <div id="annotations" aria-hidden="true"><svg id="leaders"></svg></div>
+  <div class="hero-text" id="hero-text">
+    <p class="eyebrow"><i></i>RNA splicing and processing</p>
+    <h1 class="display" id="hub-title">From gene<br>to mRNA.</h1>
+    <p class="lede">In eukaryotes, RNAs transcribed from their genes require further processing to become mature and functional. Splicing often occurs as the pre-mRNA is still being transcribed.</p>
+    <div class="zoom" aria-label="A tour from the gene to its mRNA" role="group">
+      <div class="stations" id="stations"></div>
+      <button class="tour" id="tour" type="button" aria-pressed="false" aria-label="Play the tour" data-state="paused"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="play" d="M8 5.5v13l10.5-6.5z"/><path class="pause" d="M7.5 5.5h3v13h-3zM13.5 5.5h3v13h-3z"/><path class="replay" d="M5.2 12a6.8 6.8 0 1 0 2-4.8M5 4.6v3.6h3.6"/></svg></button>
+    </div>
+    <p class="station-text" id="station-text" aria-live="polite"></p>
+  </div>
+  <p class="hero-hint" aria-hidden="true">Drag to turn the view</p>
+  <p class="sr-only" id="hub-now"></p>
+  <a class="scroll-cue" id="scroll-cue" href="#content" aria-label="Scroll down"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></a>
+</section>
+
+<main class="hub" id="content">
+  <section class="differences" aria-labelledby="genes-title">
+    <h2 class="section-title" id="genes-title">Interrupted genes</h2>
+    <div class="columns">
+      <article>
+        <span class="n">01</span>
+        <h3>Exons and introns</h3>
+        <p>In an interrupted gene, the sequences retained in the mature RNA, the exons, are separated by intervening sequences called introns. Introns are transcribed into RNA along with the exons but are then removed by splicing, and the exons are joined in the mature RNA.</p>
+      </article>
+      <article>
+        <span class="n">02</span>
+        <h3>In all eukaryotes</h3>
+        <p>Interrupted genes are found in all groups of eukaryotes. Most genes in multicellular eukaryotes are interrupted; only a few genes in unicellular eukaryotes, such as yeast, are.</p>
+      </article>
+      <article>
+        <span class="n">03</span>
+        <h3>Short exons, long introns</h3>
+        <p>Genes vary widely in the numbers and lengths of their introns, but a typical mammalian gene has 7–8 exons. The exons are relatively short, only around 100–200 bp, and the introns are long, approximately 1 kb.</p>
+      </article>
+    </div>
+    <figure class="gene-figure" id="gene-figure" aria-labelledby="gene-figure-caption">
+      <dl class="gene-numbers">
+        <div><dt>Exons</dt><dd>7–8</dd></div>
+        <div><dt>An exon</dt><dd>100–200 <small>bp</small></dd></div>
+        <div><dt>An intron</dt><dd>≈1 <small>kb</small></dd></div>
+      </dl>
+      <div class="gene-drawing" id="gene-drawing"></div>
+      <figcaption id="gene-figure-caption">A gene of eight exons and seven introns, and its mRNA once the introns are removed, drawn to the same scale.</figcaption>
+    </figure>
+  </section>
+
+  <section class="processing" aria-labelledby="processing-title">
+    <h2 class="section-title" id="processing-title">Processed in the nucleus</h2>
+    <p class="section-lede">Splicing occurs in the nucleus, along with other modifications to the new RNA. The transcript is capped at the 5′ end, has its introns removed and is polyadenylated at the 3′ end; it is then transported through nuclear pores to the cytoplasm, where it is translated into protein.</p>
+    <figure class="processing-figure" id="processing-figure"></figure>
+  </section>
+
+  <section class="mass" aria-labelledby="mass-title">
+    <h2 class="section-title" id="mass-title">The spliceosome</h2>
+    <div class="mass-layout">
+      <div class="mass-text">
+        <p>The splicing reaction occurs within a large complex, the spliceosome, which is larger than a ribosome. It forms by the sequential assembly of snRNPs and other proteins onto the pre-mRNA, and its primary role is to bring the 5′ and 3′ splice sites together before any cleavage occurs.</p>
+        <p>It has a mass of about 12 MDa. Five snRNPs, each a single snRNA with its proteins, account for almost half of it; the rest are splicing factors, needed to assemble it, bind the pre-mRNA and create its catalytic centre, and proteins involved in other stages of gene expression.</p>
+      </div>
+      <figure class="mass-figure" id="mass-figure"></figure>
+    </div>
+  </section>
+
+  <section class="alternative" aria-labelledby="alternative-title">
+    <h2 class="section-title" id="alternative-title">Alternative splicing</h2>
+    <p class="section-lede">For the majority of genes in multicellular eukaryotes, one pre-mRNA gives several distinct mRNAs: over 90% of mammalian genes are estimated to undergo alternative splicing. The modes can be used individually or in combination for a single pre-mRNA.</p>
+    <div class="modes" id="modes"></div>
+  </section>
+
+  <section class="scenes" aria-labelledby="scenes-title">
+    <h2 class="section-title" id="scenes-title">Explore</h2>
+    <div class="scene-cards">
+      <a class="scene-card" href="cap.html" style="--c:#f0e442">
+        <span class="kicker">Scene · 8 steps</span>
+        <h3>The 5′ cap</h3>
+        <p>RNA polymerase II pauses with the capping enzyme, a G is added in reverse by a 5′–5′ link and methylated at N7, the cap stops a 5′–3′ exonuclease that degrades an uncapped RNA, and CBP20/80 and eIF4E hold it.</p>
+        <span class="go">Play ↗</span>
+      </a>
+      <a class="scene-card" href="splice_sites.html" style="--c:#ffa259">
+        <span class="kicker">Scene · 7 steps</span>
+        <h3>Splice sites</h3>
+        <p>The exon–intron junctions, the GU–AG rule and each site's consensus as a logo along the pre-mRNA, the branch site, a point mutation that stops splicing, and minor introns.</p>
+        <span class="go">Play ↗</span>
+      </a>
+      <a class="scene-card" href="splice_pairs.html" style="--c:#e0937a">
+        <span class="kicker">Experiment · 7 steps</span>
+        <h3>Splice sites in pairs</h3>
+        <p>Predict whether a hybrid SV40–β-globin intron is spliced and which cryptic site replaces a mutated branch site, and watch splice sites leave RNA polymerase II in 5′ to 3′ order.</p>
+        <span class="go">Play ↗</span>
+      </a>
+      <a class="scene-card" href="lariat.html" style="--c:#a99be0">
+        <span class="kicker">Scene · 8 steps</span>
+        <h3>Splicing proceeds through a lariat</h3>
+        <p>Atom by atom in the spliceosome's core: the branch-site A's 2′-OH attacks the 5′ splice site, making a lariat with a 2′–5′ bond; exon 1's freed 3′-OH joins the exons; the lariat is then debranched and degraded.</p>
+        <span class="go">Play ↗</span>
+      </a>
+      <a class="scene-card" href="snrnps.html" style="--c:#ee5f9f">
+        <span class="kicker">Scene · 7 steps</span>
+        <h3>snRNPs</h3>
+        <p>Small RNAs with their proteins: the five snRNPs, U4/U6 joined with U5, the Sm and Lsm rings, and the snRNPs in a spliceosome.</p>
+        <span class="go">Play ↗</span>
+      </a>
+      <a class="scene-card" href="spliceosome.html" style="--c:#7f9fe8">
+        <span class="kicker">Scene · 8 steps</span>
+        <h3>The spliceosome cycle</h3>
+        <p>Eight cryo-EM structures in one frame: U1 and U2 mark the intron, the tri-snRNP joins, U1 and U4 leave, the lariat forms, the exons are joined and the snRNPs are freed.</p>
+        <span class="go">Play ↗</span>
+      </a>
+      <a class="scene-card" href="u1.html" style="--c:#f39ac1">
+        <span class="kicker">Experiment · 7 steps</span>
+        <h3>U1 and the 5′ splice site</h3>
+        <p>U1 snRNA pairs with the 5′ splice site base by base; predict what a mutant splice site, and a compensating mutation in U1, do to splicing.</p>
+        <span class="go">Play ↗</span>
+      </a>
+      <a class="scene-card" href="commitment.html" style="--c:#c9b05a">
+        <span class="kicker">Scene · 7 steps</span>
+        <h3>The commitment complex</h3>
+        <p>U1, U2AF and BBP/SF1 commit the pre-mRNA to splicing, SR proteins bridge the intron, and splice sites are paired by intron or exon definition.</p>
+        <span class="go">Play ↗</span>
+      </a>
+      <a class="scene-card" href="alternative.html" style="--c:#9eeee2">
+        <span class="kicker">Experiment · 8 steps</span>
+        <h3>Alternative splicing</h3>
+        <p>One pre-mRNA spliced six ways: predict which mRNA each choice of splice sites gives, then watch the introns loop out and the exons join.</p>
+        <span class="go">Play ↗</span>
+      </a>
+      <a class="scene-card" href="isoforms.html" style="--c:#c9a8d6">
+        <span class="kicker">Scene · 8 steps</span>
+        <h3>Isoforms</h3>
+        <p>What alternative splicing does: CaMKIIδ kinases sent to the cytoplasm, nucleus or membrane, Bcl-xL and Bcl-xS with opposite fates, and an mRNA degraded because of a premature stop codon.</p>
+        <span class="go">Play ↗</span>
+      </a>
+      <a class="scene-card" href="../protein_browser/?chapter=rna" style="--c:#9fc3d2">
+        <span class="kicker">Library · 17 molecules</span>
+        <h3>The molecules, one by one</h3>
+        <p>The capping enzyme and the cap-binding proteins, the snRNPs and their rings, the splice-site factors, a spliceosome, the debranching enzyme and the proteins alternative splicing makes, each in 3D.</p>
+        <span class="go">Open ↗</span>
+      </a>
+      <a class="scene-card" href="notes.html" style="--c:#d9b882">
+        <span class="kicker">Reading</span>
+        <h3>The notes</h3>
+        <p>RNA splicing and processing in full: the cap, splice sites, the lariat, snRNAs and the spliceosome, committing the pre-mRNA, and alternative splicing.</p>
+        <span class="go">Read ↗</span>
+      </a>
+    </div>
+  </section>
+</main>
+
+<div class="load-error" id="load-error" hidden role="alert">
+  <h2 class="display">This page needs a web server</h2>
+  <p>Its structures load over HTTP. From the repository root, run</p>
+  <code>pixi run serve-drawings</code>
+  <p>then open <b>http://127.0.0.1:8080/rna_splicing/</b>.</p>
+</div>
+<script type="module" src="hub.mjs"></script>
+<script type="module" src="panels.mjs"></script>
+<script type="module">import {scrollCue} from '../shared/scroll_cue.mjs'; scrollCue(document.getElementById('scroll-cue'), document.getElementById('content'));</script>
+<script>if(location.protocol==='file:'){document.getElementById('loader').classList.add('hidden');document.getElementById('load-error').hidden=false}</script>
+</body>
+</html>

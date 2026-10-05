@@ -1,0 +1,420 @@
+{
+  "sets": [
+    {
+      "out": "assets/helix",
+      "structures": [
+        {
+          "id": "bdna",
+          "file": "source/355D.cif.gz",
+          "source": "PDB 355D",
+          "strands": [
+            {
+              "name": "a",
+              "chain": "A"
+            },
+            {
+              "name": "b",
+              "chain": "B"
+            }
+          ],
+          "atoms": [
+            {
+              "name": "duplex",
+              "chains": [
+                "A",
+                "B"
+              ],
+              "hetero": [
+                "MG"
+              ]
+            }
+          ]
+        }
+      ],
+      "citations": {
+        "355D": "Shui X et al. Biochemistry 37, 8341–8355 (1998)"
+      }
+    },
+    {
+      "out": "assets/nucleotides",
+      "center": "dA",
+      "structures": [
+        {
+          "id": "dA",
+          "file": "source/ccd/DA.cif.gz",
+          "ccd": true,
+          "source": "PDB Chemical Component Dictionary · DA",
+          "atoms": [
+            {
+              "name": "dAMP",
+              "hydrogens": true,
+              "charged": true
+            }
+          ]
+        },
+        {
+          "id": "dG",
+          "file": "source/ccd/DG.cif.gz",
+          "ccd": true,
+          "source": "PDB Chemical Component Dictionary · DG",
+          "align": {
+            "to": "dA",
+            "atoms": [
+              "C1'",
+              "C2'",
+              "C3'",
+              "C4'",
+              "O4'"
+            ]
+          },
+          "atoms": [
+            {
+              "name": "dGMP",
+              "hydrogens": true,
+              "charged": true
+            }
+          ]
+        },
+        {
+          "id": "dC",
+          "file": "source/ccd/DC.cif.gz",
+          "ccd": true,
+          "source": "PDB Chemical Component Dictionary · DC",
+          "align": {
+            "to": "dA",
+            "atoms": [
+              "C1'",
+              "C2'",
+              "C3'",
+              "C4'",
+              "O4'"
+            ]
+          },
+          "atoms": [
+            {
+              "name": "dCMP",
+              "hydrogens": true,
+              "charged": true
+            }
+          ]
+        },
+        {
+          "id": "dT",
+          "file": "source/ccd/DT.cif.gz",
+          "ccd": true,
+          "source": "PDB Chemical Component Dictionary · DT",
+          "align": {
+            "to": "dA",
+            "atoms": [
+              "C1'",
+              "C2'",
+              "C3'",
+              "C4'",
+              "O4'"
+            ]
+          },
+          "atoms": [
+            {
+              "name": "dTMP",
+              "hydrogens": true,
+              "charged": true
+            }
+          ]
+        },
+        {
+          "id": "A",
+          "file": "source/ccd/A.cif.gz",
+          "ccd": true,
+          "source": "PDB Chemical Component Dictionary · A",
+          "align": {
+            "to": "dA",
+            "atoms": [
+              "C1'",
+              "C2'",
+              "C3'",
+              "C4'",
+              "O4'"
+            ]
+          },
+          "atoms": [
+            {
+              "name": "AMP",
+              "hydrogens": true,
+              "charged": true
+            }
+          ]
+        },
+        {
+          "id": "U",
+          "file": "source/ccd/U.cif.gz",
+          "ccd": true,
+          "source": "PDB Chemical Component Dictionary · U",
+          "align": {
+            "to": "dT",
+            "atoms": [
+              "N1",
+              "C2",
+              "N3",
+              "C4",
+              "C5",
+              "C6"
+            ]
+          },
+          "atoms": [
+            {
+              "name": "UMP",
+              "hydrogens": true,
+              "charged": true
+            }
+          ]
+        },
+        {
+          "id": "chain",
+          "file": "source/355D.cif.gz",
+          "source": "PDB 355D, rebuilt from the Chemical Component Dictionary",
+          "atoms": [
+            {
+              "name": "chain",
+              "chains": [
+                "A"
+              ],
+              "residues": [
+                2,
+                5
+              ],
+              "ideal": true,
+              "charged": true
+            }
+          ]
+        }
+      ],
+      "citations": {
+        "355D": "Shui X et al. Biochemistry 37, 8341–8355 (1998)",
+        "CCD": "Westbrook JD et al. Bioinformatics 31, 1274–1278 (2015)"
+      }
+    },
+    {
+      "out": "assets/replication",
+      "quantise": true,
+      "decimate": 0.5,
+      "structures": [
+        {
+          "id": "pol",
+          "file": "source/1T7P.cif.gz",
+          "source": "PDB 1T7P",
+          "parts": [
+            {
+              "name": "DNA polymerase",
+              "chains": [
+                "A",
+                "B"
+              ],
+              "proteinOnly": true
+            }
+          ],
+          "strands": [
+            {
+              "name": "template",
+              "chain": "T"
+            },
+            {
+              "name": "primer",
+              "chain": "P"
+            }
+          ]
+        },
+        {
+          "id": "helicase",
+          "file": "source/6N7I.cif.gz",
+          "source": "PDB 6N7I",
+          "parts": [
+            {
+              "name": "Helicase",
+              "chains": [
+                "A",
+                "B",
+                "C",
+                "D",
+                "E",
+                "F"
+              ],
+              "proteinOnly": true
+            }
+          ],
+          "strands": [
+            {
+              "name": "ssDNA",
+              "chain": "T"
+            }
+          ]
+        }
+      ],
+      "citations": {
+        "1T7P": "Doublié S et al. Nature 391, 251–258 (1998)",
+        "6N7I": "Gao Y et al. Science 363, eaav7003 (2019)"
+      }
+    },
+    {
+      "out": "assets/hub",
+      "quantise": true,
+      "decimate": 0.5,
+      "center": "nucleosome",
+      "structures": [
+        {
+          "id": "nucleosome",
+          "file": "source/1KX5.cif.gz",
+          "source": "PDB 1KX5",
+          "parts": [
+            {
+              "name": "Histones",
+              "chains": [
+                "A",
+                "B",
+                "C",
+                "D",
+                "E",
+                "F",
+                "G",
+                "H"
+              ],
+              "role": "histone"
+            }
+          ],
+          "strands": [
+            {
+              "name": "top",
+              "chain": "I"
+            },
+            {
+              "name": "bottom",
+              "chain": "J"
+            }
+          ]
+        }
+      ],
+      "citations": {
+        "1KX5": "Davey CA et al. Solvent mediated interactions in the structure of the nucleosome core particle at 1.9 Å resolution. J Mol Biol 319, 1097–1113 (2002)"
+      }
+    },
+    {
+      "out": "assets/hybridisation",
+      "structures": [
+        {"id": "kissing", "file": "source/1KIS.cif.gz", "source": "PDB 1KIS",
+         "atoms": [{"name": "kissing", "chains": ["A", "B"]}]},
+        {"id": "hybrid", "file": "source/1FIX.cif.gz", "source": "PDB 1FIX",
+         "strands": [{"name": "rna", "chain": "A"}, {"name": "dna", "chain": "B"}],
+         "atoms": [{"name": "heteroduplex", "chains": ["A", "B"]}]}
+      ],
+      "citations": {
+        "1KIS": "Chang KY, Tinoco I Jr. The structure of an RNA \"kissing\" hairpin complex of the HIV TAR hairpin loop and its complement. J Mol Biol 269, 52–66 (1997)",
+        "1FIX": "Horton NC, Finzel BC. The structure of an RNA/DNA hybrid: a substrate of the ribonuclease activity of HIV-1 reverse transcriptase. J Mol Biol 264, 521–533 (1996)"
+      }
+    },
+    {
+      "out": "assets/dna_or_rna",
+      "quantise": true,
+      "decimate": 0.5,
+      "structures": [
+        {"id": "rdrp", "file": "source/library/3OL6.cif.gz", "source": "PDB 3OL6",
+         "parts": [{"name": "RNA-dependent RNA polymerase", "chains": ["A"], "proteinOnly": true}],
+         "strands": [{"name": "template", "chain": "B"}, {"name": "product", "chain": "C"}]},
+        {"id": "rt", "file": "source/library/4PQU.cif.gz", "source": "PDB 4PQU",
+         "parts": [{"name": "Reverse transcriptase", "chains": ["A", "B"], "proteinOnly": true}],
+         "strands": [{"name": "template", "chain": "T"}, {"name": "primer", "chain": "P"}]}
+      ],
+      "citations": {
+        "3OL6": "Gong P, Peersen OB. Structural basis for active site closure by the poliovirus RNA-dependent RNA polymerase. Proc Natl Acad Sci USA 107, 22505–22510 (2010)",
+        "4PQU": "Das K et al. Structures of HIV-1 RT-RNA/DNA ternary complexes with dATP and nevirapine reveal conformational flexibility of RNA/DNA. Nucleic Acids Res 42, 8125–8137 (2014)"
+      }
+    },
+    {
+      "out": "assets/transfection",
+      "quantise": true,
+      "decimate": 0.5,
+      "structures": [
+        {"id": "tk1", "file": "source/library/1XBT.cif.gz", "source": "PDB 1XBT",
+         "parts": [{"name": "TK1 A", "chains": ["A"], "proteinOnly": true}, {"name": "TK1 B", "chains": ["B"], "proteinOnly": true},
+                   {"name": "TK1 C", "chains": ["C"], "proteinOnly": true}, {"name": "TK1 D", "chains": ["D"], "proteinOnly": true}]}
+      ],
+      "citations": {
+        "1XBT": "Welin M et al. Structures of thymidine kinase 1 of human and mycoplasmic origin. Proc Natl Acad Sci USA 101, 17970–17975 (2004)"
+      }
+    },
+    {
+      "out": "assets/library",
+      "quantise": true,
+      "decimate": 0.5,
+      "structures": [
+        {"id": "bdna", "file": "source/355D.cif.gz", "source": "355D", "strands": [
+          {"name": "a", "chain": "A"}, {"name": "b", "chain": "B"}]},
+        {"id": "trna", "file": "source/library/1EHZ.cif.gz", "source": "1EHZ", "atoms": [
+          {"name": "tRNA", "chains": ["A"], "hetero": ["5MC", "YYG"]}]},
+        {"id": "hybrid", "file": "source/1FIX.cif.gz", "source": "1FIX", "strands": [
+          {"name": "rna", "chain": "A"}, {"name": "dna", "chain": "B"}]},
+        {"id": "pol", "file": "source/1T7P.cif.gz", "source": "1T7P", "parts": [
+          {"name": "DNA polymerase", "chains": ["A"], "proteinOnly": true}, {"name": "Thioredoxin", "chains": ["B"]},
+          {"name": "Template strand", "chains": ["T"]}, {"name": "New strand", "chains": ["P"]}]},
+        {"id": "helicase", "file": "source/6N7I.cif.gz", "source": "6N7I", "parts": [
+          {"name": "Subunit 1", "chains": ["A"]}, {"name": "Subunit 2", "chains": ["B"]}, {"name": "Subunit 3", "chains": ["C"]},
+          {"name": "Subunit 4", "chains": ["D"]}, {"name": "Subunit 5", "chains": ["E"]}, {"name": "Subunit 6", "chains": ["F"]},
+          {"name": "DNA strand", "chains": ["T"]}]},
+        {"id": "rt", "file": "source/library/4PQU.cif.gz", "source": "4PQU", "parts": [
+          {"name": "p66", "chains": ["A"]}, {"name": "p51", "chains": ["B"]},
+          {"name": "RNA template", "chains": ["T"]}, {"name": "New DNA strand", "chains": ["P"]}]},
+        {"id": "rdrp", "file": "source/library/3OL6.cif.gz", "source": "3OL6", "parts": [
+          {"name": "Polymerase", "chains": ["A"]}, {"name": "RNA template", "chains": ["B"]}, {"name": "New RNA strand", "chains": ["C"]}]},
+        {"id": "tk", "file": "source/library/1XBT.cif.gz", "source": "1XBT", "parts": [
+          {"name": "Subunit 1", "chains": ["A"]}, {"name": "Subunit 2", "chains": ["B"]},
+          {"name": "Subunit 3", "chains": ["C"]}, {"name": "Subunit 4", "chains": ["D"]}]}
+      ],
+      "citations": {
+        "355D": "Shui X et al. The B-DNA dodecamer at high resolution reveals a spine of water on sodium. Biochemistry 37, 8341–8355 (1998)",
+        "1EHZ": "Shi H, Moore PB. The crystal structure of yeast phenylalanine tRNA at 1.93 Å resolution: a classic structure revisited. RNA 6, 1091–1105 (2000)",
+        "1FIX": "Horton NC, Finzel BC. The structure of an RNA/DNA hybrid: a substrate of the ribonuclease activity of HIV-1 reverse transcriptase. J Mol Biol 264, 521–533 (1996)",
+        "1T7P": "Doublié S et al. Crystal structure of a bacteriophage T7 DNA replication complex at 2.2 Å resolution. Nature 391, 251–258 (1998)",
+        "6N7I": "Gao Y et al. Structures and operating principles of the replisome. Science 363, eaav7003 (2019)",
+        "4PQU": "Das K et al. Structures of HIV-1 RT-RNA/DNA ternary complexes with dATP and nevirapine reveal conformational flexibility of RNA/DNA. Nucleic Acids Res 42, 8125–8137 (2014)",
+        "3OL6": "Gong P, Peersen OB. Structural basis for active site closure by the poliovirus RNA-dependent RNA polymerase. Proc Natl Acad Sci USA 107, 22505–22510 (2010)",
+        "1XBT": "Welin M et al. Structures of thymidine kinase 1 of human and mycoplasmic origin. Proc Natl Acad Sci USA 101, 17970–17975 (2004)"
+      }
+    },
+    {
+      "out": "assets/phage",
+      "quantise": true,
+      "center": "head",
+      "structures": [
+        {"id": "head", "file": "source/phage/7VS5_ca.cif.gz", "source": "PDB 7VS5", "assembly": "1", "parts": [
+          {"name": "Head", "chains": ["*"], "grid": {"spacing": 4, "sigma": 1.2, "level": 0.16}, "decimate": 0.92},
+          {"name": "Head, far", "chains": ["*"], "grid": {"spacing": 7, "sigma": 1.1, "level": 0.5}, "decimate": 0.97}]},
+        {"id": "portal", "file": "source/phage/6UZC_ca.cif.gz", "source": "PDB 6UZC", "parts": [
+          {"name": "Portal", "entities": ["2"], "grid": {"spacing": 4, "sigma": 1.2, "level": 0.16}, "decimate": 0.7}]},
+        {"id": "baseplate", "file": "source/phage/5IV5_ca.cif.gz", "source": "PDB 5IV5", "parts": [
+          {"name": "Baseplate", "entities": ["1", "2", "3", "4", "5", "6", "7", "9", "11"], "grid": {"spacing": 3, "sigma": 1.2, "level": 0.07}, "decimate": 0.88},
+          {"name": "Baseplate, far", "entities": ["1", "2", "3", "4", "5", "6", "7", "9", "11"], "grid": {"spacing": 6, "sigma": 1.1, "level": 0.4}, "decimate": 0.93},
+          {"name": "Hub", "entities": ["10", "12", "13", "14", "15"], "grid": {"spacing": 3, "sigma": 1.2, "level": 0.07}, "decimate": 0.75},
+          {"name": "Hub, far", "entities": ["10", "12", "13", "14", "15"], "grid": {"spacing": 6, "sigma": 1.0, "level": 0.35}, "decimate": 0.7},
+          {"name": "Tube subunit", "chains": ["R"], "grid": {"spacing": 3, "sigma": 1.2, "level": 0.07}, "decimate": 0.7},
+          {"name": "Tube subunit, far", "chains": ["R"], "grid": {"spacing": 6, "sigma": 1.0, "level": 0.35}, "decimate": 0.75}],
+         "points": [{"name": "fibre-F", "chain": "F", "residue": 288}, {"name": "fibre-G", "chain": "G", "residue": 288},
+                    {"name": "fibre-H", "chain": "H", "residue": 288}]},
+        {"id": "sheath", "file": "source/phage/3J2M.cif.gz", "source": "PDB 3J2M", "parts": [
+          {"name": "Sheath subunit", "chains": ["U"], "grid": {"spacing": 3, "sigma": 1.1, "level": 0.5}, "decimate": 0.8},
+          {"name": "Sheath subunit, far", "chains": ["U"], "grid": {"spacing": 6, "sigma": 1.0, "level": 2.5}, "decimate": 0.85},
+          {"name": "Tail terminator", "chains": ["A", "B", "C", "D", "E", "F"], "grid": {"spacing": 3, "sigma": 1.1, "level": 0.5}, "decimate": 0.7}],
+         "points": [{"name": "sheath-a", "chain": "U", "residue": 60}, {"name": "sheath-b", "chain": "U", "residue": 250},
+                    {"name": "sheath-c", "chain": "U", "residue": 450}, {"name": "sheath-d", "chain": "U", "residue": 600}]},
+        {"id": "sheathContracted", "file": "source/phage/3J2N.cif.gz", "source": "PDB 3J2N",
+         "align": {"to": "sheath", "pairs": [["A", "A"], ["B", "B"], ["C", "C"], ["D", "D"], ["E", "E"], ["F", "F"]]},
+         "points": [{"name": "contracted-a", "chain": "U", "residue": 60}, {"name": "contracted-b", "chain": "U", "residue": 250},
+                    {"name": "contracted-c", "chain": "U", "residue": 450}, {"name": "contracted-d", "chain": "U", "residue": 600}]}
+      ],
+      "citations": {
+        "7VS5": "Fang Q et al. Structures of a large prolate virus capsid in unexpanded and expanded states generate insights into the icosahedral virus assembly. Proc Natl Acad Sci USA 119, e2203272119 (2022)",
+        "6UZC": "Fang Q et al. Structural morphing in a symmetry-mismatched viral vertex. Nat Commun 11, 1713 (2020)",
+        "5IV5": "Taylor NMI et al. Structure of the T4 baseplate and its function in triggering sheath contraction. Nature 533, 346–352 (2016)",
+        "3J2M": "Fokine A et al. The molecular architecture of the bacteriophage T4 neck. J Mol Biol 425, 1731–1744 (2013)",
+        "3J2N": "Fokine A et al. The molecular architecture of the bacteriophage T4 neck. J Mol Biol 425, 1731–1744 (2013)"
+      }
+    }
+  ]
+}

@@ -61,11 +61,20 @@ export function createLabels(root,svg,announcer){
         L.el.classList.toggle('inside',q.inside);
         if(L.sizeText!==text){const c=sizes.get(text);if(c){L.w=c[0];L.h=c[1]}else{L.el.style.transform='translate3d(-9999px,0,0)';L.w=L.el.offsetWidth;L.h=L.el.offsetHeight;sizes.set(text,[L.w,L.h])}L.sizeText=text}
         // The side facing away from screen centre is tried first, unless the page prefers one (o.side); boxes go above
-        // their anchor if they can, or below (o.below).
-        const outward=q.side||(q.s.x>W*.55?1:-1);let box=null;
-        for(const side of [outward,-outward]){for(const[ox,oy]of q.below?BELOW:OFFSETS){const b={x:side>0?q.s.x+ox:q.s.x-ox-L.w,y:q.s.y+oy-L.h/2,w:L.w,h:L.h};
-          if(b.x<12||b.y<12||b.x+b.w>W-12||b.y+b.h>H-12)continue;if(blocked.some(r=>overlaps(b,r)))continue;if(placed.some(r=>overlaps(b,r)))continue;if(dots.some(d=>overlaps(b,d,4)))continue;box=b;break}if(box)break}
+        // their anchor if they can, or below (o.below). A label already shown keeps last frame's place beside its
+        // anchor while that still fits (and is on the side the page prefers, if it prefers one), so it does not swap
+        // sides as its anchor drifts or travels across the screen; where that place no longer fits, it holds still
+        // where it is, its leader following the anchor, while that is clear and the leader short (a travelling anchor
+        // crossing the middle of a phone, where no place beside it fits); only then is a new place sought.
+        const outward=q.side||(q.s.x>W*.55?1:-1);let box=null,pick=null;
+        const at=(side,ox,oy)=>({x:side>0?q.s.x+ox:q.s.x-ox-L.w,y:q.s.y+oy-L.h/2,w:L.w,h:L.h});
+        const fits=b=>!(b.x<12||b.y<12||b.x+b.w>W-12||b.y+b.h>H-12)&&!blocked.some(r=>overlaps(b,r))&&!placed.some(r=>overlaps(b,r))&&!dots.some(d=>overlaps(b,d,4));
+        const kept=L.key===q.key&&L.shown&&L.pick;
+        if(kept&&L.pick[0]!=='hold'&&(!q.side||L.pick[0]===q.side)){const b=at(...L.pick);if(fits(b)){box=b;pick=L.pick}}
+        if(!box&&kept){const b={x:L.x,y:L.y,w:L.w,h:L.h},near=Math.hypot(q.s.x-(b.x+b.w/2),q.s.y-(b.y+b.h/2))<Math.max(240,.32*W);if(near&&fits(b)){box=b;pick=['hold']}}
+        if(!box)for(const side of [outward,-outward]){for(const[ox,oy]of q.below?BELOW:OFFSETS){const b=at(side,ox,oy);if(fits(b)){box=b;pick=[side,ox,oy];break}}if(box)break}
         if(!box)continue;
+        L.pick=pick;
         const fresh=L.key!==q.key||!L.shown;L.key=q.key;
         if(fresh){L.x=box.x;L.y=box.y}else{L.x+=(box.x-L.x)*damping;L.y+=(box.y-L.y)*damping}if(Math.abs(box.x-L.x)+Math.abs(box.y-L.y)>.5)moving=true;
         placed.push({x:L.x,y:L.y,w:L.w,h:L.h});active.add(i);count++;
@@ -79,8 +88,10 @@ export function createLabels(root,svg,announcer){
       let k=0;
       if(enabled)for(const q of tagQueue){if(k>=MAX_TAGS)break;const s=project(q.anchor,camera,W,H);if(!s||s.x<MARGIN||s.y<MARGIN||s.x>W-MARGIN||s.y>H-MARGIN||inBlocked(s.x,s.y))continue;
         const T=tags[k];let w=tagWidths.get(q.text);if(w===undefined){ruler.textContent=q.text;w=ruler.offsetWidth||q.text.length*6.2+12;tagWidths.set(q.text,w)}
-        // Near the right edge the tag flips to the left of its subject, dot on the right.
-        const flip=s.x-DOT+w>W-MARGIN,box={x:flip?s.x+DOT-w:s.x-DOT,y:s.y-TAG_H/2,w,h:TAG_H};
+        // Near the right edge the tag flips to the left of its subject, dot on the right; a tag already shown keeps
+        // its side while it still fits there, so one whose subject moves about near the edge does not flip back and forth.
+        const fitsRight=s.x-DOT+w<=W-MARGIN,fitsLeft=s.x+DOT-w>=MARGIN,kept=T.shown&&T.text===q.text&&T.flip!==undefined;
+        const flip=kept?(T.flip?fitsLeft||!fitsRight:!fitsRight):!fitsRight,box={x:flip?s.x+DOT-w:s.x-DOT,y:s.y-TAG_H/2,w,h:TAG_H};
         if(box.x<MARGIN||placed.some(r=>overlaps(box,r,6))||blocked.some(r=>overlaps(box,r,4)))continue;
         k++;placed.push(box);T.box=box;if(T.text!==q.text){setRich(T.el,q.text);T.text=q.text}if(T.flip!==flip){T.el.classList.toggle('flip',flip);T.flip=flip}if(T.color!==q.color){T.el.style.setProperty('--c',q.color);T.color=q.color}
         T.el.style.transform=`translate3d(${box.x.toFixed(1)}px,${box.y.toFixed(1)}px,0)`;show(T.el,true);T.shown=true}

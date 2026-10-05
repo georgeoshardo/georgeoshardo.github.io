@@ -1,0 +1,85 @@
+/* Chapter 4's hub (index.html, hub.mjs, panels.mjs), on shared/hub.css (its hero, sections, cards and tour rail): the
+   gene in numbers, processing in the nucleus, the spliceosome's mass and the modes of alternative splicing. */
+/* The 3D view is masked out under the introduction and the header, so the hero is the canvas's own flat night, not
+   the page's radial glow (which bands under the hero's left-hand shade there). The page below is flat night too: the
+   glow, hidden by the hero on wide screens, would otherwise begin at the hero's foot on a phone as a hard edge. */
+body,.hero{background:var(--night)}
+.hero-text{max-width:620px}
+.hero-text .display{font-size:clamp(44px,5.2vw,80px)}
+
+.processing,.mass,.alternative{margin-top:72px;border-top:1px solid var(--line);padding-top:28px}
+.section-lede{max-width:72ch;margin:-8px 0 26px;font-size:13px;line-height:1.75;color:#b3c1ca;text-wrap:pretty}
+figure{margin:0}
+main figure svg{display:block;width:100%;height:auto;overflow:visible}
+main svg text{font-family:var(--sans);fill:#c7d3da}
+
+/* ---------- Interrupted genes: the gene and its mRNA to scale ---------- */
+.gene-figure{margin-top:clamp(28px,4vw,44px);display:grid;grid-template-columns:auto minmax(0,1fr);gap:clamp(20px,3vw,48px);align-items:center}
+.gene-numbers{display:grid;gap:14px;margin:0}
+.gene-numbers div{display:grid;gap:2px}
+.gene-numbers dt{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint)}
+.gene-numbers dd{margin:0;font-family:var(--serif);font-size:34px;line-height:1;color:var(--ink);font-variant-numeric:tabular-nums}
+.gene-numbers small{font-family:var(--sans);font-size:12px;color:#9fb0ba}
+.gene-figure figcaption{grid-column:1/-1;font-size:12px;line-height:1.7;color:#8e9ea8}
+.gene-drawing .row-name{font-size:11px;fill:#9fb0ba}
+.gene-drawing .size{font-size:11px;fill:#8e9ea8;font-variant-numeric:tabular-nums}
+.gene-drawing .tick{stroke:#8e9ea8;stroke-width:1}
+.gene-drawing .line{stroke:var(--intron);stroke-width:2}
+
+/* ---------- Colours of the RNA drawings (shared/rna.mjs SPLICING) ---------- */
+:root{--exon:#ffa259;--exon-2:#e27a37;--exon-alt:#ffd9b8;--intron:#8c86ad;--intron-fill:#5d5884;--cap:#f0e442;--polya:#2fbf8f}
+.exon{fill:var(--exon)}.exon.even{fill:var(--exon-2)}.intron{fill:var(--intron-fill)}.cap{fill:var(--cap)}.polya{fill:var(--polya)}
+
+/* ---------- Processing in the nucleus ---------- */
+.processing-figure.tall svg{max-width:440px;margin:0 auto}
+.processing-figure .envelope{fill:none;stroke:#7fb6d0;stroke-width:1.6;stroke-opacity:.55}
+.processing-figure .nucleus{fill:#7fb6d00d}
+.processing-figure .pore{fill:#070e17;stroke:#7fb6d0;stroke-width:1.4;stroke-opacity:.7}
+.processing-figure .place{font-size:11px;letter-spacing:.14em;text-transform:uppercase;fill:#7f95a3}
+.processing-figure .step{font-size:12.5px;fill:#dfe7ea}
+.processing-figure .sub{font-size:11px;fill:#8e9ea8}
+.processing-figure .arrow{fill:none;stroke:#8e9ea8;stroke-width:1.4}
+.processing-figure .head{fill:#8e9ea8}
+.processing-figure .ribosome{fill:#a9b6c3}
+.processing-figure .ribosome.small{fill:#c6d0d8}
+.processing-figure .chain{fill:#8fc2a0;stroke:#070e17;stroke-width:1}
+.processing-figure a .step{fill:var(--accent)}
+.processing-figure a:focus-visible{outline:none}
+.processing-figure a:focus-visible .step{text-decoration:underline}
+@media(hover:hover){.processing-figure a:hover .step{fill:#f3cfa1}}
+
+/* ---------- The spliceosome's mass ---------- */
+.mass-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:clamp(24px,4vw,64px);align-items:center}
+.mass-text p{margin:0 0 14px;font-size:13px;line-height:1.75;color:#b3c1ca;text-wrap:pretty}
+.mass-figure .total{font-family:var(--serif);font-size:30px;fill:var(--ink)}
+.mass-figure .total-sub{font-size:11px;fill:#8e9ea8;letter-spacing:.06em}
+.mass-figure .name{font-size:13px;fill:#dfe7ea}
+.mass-figure .value{font-size:12px;fill:#9fb0ba;font-variant-numeric:tabular-nums}
+.mass-figure .pct{font-size:12px;font-weight:600;fill:#070e17;font-variant-numeric:tabular-nums}
+.mass-figure .mass-bracket{fill:none;stroke:#c7d3da;stroke-width:1.2}
+.mass-figure .mass-bracket-label{font-size:12px;fill:#c7d3da}
+.mass-figure .gap{stroke:#070e17;stroke-width:2}
+
+/* ---------- The modes of alternative splicing ---------- */
+.modes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(14px,2vw,22px)}
+.mode{margin:0;padding:18px 18px 16px;border-radius:var(--radius);border:1px solid #9fb6c01c;background:linear-gradient(180deg,#0f1b27cc,#0b141ecc)}
+.mode h3{font-family:var(--serif);font-weight:400;font-size:23px;line-height:1.1;margin:0 0 8px}
+.mode p{margin:12px 0 0;font-size:12px;line-height:1.65;color:#a8b6bf;text-wrap:pretty}
+.mode .label{font-size:10px;letter-spacing:.12em;text-transform:uppercase;fill:#7f95a3}
+.mode .num{font-size:10px;font-weight:600;fill:#070e17;text-anchor:middle;dominant-baseline:central}
+.mode .num.light{fill:#2a1a0c}
+.mode .splice{fill:none;stroke:#c7d3da;stroke-width:1.3}
+.mode .splice.alt{stroke:#c7d3da;stroke-dasharray:3 3}
+.mode .arrow{fill:none;stroke:#6f838f;stroke-width:1.2}
+.mode .head{fill:#6f838f}
+.mode .exon.alt{fill:var(--exon-alt)}
+.mode .or{font-size:10px;fill:#7f95a3;text-anchor:middle}
+
+@media(max-width:1100px){.modes{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:900px){.mass-layout{grid-template-columns:1fr}}
+@media(max-width:780px){
+  .gene-figure{grid-template-columns:1fr}
+  .gene-numbers{grid-template-columns:repeat(3,auto);justify-content:start;gap:22px}
+  .gene-numbers dd{font-size:28px}
+}
+@media(max-width:640px){.modes{grid-template-columns:1fr}}

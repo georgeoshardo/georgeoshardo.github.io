@@ -59,3 +59,23 @@ body{background:radial-gradient(1100px 700px at 75% 10%,#12243160,transparent 62
 @keyframes scroll-cue-bob{0%,100%{transform:translateY(-2px)}50%{transform:translateY(2px)}}
 @media(max-width:780px){.hero:has(.scroll-cue) .hero-text{bottom:70px}.scroll-cue{width:44px;height:44px;bottom:12px}}
 @media(prefers-reduced-motion:reduce){.scroll-cue svg{animation:none}}
+/* Superscripts set by text.mjs (m<sup>7</sup>G) in a hub's text and labels. */
+sup{font-size:.72em;vertical-align:.42em;line-height:0}
+
+/* A hub's tour (chapter 1's zoom, chapter 4's gene to mRNA): a rail of stations under the introduction, a round button
+   that plays, pauses or replays the tour beside it, and the station's text below. The page's script fills the rail
+   with buttons (.station: .n, its number, and .name) and marks the current one aria-current=step. */
+.zoom{display:flex;align-items:center;gap:10px;margin-top:24px}
+.stations{display:flex;gap:2px;flex-wrap:wrap}
+.station{display:flex;align-items:baseline;gap:6px;padding:7px 10px;border-radius:999px;border:1px solid transparent;font-size:11px;color:#9fb0ba;transition:color .2s,border-color .2s,background .2s}
+.station .n{font-size:9px;letter-spacing:.12em;color:#6f838f;transition:color .2s}
+.station[aria-current=step]{color:var(--ink);border-color:var(--line-2);background:#15222c80}
+.station[aria-current=step] .n{color:var(--accent)}
+@media(hover:hover){.station:hover{color:var(--ink)}}
+.tour{flex:none;display:grid;place-items:center;width:32px;height:32px;border-radius:50%;border:1px solid var(--line-2);background:#15222c80;color:var(--accent)}
+.tour svg{width:15px;height:15px;fill:currentColor}
+.tour .replay{fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.tour:not([data-state=playing]) .pause,.tour:not([data-state=paused]) .play,.tour:not([data-state=ended]) .replay{display:none}
+@media(hover:hover){.tour:hover{background:#cfe7e21a}}
+.station-text{min-height:3.4em;margin:12px 0 0;max-width:52ch;font-size:13px;line-height:1.65;color:#c7d3da;text-wrap:pretty}
+@media(max-width:780px){.zoom{margin-top:18px}.station{padding:6px 9px}.station .name{font-size:10px}.station-text{min-height:4.8em}}

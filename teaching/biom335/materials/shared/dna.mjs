@@ -122,10 +122,15 @@ export function createDuplex({pairs, template = STRANDS.template, coding = STRAN
   const glow = k => widths[k] >= widths[1 - k] ? STRANDS.glow.template : STRANDS.glow.coding;
   const strands = [template, coding].map((color, k) => createTube(group, {color, radius: widths[k], max, glow: glow(k), outline: true}));
   const rungs = createRungs(group, n, rung);
-  // How many pairs of each strand are drawn (from pair 0), e.g. a new strand as a replication fork makes it.
-  const shown = [n, n];
+  // How many pairs of each strand are drawn (from pair 0), e.g. a new strand as a polymerase makes it; or, for a
+  // strand drawn in pieces (a replication fork's lagging strand), its pair ranges [from, to), each its own tube; or,
+  // for a strand of stretches of two kinds of DNA, ranges that meet end to end, each in its own colour (`joined`).
+  const shown = [n, n], ranges = [null, null], joined = [false, false], pieces = [[], []];
+  const piece = (k, j) => pieces[k][j] ||= createTube(group, {color: k ? coding : template, radius: strands[k].radius, max, glow: glow(k), outline: true});
+  const paint = (tube, colour) => { if (tube.colour === colour) return; tube.colour = colour; tube.material.color.set(colour); tube.material.emissive?.set(colour); };
+  const drawnAt = (k, i) => ranges[k] ? ranges[k].some(([a, b]) => i >= a && i < b) : i < shown[k];
   const world = {aBackbone: pairs.map(() => new THREE.Vector3()), bBackbone: pairs.map(() => new THREE.Vector3()), aBase: pairs.map(() => new THREE.Vector3()), bBase: pairs.map(() => new THREE.Vector3())};
-  const curve = pts => new THREE.CatmullRomCurve3(pts, false, 'centripetal').getSpacedPoints(max - 1), mid = new THREE.Vector3();
+  const curve = pts => new THREE.CatmullRomCurve3(pts, false, 'centripetal').getSpacedPoints(max - 1), mid = new THREE.Vector3(), tan = new THREE.Vector3();
   let last = null;
   const duplex = {group, pairs, strands, rungs, world,
     // Places each pair by its frame; `open` (0–1 per pair, optional) draws the bond part way, as the strands part.
@@ -139,11 +144,31 @@ export function createDuplex({pairs, template = STRANDS.template, coding = STRAN
         world.bBase[i].copy(L.bBase).applyQuaternion(f.q).add(f.origin);
         const k = 1 - .6 * (open?.[i] || 0);
         mid.addVectors(world.aBackbone[i], world.bBackbone[i]).multiplyScalar(.5);
-        halfRung(rungs[0], i, world.aBackbone[i], mid, STRANDS.rung.radius, i < shown[0] ? k : 0);
-        halfRung(rungs[1], i, world.bBackbone[i], mid, STRANDS.rung.radius, i < shown[1] ? k : 0);
+        halfRung(rungs[0], i, world.aBackbone[i], mid, STRANDS.rung.radius, drawnAt(0, i) ? k : 0);
+        halfRung(rungs[1], i, world.bBackbone[i], mid, STRANDS.rung.radius, drawnAt(1, i) ? k : 0);
       }
       [world.aBackbone, world.bBackbone].forEach((backbone, k) => {
-        const pts = curve(backbone), m = shown[k] >= n ? pts.length : Math.max(0, (shown[k] - 1) * samples + 1);
+        const pts = curve(backbone);
+        if (ranges[k]) {
+          strands[k].update(0);
+          // Joined stretches share their meeting ring (no caps, the curve's tangent there, the last frame carried on).
+          let before = null;
+          ranges[k].forEach(([a, b, colour], j) => {
+            const tube = piece(k, j), from = Math.max(0, a) * samples, to = Math.min(n - 1, joined[k] ? b : b - 1) * samples, m = to - from + 1;
+            paint(tube, colour ?? (k ? coding : template));
+            if (m < 2) { tube.update(0); before = null; return; }
+            for (let i = 0; i < m; i++) tube.points[i].copy(pts[from + i]);
+            const next = ranges[k][j + 1], joinsBefore = joined[k] && !!before, joinsAfter = joined[k] && !!next && Math.round(next[0]) * samples === to && to < pts.length - 1;
+            const across = i => tan.subVectors(pts[Math.min(pts.length - 1, i + 1)], pts[Math.max(0, i - 1)]).clone();
+            tube.update(m, joined[k] ? {caps: [!joinsBefore, !joinsAfter], tangents: [joinsBefore ? across(from) : null, joinsAfter ? across(to) : null],
+              frame: joinsBefore ? before.endNormal : null} : undefined);
+            before = tube;
+          });
+          for (let j = ranges[k].length; j < pieces[k].length; j++) pieces[k][j].update(0);
+          return;
+        }
+        for (const tube of pieces[k]) tube.update(0);
+        const m = shown[k] >= n ? pts.length : Math.max(0, (shown[k] - 1) * samples + 1);
         for (let i = 0; i < m; i++) strands[k].points[i].copy(pts[i]);
         strands[k].update(m);
       });
@@ -151,10 +176,24 @@ export function createDuplex({pairs, template = STRANDS.template, coding = STRAN
     },
     // Draws strand k (0 = a, 1 = b) only up to pair `count`; applies at the next pose().
     reveal(k, count) { shown[k] = Math.max(0, Math.min(n, Math.round(count))); },
+    // Draws strand k as pieces over pair ranges [[from, to), …] (null: whole again, or as revealed); next pose().
+    pieces(k, list) { ranges[k] = list && list.map(([a, b]) => [Math.round(a), Math.round(b)]); joined[k] = false; },
+    // Draws strand k as stretches [[from, to, colour], …] that meet end to end, each bond half a shade darker than its
+    // stretch: a strand of two kinds of DNA (null: whole again); next pose().
+    segments(k, list) {
+      ranges[k] = list && list.map(([a, b, c]) => [Math.round(a), Math.round(b), c]); joined[k] = !!list;
+      if (!list) return;
+      const c = new THREE.Color();
+      for (const [a, b, colour] of ranges[k]) { c.set(colour).multiplyScalar(.8); for (let i = Math.max(0, a); i < Math.min(n, b); i++) rungs[k].setColorAt(i, c); }
+      rungs[k].instanceColor.needsUpdate = true;
+    },
     // Wide shots: strands at least ~1.6 px wide and outlined, for a view scale in px/Å; re-posed when they change.
     view(pxPerA) {
       let changed = false;
-      for (const tb of strands) { const r = minRadius(tb.base, pxPerA); if (Math.abs(r - tb.radius) > .02) { tb.radius = r; changed = true; } tb.outline.width = outlineWidth(pxPerA); }
+      strands.forEach((tb, k) => {
+        const r = minRadius(tb.base, pxPerA); if (Math.abs(r - tb.radius) > .02) { tb.radius = r; changed = true; } tb.outline.width = outlineWidth(pxPerA);
+        for (const p of pieces[k]) { p.radius = tb.radius; p.outline.width = tb.outline.width; }
+      });
       if (changed && last) duplex.pose(...last);
     },
     // Tints pairs (e.g. the TATA box) by blending each bond towards a colour by w[i].

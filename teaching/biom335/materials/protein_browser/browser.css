@@ -29,6 +29,7 @@ body{min-height:100vh;overflow-x:hidden;background:radial-gradient(1200px 700px 
 .card .icon{position:relative;aspect-ratio:1/1;width:100%;background:radial-gradient(closest-side,color-mix(in srgb,var(--c),transparent 88%),transparent 78%)}
 .card .symbol{position:absolute;left:14px;top:12px;font-family:var(--serif);font-size:21px;color:color-mix(in srgb,var(--c),#fff 35%);letter-spacing:-.01em}
 sub{font-size:.62em;vertical-align:-.28em;line-height:0}
+sup{font-size:.62em;vertical-align:.5em;line-height:0}
 .card .label{padding:0 16px 16px;margin-top:-6px}
 .card .name{display:block;font-family:var(--serif);font-size:23px;line-height:1.05;letter-spacing:-.01em;color:var(--ink)}
 .card .gene{display:block;font-size:10px;color:var(--faint);margin-top:5px;letter-spacing:.04em}
@@ -75,17 +76,21 @@ sub{font-size:.62em;vertical-align:-.28em;line-height:0}
 .detail-links h3{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:500;margin:0 0 10px}
 .chips{display:flex;flex-wrap:wrap;gap:7px}
 .chips .pill{text-decoration:none}
+.chips .pill small{margin-left:7px;font-size:10px;color:var(--faint);letter-spacing:.02em}
 .detail-notes{margin:6px 0 18px;font-size:12px}
 .detail-notes a{color:#d9b882;text-underline-offset:3px}
 .source{font-size:10px;line-height:1.6;color:#6f8793;margin:0;padding-top:14px;border-top:1px solid var(--line)}
 .source span{display:block}
 
 @media(max-width:900px){
-  .detail{grid-template-columns:1fr;grid-template-rows:min(48vh,440px) minmax(0,1fr)}
+  .detail{grid-template-columns:1fr;grid-template-rows:auto minmax(0,1fr)}
   .detail-text{border-left:0;border-top:1px solid var(--line);padding-top:18px}
   .detail-bar{position:fixed;top:14px;right:14px;margin:0;z-index:3}
   .context{top:16px;left:16px;right:auto}
-  .parts{top:auto;bottom:16px;flex-direction:row;flex-wrap:wrap;right:16px}
+  /* The legend sits under the structure rather than over it, so a long one (a spliceosome's) covers none of it. */
+  .detail-stage{display:flex;flex-direction:column}
+  .detail-view{position:relative;inset:auto;flex:none;height:min(44vh,400px)}
+  .parts{position:static;flex:none;flex-direction:row;flex-wrap:wrap;padding:8px 16px 12px}
   .view-hint{display:none}
 }
 @media(max-width:560px){.top{padding:18px 16px}.brand{font-size:7px}.brand-mark{width:32px;height:32px;font-size:20px}.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.card .name{font-size:19px}.card .short{display:none}.card .label{padding:0 12px 12px}}

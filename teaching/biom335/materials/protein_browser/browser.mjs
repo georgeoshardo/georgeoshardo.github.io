@@ -5,6 +5,10 @@
 import * as THREE from 'three';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 import {loadSurfaceSet, surfaceGeometry, proteinMaterial, createRenderer, studio, fitDistance, restoreEnvironment} from '../shared/molecules.mjs';
+import {STRANDS} from '../shared/strands.mjs';
+import {nucleotides, partners, pairTip, createCartoon, COMPLEMENT, stubColour} from '../shared/rna.mjs';
+import {createAtoms} from '../shared/atoms.mjs';
+import {pairsFromStrands, frameFromPairs, createDuplex} from '../shared/dna.mjs';
 import {CHAPTERS} from './chapters.mjs';
 import {setRich} from '../shared/text.mjs';
 
@@ -24,6 +28,9 @@ const where = new Map();  // protein id → its chapter
 for (const ch of CHAPTERS) for (const p of ch.PROTEINS) where.set(p.id, ch);
 const proteinOf = id => where.get(id)?.PROTEINS.find(p => p.id === id);
 let active = null;
+// Tab, window title and back-button names; the transcription chapters' are built from their noun.
+const tabName = ch => ch.label || `${ch.tab} transcription`;
+const titleOf = ch => ch.title || `Proteins of ${ch.noun} transcription`;
 
 // A chapter's sets load once; its models and contexts may be listed from the sets themselves.
 function loadChapter(ch, onProgress) {
@@ -47,26 +54,47 @@ function recordOf(part, ch) {
 const partKey = (part, ch) => `${part.set || ch.defaultSet}/${part.structure || ''}/${part.id || part.mesh}`;
 
 // A model: the parts' meshes in an inner group centred on the pivot, which turns. With `context`, the
-// rest of the complex it belongs to is added as faint, unpickable ghosts in the same coordinates.
-function buildModel(id, {context = false} = {}) {
-  const ch = where.get(id), pivot = new THREE.Group(), inner = new THREE.Group(), parts = [], ghosts = [];
-  pivot.add(inner);
-  for (const part of ch.M[id].parts) {
+// rest of the complex it belongs to is added as faint, unpickable ghosts in the same coordinates. An `icon` (a grid
+// card) draws its small molecules space filling, so they read at that size.
+function buildModel(id, {context = false, icon = false} = {}) {
+  const ch = where.get(id), pivot = new THREE.Group(), orient = new THREE.Group(), inner = new THREE.Group(), parts = [], ghosts = [];
+  pivot.add(orient); orient.add(inner);
+  // Proteins are surfaces; a nucleic acid (style 'strands') is drawn as every page draws DNA and RNA. Surfaces can
+  // come with exported strands (`strands`: the RNA of a ribonucleoprotein, the RNA a protein binds) and small
+  // molecules drawn atom by atom (`ligands`: a cap in its pocket).
+  const spec = ch.M[id];
+  let pairs = 0;
+  if (spec.style === 'strands') { const n = nucleicParts(spec, ch, inner); parts.push(...n.parts); pairs = n.pairs; }
+  for (const part of spec.parts || []) {
     const {set, rec} = recordOf(part, ch), mesh = new THREE.Mesh(surfaceGeometry(rec, set.buffer), proteinMaterial(part.color));
     mesh.userData.part = part; mesh.userData.record = rec;
     inner.add(mesh); parts.push(mesh);
   }
+  if (spec.strands) { const n = strandParts(spec.strands, ch, inner); parts.push(...n.parts); pairs += n.pairs; }
+  if (spec.ligands) parts.push(...ligandParts(spec.ligands, ch, inner, icon ? 1 : 0));
   const box = new THREE.Box3();
-  for (const m of parts) box.union(m.geometry.boundingBox);
+  for (const m of parts) box.union(m.userData.points ? new THREE.Box3().setFromArray(m.userData.points) : m.geometry.boundingBox);
   const center = box.getCenter(V());
   // The exact extent about the centre (every vertex), so icons fill their boxes.
   let r2 = 0;
-  for (const m of parts) { const a = m.geometry.attributes.position.array; for (let i = 0; i < a.length; i += 3) { const x = a[i] - center.x, y = a[i + 1] - center.y, z = a[i + 2] - center.z; r2 = Math.max(r2, x * x + y * y + z * z); } }
+  for (const m of parts) { const a = pointsOf(m); for (let i = 0; i < a.length; i += 3) { const x = a[i] - center.x, y = a[i + 1] - center.y, z = a[i + 2] - center.z; r2 = Math.max(r2, x * x + y * y + z * z); } }
   const radius = Math.sqrt(r2);
   inner.position.copy(center).negate();
+  // A model can be turned to show itself best: the long (or, for a flat one, the short) axis of its parts, or of
+  // one named part, stood up along the turning axis (a duplex upright) or turned towards the viewer (down a ring).
+  // With `to: 'front'`, the named part is brought round in front of the rest (a strand in its enzyme's cleft).
+  const o = spec.orient;
+  if (o) {
+    const named = o.part ? parts.filter(m => [o.part].flat().includes(m.userData.part.label)) : parts;
+    const [long, , short, mean] = principalAxes(named);
+    if (o.to === 'front') orient.quaternion.setFromUnitVectors(mean.sub(center).normalize(), VIEW);
+    else orient.quaternion.setFromUnitVectors(o.axis === 'short' ? short : long, o.to === 'view' ? VIEW : V(0, -1, 0));
+    // `turn` then spins it about the upright axis (radians), to choose which side faces the viewer.
+    if (o.turn) orient.quaternion.premultiply(new THREE.Quaternion().setFromAxisAngle(V(0, -1, 0), o.turn));
+  }
   let whole = radius;
   if (context && ch.X[id]) {
-    const own = new Set(ch.M[id].parts.map(p => partKey(p, ch)));
+    const own = new Set((spec.parts || []).map(p => partKey(p, ch)));
     for (const part of ch.X[id]) {
       if (own.has(partKey(part, ch))) continue;
       const {set, rec} = recordOf(part, ch), m = new THREE.Mesh(surfaceGeometry(rec, set.buffer), ghostMaterial(part.color));
@@ -75,7 +103,118 @@ function buildModel(id, {context = false} = {}) {
       for (let i = 0; i < a.length; i += 3) whole = Math.max(whole, Math.hypot(a[i] - center.x, a[i + 1] - center.y, a[i + 2] - center.z));
     }
   }
-  return {pivot, parts, ghosts, radius, whole};
+  return {pivot, parts, ghosts, radius, whole, pairs};
+}
+
+// ---------- Nucleic acids ----------
+// A model with style 'strands' draws its nucleic acid from the structure's own atoms, as the scenes do: a duplex
+// (`duplex: {structure, strands: [a, b]}`, two exported strands) with shared/dna.mjs, each strand a tube through its
+// backbone and each base pair one bond across; or a single folded chain (`fold: {structure, atoms}`, an exported atom
+// group) as a tube with, for each base, one bond to the middle of its pair or, unpaired, a short stub towards its base.
+// Each strand is a part (legend, hover); `labels`, `colors`, `widths` and `rungs` style them.
+function nucleicParts(spec, ch, inner) {
+  const meta = ch.data[spec.set || ch.defaultSet].meta, n = spec.duplex || spec.fold, source = {source: null};
+  let tubes, rungs, count;
+  if (spec.duplex) {
+    const [a, b] = spec.duplex.strands.map(name => meta.strands.find(s => s.structure === n.structure && s.name === name));
+    const pairs = pairsFromStrands(a, b), frames = frameFromPairs(pairs);
+    const duplex = createDuplex({pairs, ...(spec.colors && {template: spec.colors[0], coding: spec.colors[1]}), ...(spec.widths && {widths: spec.widths}), ...(spec.rungs && {rung: spec.rungs})});
+    duplex.pose(frames); inner.add(duplex.group);
+    tubes = duplex.strands; rungs = duplex.rungs; source.source = a.source; count = pairs.length;
+  } else {
+    const group = meta.atoms.find(g => g.structure === n.structure && g.name === n.atoms), cartoon = foldedStrand(group, spec);
+    inner.add(cartoon.group);
+    tubes = [cartoon.tube]; rungs = [cartoon.bonds]; source.source = group.source; count = cartoon.pairs;
+  }
+  return {pairs: count, parts: tubes.map((tube, k) => {
+    const m = tube.mesh;
+    m.geometry.computeBoundingBox(); m.geometry.computeBoundingSphere(); m.geometry.userData.own = true;
+    m.userData.part = {label: spec.labels?.[k] ?? '', color: tube.material.color.getHex()}; m.userData.record = source;
+    // Its half of each base-pair bond dims and lights with it.
+    m.userData.also = [rungs[k]];
+    return m;
+  })};
+}
+
+// A single folded chain, as shared/rna.mjs draws one: a tube through its nucleotides' backbones (C4′) and each base
+// one bond, to the middle of its pair (Watson–Crick partners within the chain) or, unpaired, a short stub towards it.
+function foldedStrand(g, spec) {
+  const nts = nucleotides(g).filter(nt => nt.backbone), partner = partners(nts);
+  const cartoon = createCartoon(new THREE.Group(), nts.length, {colour: spec.colors?.[0] ?? STRANDS.rna, rung: spec.rungs?.[0] ?? STRANDS.rung.template, radius: spec.widths?.[0] ?? 1.05});
+  cartoon.pose(nts.map(nt => nt.backbone), nts.map((nt, i) => pairTip(V(), nt.backbone, nt.base, partner[i] >= 0 ? nts[partner[i]].backbone : null)));
+  return {group: cartoon.group, tube: cartoon.tube, bonds: cartoon.bonds, pairs: partner.filter((j, i) => j > i).length};
+}
+
+// Exported strands drawn with a model's surfaces (`strands: [{structure, strand, label, color, width, group, link,
+// from}]`), as the scenes draw a structure's RNA: a tube through each strand's backbone, in pieces where nucleotides
+// are missing (consecutive backbone points more than 9 Å apart), and each base one bond, to the middle of its pair (a
+// complementary partner on any strand of the same structure, each the other's) or else a short stub towards its base.
+// `from: {strand, num}` starts the strand at another strand's nucleotide, joined to it as a branch is by its 2′–5′
+// bond. Each piece is a part; a strand in pieces gathers them under its label.
+const GAP = 9;
+function strandParts(list, ch, inner) {
+  const out = [], pairs = new Set();
+  for (const x of list) {
+    const meta = ch.data[x.set || ch.defaultSet].meta, of = (structure, name) => meta.strands.find(s => s.structure === structure && s.name === name);
+    const s = of(x.structure, x.strand);
+    if (!s) throw new Error(`Missing strand ${x.structure} ${x.strand}`);
+    const byChain = new Map(meta.strands.filter(o => o.structure === x.structure).map(o => [o.chain, o]));
+    const P = s.backbone.map(b => V(...b)), color = x.color ?? STRANDS.rna;
+    // A partner counts when it pairs back and the bases are complementary.
+    const mate = k => {
+      const q = s.partner[k], o = q && byChain.get(q[0]), back = o?.partner[q[1]];
+      return o && back && back[0] === s.chain && back[1] === k && COMPLEMENT[s.sequence[k]]?.includes(o.sequence[q[1]]) ? V(...o.backbone[q[1]]) : null;
+    };
+    const tips = P.map((p, k) => { const m = mate(k), base = V(...s.base[k]); return base.distanceTo(p) < .5 ? (m ? p.clone().lerp(m, .5) : p.clone()) : pairTip(V(), p, base, m); });
+    P.forEach((_, k) => { if (mate(k)) pairs.add([`${x.structure}/${s.chain}/${k}`, `${x.structure}/${s.partner[k].join('/')}`].sort().join(' ')); });
+    const runs = [[0, 1]];
+    for (let k = 1; k < P.length; k++) if (P[k - 1].distanceTo(P[k]) > GAP) runs.push([k, k + 1]); else runs[runs.length - 1][1] = k + 1;
+    // A branch starts from its branch point: that nucleotide's backbone leads the first piece, with no bond of its own.
+    const lead = x.from && (() => { const b = of(x.structure, x.from.strand), k = b?.numbers.indexOf(x.from.num); return b && k >= 0 ? V(...b.backbone[k]) : null; })();
+    const pieces = runs.map(([a, b], i) => i === 0 && lead ? [[lead, ...P.slice(a, b)], [lead, ...tips.slice(a, b)]] : [P.slice(a, b), tips.slice(a, b)]).filter(([p]) => p.length > 1);
+    for (const [points, ends] of pieces) {
+      const cartoon = createCartoon(inner, points.length, {colour: color, rung: stubColour(color).getHex(), radius: x.width ?? STRANDS.radius.rna});
+      cartoon.pose(points, ends);
+      const m = cartoon.tube.mesh;
+      m.geometry.computeBoundingBox(); m.geometry.computeBoundingSphere(); m.geometry.userData.own = true;
+      m.userData.part = {label: x.label ?? x.strand, color, link: x.link, group: x.group ?? (pieces.length > 1 ? x.label ?? x.strand : undefined)};
+      m.userData.record = {source: s.source}; m.userData.also = [cartoon.bonds];
+      out.push(m);
+    }
+  }
+  return {parts: out, pairs: pairs.size};
+}
+
+// Small molecules from exported atom groups (`ligands: [{structure, atoms, label, color}]`), drawn atom by atom as
+// the scenes draw chemistry (shared/atoms.mjs), carbons in `color`: a cap in its binding pocket. Each is a part.
+// `fill` 1 draws them space filling (an icon's), 0 ball-and-stick (the open view's).
+function ligandParts(list, ch, inner, fill = 0) {
+  return list.map(x => {
+    const g = ch.data[x.set || ch.defaultSet].meta.atoms.find(a => a.structure === x.structure && a.name === x.atoms);
+    if (!g) throw new Error(`Missing atoms ${x.structure} ${x.atoms}`);
+    const atoms = createAtoms(inner, g, {carbon: () => x.color, filter: i => g.atoms.element[i].toUpperCase() !== 'H'});
+    if (fill) { atoms.fill = fill; atoms.update(); }
+    const balls = atoms.group.children[0];
+    balls.userData.part = {label: x.label ?? x.atoms, color: x.color, link: x.link}; balls.userData.record = {source: g.source};
+    balls.userData.points = Float32Array.from(atoms.positions.flatMap(p => [p.x, p.y, p.z]));
+    balls.computeBoundingSphere();
+    return balls;
+  });
+}
+// A part's points: a surface's or a tube's vertices, or a molecule's atom centres.
+const pointsOf = m => m.userData.points || m.geometry.attributes.position.array;
+
+// The principal axes of some meshes' vertices, longest first (power iteration on their covariance, the second
+// axis kept perpendicular to the first, the third perpendicular to both), and the vertices' mean.
+function principalAxes(meshes) {
+  const mean = V(); let n = 0;
+  for (const m of meshes) { const a = pointsOf(m); for (let i = 0; i < a.length; i += 3) { mean.x += a[i]; mean.y += a[i + 1]; mean.z += a[i + 2]; n++; } }
+  mean.divideScalar(n);
+  const c = new THREE.Matrix3().multiplyScalar(0), e = c.elements;  // symmetric: element order does not matter
+  for (const m of meshes) { const a = pointsOf(m); for (let i = 0; i < a.length; i += 3) { const d = [a[i] - mean.x, a[i + 1] - mean.y, a[i + 2] - mean.z]; for (let r = 0; r < 3; r++) for (let k = 0; k < 3; k++) e[r * 3 + k] += d[r] * d[k]; } }
+  const iterate = (v, away) => { for (let k = 0; k < 60; k++) { v.applyMatrix3(c); if (away) v.addScaledVector(away, -v.dot(away)); v.normalize(); } return v; };
+  const long = iterate(V(1, .7, .4).normalize()), mid = iterate(V(-.4, 1, .7).normalize(), long);
+  return [long, mid, long.clone().cross(mid).normalize(), mean];
 }
 
 function ghostMaterial(color) {
@@ -141,10 +280,10 @@ function card(p, ch) {
   const gene = el.querySelector('.gene');
   if (p.gene) { const i = document.createElement('i'); i.textContent = p.gene; gene.append(i); } else gene.remove();
   setSymbol(el.querySelector('.short'), p.short);
-  const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(28, 1, 1, 5000), model = buildModel(p.id);
+  const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(28, 1, 1, 5000), model = buildModel(p.id, {icon: true});
   studio(scene, camera, iconRenderer); scene.add(model.pivot);
   camera.position.copy(VIEW).multiplyScalar(fitDistance(camera, model.radius, spec.wide ? .96 : .9)); camera.lookAt(0, 0, 0);
-  const c = {id: p.id, el, icon: el.querySelector('.icon'), scene, camera, model, angle: cards.length * .9, hover: 0, hovering: false};
+  const c = {id: p.id, el, icon: el.querySelector('.icon'), scene, camera, model, angle: cards.length * .9, hover: 0, hovering: false, faced: ['view', 'front'].includes(spec.orient?.to) || spec.orient?.turn != null};
   el.addEventListener('pointerenter', () => { c.hovering = true; wake(); });
   el.addEventListener('pointerleave', () => { c.hovering = false; wake(); });
   el.addEventListener('focus', () => { c.hovering = true; wake(); });
@@ -160,7 +299,7 @@ function buildTabs() {
   for (const ch of CHAPTERS) {
     const b = document.createElement('button');
     b.className = 'pill'; b.id = `tab-${ch.id}`; b.dataset.chapter = ch.id;
-    b.setAttribute('role', 'tab'); b.setAttribute('aria-controls', 'groups'); b.textContent = `${ch.tab} transcription`;
+    b.setAttribute('role', 'tab'); b.setAttribute('aria-controls', 'groups'); b.textContent = tabName(ch);
     b.addEventListener('click', () => showChapter(ch));
     tabs.append(b);
   }
@@ -186,8 +325,7 @@ async function showChapter(ch, {url = true} = {}) {
   setSymbol($('intro-lede'), ch.lede);
   const links = $('top-links'); links.textContent = '';
   for (const l of ch.links) { const a = document.createElement('a'); a.className = 'pill'; a.href = l.href; a.textContent = l.text; links.append(a); }
-  document.querySelector('.brand').href = ch.links[0].href;
-  if (!openId) document.title = `Proteins of ${ch.noun} transcription`;
+  if (!openId) document.title = titleOf(ch);
   if (url) history.replaceState(history.state, '', `${location.pathname}${chapterQuery(ch)}${location.hash}`);
   if (!ch.built) {
     const l = $('loader'); l.hidden = false; l.classList.remove('hidden'); $('load-detail').textContent = 'Loading structures'; $('load-back').hidden = true;
@@ -212,7 +350,7 @@ function failed(ch, previous, e) {
   if (!previous?.built) return;
   history.replaceState(history.state, '', `${location.pathname}${chapterQuery(previous)}`);
   const back = $('load-back');
-  back.textContent = `Back to ${previous.tab.toLowerCase()} transcription`; back.hidden = false;
+  back.textContent = `Back to ${previous.label || tabName(previous).toLowerCase()}`; back.hidden = false;
   back.onclick = () => showChapter(previous);
 }
 const chapterQuery = ch => {
@@ -258,30 +396,44 @@ function setupDetail() {
     ray.setFromCamera(ndc, camera);
     return ray.intersectObjects(detail.model.parts, false)[0]?.object || null;
   };
-  view.addEventListener('pointermove', e => {
-    if (e.buttons) return;
+  // The part under a resting mouse is named; as the view turns under it (by itself, or from the keys) the name follows
+  // what is now under it, and a drag clears it, so the tag never names a part that has turned away or behind another.
+  let pointer = null;
+  const unhover = () => { setHover(null); $('hover-tag').hidden = true; view.style.cursor = ''; };
+  const hoverAt = e => {
     const m = hit(e), tag = $('hover-tag');
     setHover(m);
     if (m && detail.model.parts.length > 1) {
       const part = m.userData.part, stage = view.parentElement.getBoundingClientRect(), p = part.link && part.link !== openId ? proteinOf(part.link) : null;
       tag.innerHTML = ''; tag.append(rich(part.label || ''));
-      if (p) tag.append(rich(p.name, 'small'));
+      if (p && p.name !== part.label) tag.append(rich(p.name, 'small'));
       tag.style.left = `${e.clientX - stage.left}px`; tag.style.top = `${e.clientY - stage.top}px`; tag.hidden = false;
       view.style.cursor = p ? 'pointer' : '';
     } else { tag.hidden = true; view.style.cursor = ''; }
+  };
+  view.addEventListener('pointermove', e => {
+    if (e.buttons) return;
+    pointer = e.pointerType === 'mouse' ? {clientX: e.clientX, clientY: e.clientY} : null;
+    hoverAt(e);
   });
-  view.addEventListener('pointerleave', () => { setHover(null); $('hover-tag').hidden = true; });
+  view.addEventListener('pointerleave', () => { pointer = null; unhover(); });
   // A tap is one pointer that never strayed more than 5 px; drags that come back and pinches are not taps.
   const pointers = new Map();
   let multi = false;
+  detail.rehover = () => { if (pointer && !pointers.size && detail.model) hoverAt(pointer); };
   view.addEventListener('pointerdown', e => { pointers.set(e.pointerId, {x: e.clientX, y: e.clientY, far: 0}); if (pointers.size > 1) multi = true; });
-  view.addEventListener('pointermove', e => { const q = pointers.get(e.pointerId); if (q) q.far = Math.max(q.far, Math.hypot(e.clientX - q.x, e.clientY - q.y)); });
+  view.addEventListener('pointermove', e => {
+    const q = pointers.get(e.pointerId); if (!q) return;
+    q.far = Math.max(q.far, Math.hypot(e.clientX - q.x, e.clientY - q.y));
+    if (q.far > 5 && (detail.hovered || !$('hover-tag').hidden)) unhover();
+  });
   const lift = e => { pointers.delete(e.pointerId); if (!pointers.size) setTimeout(() => { multi = false; }); };
   view.addEventListener('pointercancel', lift);
   view.addEventListener('pointerup', e => {
     const q = pointers.get(e.pointerId), tap = q && !multi && pointers.size === 1 && q.far <= 5;
     lift(e);
-    if (!tap) return;
+    // After a drag, the part now under the mouse is named again.
+    if (!tap) { if (e.pointerType === 'mouse' && !pointers.size) { pointer = {clientX: e.clientX, clientY: e.clientY}; hoverAt(pointer); } return; }
     const link = hit(e)?.userData.part.link;
     if (link && link !== openId) open(link);
   });
@@ -320,10 +472,13 @@ function paintParts() {
   const legend = detail.highlight, focus = legend || (detail.model?.parts.length > 1 ? detail.hovered : null);
   const group = legend?.userData.part.group, link = focus?.userData.part.link;
   for (const m of detail.model?.parts || []) {
-    const part = m.userData.part, u = m.material.userData.uniforms;
-    const lit = !focus || m === focus || (group && part.group === group) || (link && link !== openId && part.link === link);
-    m.material.color.copy(m.material.userData.base).multiplyScalar(lit ? 1 : .38);
-    u.uGlow.value = focus && lit ? .35 : 0;
+    const part = m.userData.part, lit = !focus || m === focus || (group && part.group === group) || (link && link !== openId && part.link === link);
+    for (const material of [m.material, ...(m.userData.also || []).map(x => x.material)]) {
+      // A strand's own colour (and glow) is kept on first use; a protein surface keeps its tone in userData.base.
+      const base = material.userData.base ||= material.color.clone(), glow = material.emissive && (material.userData.emissive ||= material.emissive.clone());
+      material.color.copy(base).multiplyScalar(lit ? 1 : .38); if (glow) material.emissive.copy(glow).multiplyScalar(lit ? 1 : .38);
+      if (material.userData.uniforms?.uGlow) material.userData.uniforms.uGlow.value = focus && lit ? .35 : 0;
+    }
   }
 }
 
@@ -349,7 +504,7 @@ function open(id, {push = true} = {}) {
   // Focus moves into the dialog when it opens; stepping with ‹ › keeps it where it was.
   if (first || !el.contains(document.activeElement)) $('close').focus({preventScroll: true});
   if (push) (first ? history.pushState : history.replaceState).call(history, {id, depth: 1}, '', `${location.pathname}${location.search}#${id}`);
-  document.title = `${p.name} · Proteins of ${ch.noun} transcription`;
+  document.title = `${p.name} · ${titleOf(ch)}`;
   clearTimeout(hintTimer); $('view-hint')?.classList.remove('gone'); hintTimer = setTimeout(() => $('view-hint')?.classList.add('gone'), 5000);
   wake();
 }
@@ -358,8 +513,14 @@ function open(id, {push = true} = {}) {
 function setModel(id, {keepView}) {
   const d = detail, ch = where.get(id), withContext = contextOn && !!ch.X[id];
   // Old materials are disposed after the next frame, so their shader program is reused rather than rebuilt.
-  if (d.model) { d.scene.remove(d.model.pivot); retired.push(...[...d.model.parts, ...d.model.ghosts].map(m => m.material)); }
+  // (Surface geometry is shared between views; a strand's own tube geometry is disposed with its materials.)
+  if (d.model) {
+    d.scene.remove(d.model.pivot);
+    const done = new Set();
+    d.model.pivot.traverse(o => { for (const x of [o.material, o.geometry?.userData.own && o.geometry]) if (x && !done.has(x)) { done.add(x); retired.push(x); } });
+  }
   d.model = buildModel(id, {context: withContext}); d.hovered = d.highlight = null; d.scene.add(d.model.pivot);
+  $('hover-tag').hidden = true; d.rehoverIn = 0;  // the old model's part is gone; the new one's is named on the next frame
   d.fitR = withContext ? d.model.whole : d.model.radius;
   const dir = keepView ? d.camera.position.clone().sub(d.controls.target).normalize() : VIEW;
   d.camera.position.copy(dir).multiplyScalar(fitDistance(d.camera, d.fitR, .78)); d.camera.lookAt(0, 0, 0);
@@ -376,7 +537,7 @@ function close({push = true} = {}) {
   const id = openId; openId = null;
   $('detail').hidden = true; document.body.style.overflow = ''; $('stage').style.visibility = '';
   for (const child of inerted.splice(0)) child.inert = false;
-  document.title = `Proteins of ${active.noun} transcription`;
+  document.title = titleOf(active);
   if (push) history.replaceState({depth: 0}, '', location.pathname + location.search);
   const back = opener && opener !== document.body && opener.isConnected && !opener.closest('[hidden]') ? opener : cards.find(c => c.id === id)?.el;
   back?.focus({preventScroll: false});
@@ -446,7 +607,9 @@ function fill(p, model) {
     const q = proteinOf(id); if (!q) continue;
     const b = document.createElement('button');
     b.className = 'pill'; b.style.setProperty('--c', hex(where.get(id).M?.[id]?.accent ?? 0x8fa3ad));
-    b.innerHTML = '<span class="dot"></span>'; b.append(rich(q.name));
+    b.innerHTML = '<span class="dot"></span>'; b.append(rich(ch.relatedNames?.[id] || q.name));
+    // A protein of another chapter says which (opening it shows that chapter).
+    if (where.get(id) !== ch) { const s = document.createElement('small'); s.textContent = tabName(where.get(id)); b.append(s); }
     b.addEventListener('click', () => open(id));
     related.append(b);
   }
@@ -492,8 +655,9 @@ function drawIcons(dt) {
     if (!calm) { c.angle += dt * (.3 + .9 * c.hover); busy = true; }
     const b = c.icon.getBoundingClientRect();
     if (b.bottom < box.top || b.top > box.bottom || b.width < 2 || c.el.closest('[hidden]')) continue;
-    c.model.pivot.rotation.y = calm ? .6 + c.hover * .4 : c.angle;
-    for (const m of c.model.parts) m.material.userData.uniforms.uGlow.value = .16 * c.hover;
+    // Held still, a model turned to face the viewer, or to a chosen side (orient), shows it; the others turn a little.
+    c.model.pivot.rotation.y = calm ? (c.faced ? 0 : .6) + c.hover * .4 : c.angle;
+    for (const m of c.model.parts) { const u = m.material.userData.uniforms; if (u?.uGlow) u.uGlow.value = .16 * c.hover; }
     const aspect = b.width / b.height;
     if (c.camera.aspect !== aspect) { c.camera.aspect = aspect; c.camera.updateProjectionMatrix(); }
     const x = b.left - box.left, y = box.bottom - b.bottom;
@@ -517,6 +681,9 @@ function drawDetail(dt) {
   const moving = d.controls.update(dt);
   d.renderer.render(d.scene, d.camera);
   for (const m of retired.splice(0)) m.dispose();
+  // While the view turns (by itself, easing, or from the keys) the hover follows what is under a resting mouse, ten
+  // times a second.
+  if ((d.rehoverIn = (d.rehoverIn ?? 0) - dt) <= 0) { d.rehoverIn = .1; if (moving || d.controls.autoRotate || !d.hovered) d.rehover?.(); }
   return moving || d.controls.autoRotate;
 }
 
@@ -572,7 +739,7 @@ async function start() {
   if (new URLSearchParams(location.search).get('debug') === '1') window.proteinBrowser = {
     open: id => open(id), close: () => close(), drawn: () => drawn, chapter: id => showChapter(CHAPTERS.find(c => c.id === id)),
     state: () => ({openId, contextOn, chapter: active.id, cards: cards.length, parts: detail.model?.parts.length ?? 0, ghosts: detail.model?.ghosts.length ?? 0,
-      triangles: detail.renderer.info.render.triangles, iconTriangles: iconRenderer.info.render.triangles}),
+      triangles: detail.renderer.info.render.triangles, iconTriangles: iconRenderer.info.render.triangles, pairs: detail.model?.pairs ?? 0}),
   };
   const hash = location.hash.slice(1);
   if (hash && where.has(hash)) { history.replaceState({depth: 0}, '', location.pathname + location.search); open(hash); }

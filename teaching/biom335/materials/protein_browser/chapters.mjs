@@ -2,16 +2,90 @@
 // its structures come from, what each card shows, where each protein appears in the chapter's scenes and
 // how its sources are credited. A part names a mesh in one of the chapter's sets (by `structure` as well
 // when a set holds several structures); `group` gathers parts under one legend entry; `link` opens another
-// protein. A chapter's models can be a function of its loaded sets, for parts listed in the set itself.
+// protein. A chapter's models can be a function of its loaded sets, for parts listed in the set itself. A model
+// with style 'strands' is a nucleic acid drawn as the scenes draw DNA and RNA (browser.mjs, nucleicParts). `orient`
+// turns a model to show it best: {to: 'up'} stands its long axis up (a duplex), {to: 'view'} turns it towards the
+// viewer (down a ring), {axis: 'short'} uses its shortest axis instead (the face of a flat molecule); `part` takes
+// the axis from one part or a list of parts (the strand through a ring), {to: 'front'} brings them round in
+// front of the rest (DNA in its enzyme's cleft), and `turn` then spins the model about the upright (radians).
 import * as THREE from 'three';
 import {PALETTE} from '../shared/molecules.mjs';
+import {STRANDS} from '../shared/strands.mjs';
+import * as genes from './proteins_ch1.mjs';
 import * as bacterial from './proteins.mjs';
 import * as eukaryotic from './proteins_ch3.mjs';
+import * as rnaSplicing from './proteins_ch4.mjs';
+import {SPLICING} from '../shared/rna.mjs';
 import {INFO} from '../transcription_3d/inspect.mjs';
 
-const FILM = '../transcription_3d/', EUK = '../eukaryotic_transcription/';
+const GENES = '../genes_are_dna/', FILM = '../transcription_3d/', EUK = '../eukaryotic_transcription/';
 const lighten = (c, k = .12) => new THREE.Color(c).lerp(new THREE.Color(0xffffff), k).getHex();
 const shades = (a, b, n) => Array.from({length: n}, (_, i) => new THREE.Color(a).lerp(new THREE.Color(b), n > 1 ? i / (n - 1) : 0).getHex());
+
+// ---------- Genes are DNA ----------
+// Everything comes from the chapter's library set (../genes_are_dna/assets/library.*). The three nucleic acids are
+// drawn as the scenes draw DNA and RNA (style 'strands'), from the strands of the B-DNA dodecamer (355D) and the
+// hybridisation scene's RNA–DNA decamer (1FIX), and the atoms of yeast tRNA-Phe (1EHZ). The enzymes are surfaces:
+// the replication scene's T7 DNA polymerase (1T7P) and helicase (6N7I), split into their chains; HIV-1 reverse
+// transcriptase (4PQU), the poliovirus polymerase (3OL6) and human thymidine kinase 1 (1XBT). Colours follow the
+// scenes: DNA sky blue and ivory, RNA orange (the hybrid as in the hybridisation scene), the replication scene's
+// polymerase, helicase, parental (blue) and new (gold) strands.
+const G = {
+  dna: STRANDS.template, rna: STRANDS.rna, rnaRung: 0xd7925c, newRna: 0xffc68f,
+  polymerase: 0xe0937a, thioredoxin: 0xc7b98f, helicase: 0x5cbf9a, parental: 0x4f7fe0, daughter: 0xf1dcaa,
+  p66: 0xd98aa6, p51: 0xb58cc4, rdrp: 0xa6c46a, tk: 0x7f93d2,
+};
+const HELICASE = [0, 3, 1, 4, 2, 5].map(i => shades(0x3f9f7c, 0x9adfc0, 6)[i]), TK = [0, 2, 1, 3].map(i => shades(0x4d65b8, 0x8698d8, 4)[i]);
+const g = (structure, mesh, color, extra = {}) => ({structure, mesh, color, label: mesh, ...extra});
+
+const GENES_ARE_DNA = {
+  id: 'genes', tab: 'Genes are DNA', label: 'Genes are DNA', title: 'Genes are DNA · Protein library',
+  eyebrow: 'Genes are DNA', heading: 'Nucleic acids and<br>their enzymes.',
+  lede: 'The DNA double helix and base-paired RNA, the enzymes that replicate DNA at the replication fork, the viral enzymes that copy RNA genomes, and thymidine kinase, whose gene can be transfected into cells.',
+  links: [{href: GENES + 'index.html', text: 'Genes are DNA'}],
+  notes: GENES + 'notes.html', ...genes,
+  sets: {lib: [GENES + 'assets/library.json', GENES + 'assets/library.bin']},
+  defaultSet: 'lib',
+  models: {
+    bdna: {style: 'strands', duplex: {structure: 'bdna', strands: ['a', 'b']}, labels: ['Strand 1', 'Strand 2'], accent: lighten(STRANDS.template), orient: {to: 'up'}},
+    trna: {style: 'strands', fold: {structure: 'trna', atoms: 'tRNA'}, colors: [G.rna], rungs: [G.rnaRung], accent: lighten(G.rna), orient: {axis: 'short', to: 'view'}},
+    hybrid: {style: 'strands', duplex: {structure: 'hybrid', strands: ['rna', 'dna']}, labels: ['RNA strand', 'DNA strand'], colors: [G.rna, G.dna],
+      widths: [1.05, .95], rungs: [G.rnaRung, STRANDS.rung.template], accent: lighten(G.rna), orient: {to: 'up', turn: 1.6}},
+    dnapol: {parts: [g('pol', 'DNA polymerase', G.polymerase), g('pol', 'Thioredoxin', G.thioredoxin),
+      g('pol', 'Template strand', G.parental), g('pol', 'New strand', G.daughter)], accent: lighten(G.polymerase), orient: {part: ['Template strand', 'New strand'], to: 'front'}},
+    helicase: {parts: [...HELICASE.map((c, i) => g('helicase', `Subunit ${i + 1}`, c, {group: 'Helicase subunits'})),
+      g('helicase', 'DNA strand', G.parental)], accent: lighten(G.helicase), orient: {part: 'DNA strand', to: 'view'}},
+    rdrp: {parts: [g('rdrp', 'Polymerase', G.rdrp), g('rdrp', 'RNA template', G.rna), g('rdrp', 'New RNA strand', G.newRna)], accent: lighten(G.rdrp)},
+    rt: {parts: [g('rt', 'p66', G.p66), g('rt', 'p51', G.p51), g('rt', 'RNA template', G.rna), g('rt', 'New DNA strand', G.dna)], accent: lighten(G.p66), orient: {part: 'RNA template', to: 'up'}},
+    tk: {parts: TK.map((c, i) => g('tk', `Subunit ${i + 1}`, c)), accent: lighten(G.tk), legend: false, orient: {axis: 'short', to: 'view'}},
+  },
+  context: {}, contextLabel: {}, contextDefault: '',
+  // Related entries of other chapters, by the names this chapter gives them.
+  relatedNames: {core: 'RNA polymerase'},
+  sources: {
+    '355D': 'PDB 355D · B-DNA dodecamer CGCGAATTCGCG (Shui et al., Biochemistry 1998)',
+    '1EHZ': 'PDB 1EHZ · yeast phenylalanine tRNA (Shi and Moore, RNA 2000)',
+    '1FIX': 'PDB 1FIX · RNA–DNA hybrid decamer (Horton and Finzel, J Mol Biol 1996)',
+    '1T7P': 'PDB 1T7P · bacteriophage T7 DNA polymerase (gp5) with E. coli thioredoxin on a primer–template (Doublié et al., Nature 1998)',
+    '6N7I': 'PDB 6N7I · bacteriophage T7 gp4 helicase on single-stranded DNA (Gao et al., Science 2019)',
+    '4PQU': 'PDB 4PQU · HIV-1 reverse transcriptase on an RNA template with a DNA primer and dATP (Das et al., Nucleic Acids Res 2014)',
+    '3OL6': 'PDB 3OL6 · poliovirus RNA-dependent RNA polymerase (3Dpol) elongation complex (Gong and Peersen, PNAS 2010)',
+    '1XBT': 'PDB 1XBT · human thymidine kinase 1 (Welin et al., PNAS 2004)',
+  },
+  // Where each molecule appears in the chapter's pages: its scenes (tests/proteins_ch1.test.mjs checks that each
+  // time is the start of the step named) and the hub's central dogma, which names the enzymes.
+  seeAlsoTitle: 'In the scenes',
+  seeAlso: {
+    bdna: [['A double helix', GENES + 'double_helix.html?t=0'], ['Antiparallel', GENES + 'double_helix.html?t=28'], ['Ten to a turn', GENES + 'double_helix.html?t=57'],
+      ['Two grooves', GENES + 'double_helix.html?t=70'], ['Charged backbone', GENES + 'double_helix.html?t=82']],
+    dnapol: [['Polymerases and helicase', GENES + 'replication.html?t=32'], ['Leading and lagging', GENES + 'replication.html?t=43'], ['The central dogma', GENES + 'index.html#dogma-title']],
+    helicase: [['Polymerases and helicase', GENES + 'replication.html?t=32']],
+    hybrid: [['DNA–RNA heteroduplex', GENES + 'hybridisation.html?t=55'], ['Central to all', GENES + 'hybridisation.html?t=70']],
+    rdrp: [['RNA replication', GENES + 'dna_or_rna.html?t=46'], ['The central dogma', GENES + 'index.html#dogma-title']],
+    rt: [['Reverse transcription', GENES + 'dna_or_rna.html?t=59'], ['The central dogma', GENES + 'index.html#dogma-title']],
+    tk: [['Cells without TK', GENES + 'transfection.html?t=0'], ['Thymidine kinase', GENES + 'transfection.html?t=33'], ['Selection: a colony', GENES + 'transfection.html?t=56']],
+  },
+};
 
 // ---------- Bacterial transcription ----------
 // Parts name a mesh in one of three surface sets: the film's RNAP, NusG and Rho (8E6X/8E6W), its σ70
@@ -183,4 +257,128 @@ const EUKARYOTIC = {
   },
 };
 
-export const CHAPTERS = [BACTERIAL, EUKARYOTIC];
+// ---------- RNA splicing and processing ----------
+// Sets shared with the chapter's scenes, as they draw these molecules: the cap scene's (capping enzyme on RNA
+// polymerase II, 8P4B; the cap-binding complex, 1N52; eIF4E, 1IPC; their caps as atoms), the snRNPs scene's (Sm ring
+// 4WZJ, superposed on the tri-snRNP's U4 ring; Lsm ring 4M7A; U2 snRNP 7EVO; tri-snRNP 6QW6) and the spliceosome
+// scene's P complex (6QDV, coarse); and the library's own (U1 snRNP 4PJO, SF1 1K1G, U2AF 2G4B and 1JMT, SRSF1 2M8D,
+// Dbr1 5K78, the exon junction complex 2J0S, Bcl-xL 1MAZ, CaMKIIδ 8USO). Proteins are surfaces; every RNA, and the DNA
+// in RNA polymerase II, is drawn from its exported strands as the scenes draw it; the caps atom by atom. Colours are
+// the chapter's (SPLICING: each snRNP's snRNA and proteins in its colour, rings in theirs, exon and intron).
+const RNA = '../rna_splicing/', S = SPLICING;
+const shade = (c, k) => k >= 0 ? lighten(c, k) : new THREE.Color(c).multiplyScalar(1 + k).getHex();
+// Seven shades round a ring, alternately lighter and deeper (as the snRNPs scene shades its rings).
+const RING = [.3, -.22, .12, -.36, .42, -.1, -.3];
+const SM = ['SmB', 'SmD1', 'SmD2', 'SmD3', 'SmE', 'SmF', 'SmG'], LSM = [2, 3, 4, 5, 6, 7, 8].map(k => `Lsm${k}`);
+const R = {
+  // The cap scene's colours for the capping enzyme, CBP80, CBP20 and eIF4E; RNA polymerase II in the eukaryotic tab's
+  // blue-grey, made deeper so that it does not read as white.
+  gt: 0xc890d8, pol: [0x667d8e, 0x5a6f80, 0x748b9c], cbp80: 0x6c79b0, cbp20: 0x3f9a8a, eif4e: 0x4f7fc9,
+  tri: 0x9c8fa8, ntc: 0x86a39b, factors: 0x737b88, dbr1: 0x58a6c2,
+  eif4a3: 0x8f9fdc, magoh: 0xd9a066, y14: 0xb894d8, btz: 0x86c48f, bclxl: 0x7fc79a, kinase: 0xd98b6f, hub: 0x9fb4d8,
+};
+const on = (set, structure, mesh, color, extra = {}) => ({set, structure, mesh, color, label: mesh, ...extra});
+const rna = (set, structure, strand, color, extra = {}) => ({set, structure, strand, color, label: strand, ...extra});
+const ring = (set, structure, names, color, group, extra = {}) => names.map((n, i) => on(set, structure, n, shade(color, RING[i]), {group, ...extra}));
+const POL2 = [on('cap', 'pol', 'Rpb1', R.pol[0]), on('cap', 'pol', 'Rpb2', R.pol[1]), on('cap', 'pol', 'Other Pol II subunits', R.pol[2])]
+  .map(p => ({...p, group: 'RNA polymerase II', link: 'rnap2'}));
+const TRI = [on('snrnps', 'tri', 'Prp8', S.U5, {group: 'U5 proteins'}), on('snrnps', 'tri', 'Brr2', lighten(S.U5, .3), {group: 'U5 proteins'}),
+  on('snrnps', 'tri', 'Snu114', shade(S.U5, -.28), {group: 'U5 proteins'}), on('snrnps', 'tri', 'U5 40K and Dib1', lighten(S.U5, .52), {group: 'U5 proteins'}),
+  on('snrnps', 'tri', 'U4/U6 proteins', S.U4), on('snrnps', 'tri', 'U5 Sm ring', S.Sm, {group: 'Sm rings', link: 'smring'}),
+  on('snrnps', 'tri', 'U4 Sm ring', S.Sm, {group: 'Sm rings', link: 'smring'}), ...LSM.map(n => on('snrnps', 'tri', n, S.Lsm, {group: 'Lsm ring', link: 'lsmring'})),
+  on('snrnps', 'tri', 'Tri-snRNP proteins', R.tri)];
+
+const RNA_SPLICING = {
+  id: 'rna', tab: 'RNA splicing', label: 'RNA splicing', title: 'RNA splicing · Protein library',
+  eyebrow: 'RNA splicing and processing', heading: 'Capping, splicing<br>and their products.',
+  lede: 'The enzyme that caps new RNA and the proteins that bind its cap, the snRNPs and the spliceosome that remove introns, the factors that first recognise the splice sites, and proteins whose forms are chosen by alternative splicing.',
+  links: [{href: RNA + 'index.html', text: 'RNA splicing and processing'}],
+  notes: RNA + 'notes.html', ...rnaSplicing,
+  sets: {lib: [RNA + 'assets/library.json', RNA + 'assets/library.bin'], cap: [RNA + 'assets/cap.json', RNA + 'assets/cap.bin'],
+    snrnps: [RNA + 'assets/snrnps.json', RNA + 'assets/snrnps.bin'], p: [RNA + 'assets/spliceosome_p.json', RNA + 'assets/spliceosome_p.bin']},
+  defaultSet: 'lib',
+  models: {
+    capping: {parts: [on('cap', 'pol', 'Capping enzyme', R.gt), ...POL2],
+      strands: [rna('cap', 'pol', 'template', STRANDS.template, {label: 'Template strand', group: 'DNA', width: 1}),
+        rna('cap', 'pol', 'nontemplate', STRANDS.coding, {label: 'Non-template strand', group: 'DNA', width: .8}),
+        rna('cap', 'pol', 'rna', S.exon, {label: 'RNA'})], accent: lighten(R.gt), wide: true},
+    cbc: {parts: [on('cap', 'cbc', 'CBP80', R.cbp80), on('cap', 'cbc', 'CBP20', R.cbp20)],
+      ligands: [{set: 'cap', structure: 'cbc', atoms: 'cbc-cap', label: 'Cap (m7GpppG)', color: S.cap}], accent: lighten(R.cbp80), orient: {part: 'Cap (m7GpppG)', to: 'front'}},
+    eif4e: {parts: [on('cap', 'eif4e', 'eIF4E', R.eif4e)], ligands: [{set: 'cap', structure: 'eif4e', atoms: 'eif4e-cap', label: 'Cap (m7GTP)', color: S.cap}], accent: lighten(R.eif4e), orient: {part: 'Cap (m7GTP)', to: 'front'}},
+    smring: {parts: ring('snrnps', 'sm', SM, S.Sm), strands: [rna('snrnps', 'sm', 'U4 Sm site', S.U4, {label: 'U4 snRNA'})], accent: lighten(S.Sm), orient: {part: 'U4 snRNA', to: 'view'}},
+    lsmring: {parts: ring('snrnps', 'lsm', LSM, S.Lsm), strands: [rna('snrnps', 'lsm', 'U6 3′ end', S.U6, {label: 'U6 snRNA 3′ end'})], accent: lighten(S.Lsm, .3), orient: {axis: 'short', to: 'view'}},
+    u2snrnp: {parts: [on('snrnps', 'u2', 'SF3b', S.U2), on('snrnps', 'u2', 'SF3a', shade(S.U2, -.26)), on('snrnps', 'u2', 'U2A′ and U2B″', lighten(S.U2, .4)),
+      on('snrnps', 'u2', 'HTATSF1 and DDX46', shade(S.U2, -.42)), on('snrnps', 'u2', 'U2 Sm ring', S.Sm, {link: 'smring'})],
+      strands: [rna('snrnps', 'u2', 'U2 snRNA', lighten(S.U2, .15))], accent: lighten(S.U2, .2)},
+    trisnrnp: {parts: TRI, strands: [rna('snrnps', 'tri', 'U4 snRNA', S.U4), rna('snrnps', 'tri', 'U6 snRNA', S.U6), rna('snrnps', 'tri', 'U5 snRNA', lighten(S.U5, .2))],
+      accent: lighten(S.U4, .2), wide: true},
+    spliceosome: {parts: [on('p', 'p', 'U2 snRNP', S.U2, {link: 'u2snrnp'}), on('p', 'p', 'U2 Sm ring', S.Sm, {link: 'smring', group: 'Sm rings'}),
+      on('p', 'p', 'U5 snRNP', S.U5), on('p', 'p', 'U5 Sm ring', S.Sm, {link: 'smring', group: 'Sm rings'}), on('p', 'p', 'Prp19 complex', R.ntc), on('p', 'p', 'Other proteins', R.factors)],
+      strands: [rna('p', 'p', 'U2 snRNA', lighten(S.U2, .15)), rna('p', 'p', 'U5 snRNA', lighten(S.U5, .2)), rna('p', 'p', 'U6 snRNA', S.U6),
+        rna('p', 'p', 'pre-mRNA E', S.exon, {label: 'Joined exons'}), rna('p', 'p', 'pre-mRNA I', S.intron, {label: 'Intron lariat', group: 'Intron lariat', from: {strand: 'pre-mRNA I', num: 97}})],
+      accent: lighten(S.U5, .35), wide: true, orient: {part: ['U6 snRNA', 'Joined exons', 'Intron lariat'], to: 'front'}},
+    dbr1: {parts: [on('lib', 'dbr1', 'Dbr1', R.dbr1)], strands: [rna('lib', 'dbr1', 'Branch', S.intron, {label: 'Branched RNA', group: 'Branched RNA'}),
+      rna('lib', 'dbr1', '2′ arm', S.intron, {label: 'Branched RNA', group: 'Branched RNA', from: {strand: 'Branch', num: 501}})],
+      accent: lighten(R.dbr1), orient: {part: 'Branched RNA', to: 'front'}},
+    u1snrnp: {parts: [...ring('lib', 'u1', SM, S.Sm, 'Sm ring', {link: 'smring'}), on('lib', 'u1', 'U1-70K', S.U1), on('lib', 'u1', 'U1-C', lighten(S.U1, .35))],
+      strands: [rna('lib', 'u1', 'U1 snRNA', lighten(S.U1, .1)), rna('lib', 'u1', '5′ splice site', S.exon)], accent: lighten(S.U1, .2)},
+    sf1: {parts: [on('lib', 'sf1', 'SF1', S.SF1)], strands: [rna('lib', 'sf1', 'Branch site', S.intron)], accent: lighten(S.SF1, .3)},
+    u2af65: {parts: [on('lib', 'u2af65', 'U2AF65', S.U2AF)], strands: [rna('lib', 'u2af65', 'Polypyrimidine tract', S.intron)], accent: lighten(S.U2AF, .35), orient: {part: 'Polypyrimidine tract', to: 'front'}},
+    u2af35: {parts: [on('lib', 'u2af35', 'U2AF35', lighten(S.U2AF, .3)), on('lib', 'u2af35', 'U2AF65', S.U2AF, {link: 'u2af65'})], accent: lighten(S.U2AF, .45)},
+    srsf1: {parts: [on('lib', 'srsf1', 'SRSF1', S.SR)], strands: [rna('lib', 'srsf1', 'RNA', S.exon)], accent: lighten(S.SR, .3), orient: {part: 'RNA', to: 'front'}},
+    camkii: {parts: [on('lib', 'camkii', 'Kinase domains', R.kinase), on('lib', 'camkii', 'Hub domains', R.hub)], accent: lighten(R.kinase), orient: {part: 'Hub domains', axis: 'short', to: 'view'}},
+    bclxl: {parts: [on('lib', 'bclxl', 'Bcl-xL', R.bclxl)], accent: lighten(R.bclxl)},
+    ejc: {parts: [on('lib', 'ejc', 'eIF4AIII', R.eif4a3), on('lib', 'ejc', 'MAGOH', R.magoh), on('lib', 'ejc', 'Y14', R.y14), on('lib', 'ejc', 'Barentsz', R.btz)],
+      strands: [rna('lib', 'ejc', 'RNA', S.exon)], accent: lighten(R.eif4a3), orient: {part: 'RNA', to: 'front'}},
+  },
+  // The Sm ring core (4WZJ) is superposed on the tri-snRNP's U4 ring, so it can be shown in place.
+  context: {smring: TRI}, contextLabel: {smring: 'In the tri-snRNP'}, contextDefault: '',
+  relatedNames: {rnap2: 'RNA polymerase II'},
+  sources: {
+    'PDB 8P4B': 'PDB 8P4B · human capping enzyme on pig RNA polymerase II, paused with its new RNA (Garg et al., Mol Cell 2023)',
+    'PDB 1N52': 'PDB 1N52 · human nuclear cap-binding complex, CBP80 and CBP20, with m7GpppG (Calero et al., Nat Struct Biol 2002)',
+    'PDB 1IPC': 'PDB 1IPC · human eIF4E with m7GTP (Tomoo et al., Biochem J 2002)',
+    'PDB 4WZJ': 'PDB 4WZJ · human U4 snRNP core: the Sm ring on U4 snRNA (Leung et al., Nature 2011)',
+    'PDB 4M7A': 'PDB 4M7A · yeast Lsm2–8 ring on the 3′ end of U6 snRNA (Zhou et al., Nature 2014)',
+    'PDB 7EVO': 'PDB 7EVO · human 17S U2 snRNP (Zhang et al., Nat Struct Mol Biol 2024)',
+    'PDB 6QW6': 'PDB 6QW6 · human U4/U6·U5 tri-snRNP (Charenton et al., Science 2019)',
+    'PDB 6QDV': 'PDB 6QDV · human post-catalytic P complex spliceosome (Fica et al., Science 2019)',
+    'PDB 5K78': 'PDB 5K78 · Entamoeba histolytica Dbr1 with a branched RNA (Clark et al., PNAS 2016)',
+    'PDB 4PJO': 'PDB 4PJO · minimal human U1 snRNP with a 5′ splice site RNA (Kondo et al., eLife 2015)',
+    'PDB 1K1G': 'PDB 1K1G · human SF1 on branch-site RNA, NMR, first model (Liu et al., Science 2001)',
+    'PDB 2G4B': 'PDB 2G4B · human U2AF65 RNA-binding domains on a polyuridine tract (Sickmier et al., Mol Cell 2006)',
+    'PDB 1JMT': 'PDB 1JMT · core of the human U2AF65–U2AF35 heterodimer (Kielkopf et al., Cell 2001)',
+    'PDB 2M8D': 'PDB 2M8D · human SRSF1 RRM2 with RNA, NMR, first model (Cléry et al., PNAS 2013)',
+    'PDB 2J0S': 'PDB 2J0S · core of the human exon junction complex on RNA (Bono et al., Cell 2006)',
+    'PDB 1MAZ': 'PDB 1MAZ · human Bcl-xL (Muchmore et al., Nature 1996)',
+    'PDB 8USO': 'PDB 8USO · human CaMKIIδ holoenzyme, its twelve subunits from the crystal’s symmetry (Nguyen et al., Nat Commun 2025)',
+  },
+  // Where each molecule appears in the chapter's scenes (tests/proteins_ch4.test.mjs checks that each time starts the
+  // step named).
+  seeAlsoTitle: 'In the scenes',
+  seeAlso: {
+    capping: [['Capped as it is made', RNA + 'cap.html?t=0'], ['A G added in reverse', RNA + 'cap.html?t=23']],
+    cbc: [['The cap-binding complex', RNA + 'cap.html?t=82']],
+    eif4e: [['eIF4F', RNA + 'cap.html?t=94']],
+    smring: [['The Sm ring', RNA + 'snrnps.html?t=54'], ['Five snRNPs', RNA + 'snrnps.html?t=13']],
+    lsmring: [['The Lsm ring', RNA + 'snrnps.html?t=68']],
+    u2snrnp: [['One snRNA, several proteins', RNA + 'snrnps.html?t=27'], ['U1 and U2 join', RNA + 'spliceosome.html?t=0']],
+    trisnrnp: [['U4/U6 and U5', RNA + 'snrnps.html?t=40'], ['The tri-snRNP joins', RNA + 'spliceosome.html?t=15'], ['U4 leaves', RNA + 'spliceosome.html?t=44']],
+    spliceosome: [['In the spliceosome', RNA + 'snrnps.html?t=81'], ['Exons joined', RNA + 'spliceosome.html?t=88'], ['Second transesterification', RNA + 'lariat.html?t=58']],
+    dbr1: [['Debranching', RNA + 'lariat.html?t=90']],
+    u1snrnp: [['U1 binds first', RNA + 'u1.html?t=0'], ['A single-stranded 5′ end', RNA + 'u1.html?t=15'], ['U1 at the 5′ splice site', RNA + 'commitment.html?t=12'],
+      ['Small RNAs with proteins', RNA + 'snrnps.html?t=0'], ['U1 leaves', RNA + 'spliceosome.html?t=30']],
+    sf1: [['U2AF and BBP/SF1', RNA + 'commitment.html?t=25']],
+    u2af65: [['U2AF and BBP/SF1', RNA + 'commitment.html?t=25'], ['Exon definition', RNA + 'commitment.html?t=88']],
+    u2af35: [['U2AF and BBP/SF1', RNA + 'commitment.html?t=25']],
+    srsf1: [['SR proteins', RNA + 'commitment.html?t=41'], ['A molecular glue', RNA + 'commitment.html?t=55'], ['Exon definition', RNA + 'commitment.html?t=88']],
+    camkii: [['One gene, three kinases', RNA + 'isoforms.html?t=0'], ['δC: the cytoplasm', RNA + 'isoforms.html?t=15'], ['δB: the nucleus', RNA + 'isoforms.html?t=27'],
+      ['δA: the cell membrane', RNA + 'isoforms.html?t=38']],
+    bclxl: [['Bcl-x: two isoforms', RNA + 'isoforms.html?t=50'], ['Bcl-xL and Bcl-xS', RNA + 'isoforms.html?t=63']],
+    // The isoforms scene draws no exon junction complex; its step on the premature stop codon is this card's subject.
+    ejc: [['A premature stop codon', RNA + 'isoforms.html?t=77']],
+  },
+};
+
+// In the chapters' order; the first is shown when the address names none.
+export const CHAPTERS = [GENES_ARE_DNA, BACTERIAL, EUKARYOTIC, RNA_SPLICING];

@@ -112,13 +112,47 @@ export function proteinMaterial(color, {rim = .2, side = THREE.FrontSide} = {}) 
 // Fades a material in or out (0 invisible … 1 opaque); it turns transparent (and stops writing depth) only while it
 // is see-through. Protein envelopes fold, so a see-through ray crosses several front faces: each is given 1−(1−α)^⅓,
 // so a typical stack adds up to about the intended α and a fade looks near-linear (nothing seems to pop in); near
-// opaque the mapping eases back to α itself, so a fade ends without a jump when the surface turns opaque.
+// opaque the mapping eases back to α itself, so a fade ends without a jump when the surface turns opaque. A surface
+// cut open by a clipping plane and showing its cut (drawn both sides, the inside seen through the cut shaded as its
+// cross-section cap, uCapOn) is faded in one pass and keeps writing depth while see-through: three.js otherwise draws
+// a see-through two-sided surface back faces first, then front faces over them, which hides the cap during the fade,
+// so the cap would appear all at once as the fade ends (or vanish as one begins). Drawn so, only its nearest layer
+// shows, so it fades by α itself. A page that turns the cap off while fading (the film) keeps the usual see-through
+// drawing.
+//
+// On pages that set FADE.depthFirst (the scenes; not the film), a see-through protein surface is drawn twice in its
+// own draw: first to depth only, with its own material (colours off, so its depth matches exactly), then in colour.
+// Only its nearest layer shows, faded by α itself, so its folds, and the surfaces it overlaps, keep their depth order
+// all through the fade instead of showing in drawing order until it turns opaque and then snapping into place.
+export const FADE = {depthFirst: false};
 export function fade(material, value) {
   value = clamp(value);
-  if (material.userData.layered && value < .999) value = mix(1 - Math.cbrt(1 - value), value, smooth((value - .85) / .15));
+  const cutOpen = material.side === THREE.DoubleSide && material.clippingPlanes?.length > 0 && (material.userData.uniforms?.uCapOn?.value ?? 1) > .5;
+  const layered = material.userData.layered, depthFirst = layered && FADE.depthFirst;
+  if (layered && !cutOpen && !depthFirst && value < .999) value = mix(1 - Math.cbrt(1 - value), value, smooth((value - .85) / .15));
   const see = value < .999;
   if (material.transparent !== see) { material.transparent = see; material.depthWrite = !see; material.needsUpdate = true; }
+  const solid = see && cutOpen;
+  if (solid !== !!material.userData.solidFade) { material.userData.solidFade = solid; material.forceSinglePass = solid; material.depthWrite = !see || solid; }
+  if (depthFirst && see) drawDepthFirst(material);
+  material.userData.depthFirst = depthFirst && see;
   material.opacity = value;
+}
+function drawDepthFirst(material) {
+  if (material.userData.depthFirstHook) return;
+  material.userData.depthFirstHook = true;
+  const before = material.onBeforeRender;
+  // (A material's hook runs once the object's matrices are set for this draw, and not for other passes' materials,
+  // such as the occlusion pass's normals.)
+  material.onBeforeRender = function (renderer, scene, camera, geometry, object, group) {
+    if (this.userData.depthFirst) {
+      const colour = this.colorWrite, depth = this.depthWrite;
+      this.colorWrite = false; this.depthWrite = true;
+      renderer.renderBufferDirect(camera, scene, geometry, this, object, group);
+      this.colorWrite = colour; this.depthWrite = depth;
+    }
+    before.call(this, renderer, scene, camera, geometry, object, group);
+  };
 }
 // Fades every material under an object (each material once) and hides the object while it is invisible.
 export function fadeObject(object, value) {

@@ -1,0 +1,2346 @@
+{
+  "sets": [
+    {
+      "out": "assets/snrnps",
+      "quantise": true,
+      "center": "tri",
+      "structures": [
+        {
+          "id": "tri",
+          "file": "source/snrnps/6QW6_trim.cif.gz",
+          "source": "PDB 6QW6",
+          "parts": [
+            {
+              "name": "Prp8",
+              "chains": [
+                "5A"
+              ],
+              "role": "u5",
+              "grid": {
+                "spacing": 3,
+                "sigma": 1.2,
+                "level": 0.1
+              },
+              "decimate": 0.8
+            },
+            {
+              "name": "Brr2",
+              "chains": [
+                "5B"
+              ],
+              "role": "u5",
+              "grid": {
+                "spacing": 3,
+                "sigma": 1.2,
+                "level": 0.1
+              },
+              "decimate": 0.8
+            },
+            {
+              "name": "Snu114",
+              "chains": [
+                "5C"
+              ],
+              "role": "u5",
+              "grid": {
+                "spacing": 3,
+                "sigma": 1.2,
+                "level": 0.1
+              },
+              "decimate": 0.8
+            },
+            {
+              "name": "U5 40K and Dib1",
+              "chains": [
+                "5O",
+                "5D"
+              ],
+              "role": "u5",
+              "grid": {
+                "spacing": 3,
+                "sigma": 1.2,
+                "level": 0.1
+              },
+              "decimate": 0.8
+            },
+            {
+              "name": "U5 Sm ring",
+              "chains": [
+                "51",
+                "52",
+                "53",
+                "5b",
+                "5e",
+                "5f",
+                "5g"
+              ],
+              "role": "sm",
+              "grid": {
+                "spacing": 3,
+                "sigma": 1.2,
+                "level": 0.1
+              },
+              "decimate": 0.8
+            },
+            {
+              "name": "U4/U6 proteins",
+              "chains": [
+                "4A",
+                "4B",
+                "4C",
+                "4D"
+              ],
+              "role": "u4",
+              "grid": {
+                "spacing": 3,
+                "sigma": 1.2,
+                "level": 0.1
+              },
+              "decimate": 0.8
+            },
+            {
+              "name": "U4 Sm ring",
+              "chains": [
+                "41",
+                "42",
+                "43",
+                "4b",
+                "4e",
+                "4f",
+                "4g"
+              ],
+              "role": "sm",
+              "grid": {
+                "spacing": 3,
+                "sigma": 1.2,
+                "level": 0.1
+              },
+              "decimate": 0.8
+            },
+            {
+              "name": "Lsm2",
+              "chains": [
+                "62"
+              ],
+              "role": "lsm",
+              "grid": {
+                "spacing": 3,
+                "sigma": 1.2,
+                "level": 0.1
+              },
+              "decimate": 0.8
+            },
+            {
+              "name": "Lsm3",
+              "chains": [
+                "63"
+              ],
+              "role": "lsm",
+              "grid": {
+                "spacing": 3,
+                "sigma": 1.2,
+                "level": 0.1
+              },
+              "decimate": 0.8
+            },
+            {
+              "name": "Lsm4",
+              "chains": [
+                "64"
+              ],
+              "role": "lsm",
+              "grid": {
+                "spacing": 3,
+                "sigma": 1.2,
+                "level": 0.1
+              },
+              "decimate": 0.8
+            },
+            {
+              "name": "Lsm5",
+              "chains": [
+                "65"
+              ],
+              "role": "lsm",
+              "grid": {
+                "spacing": 3,
+                "sigma": 1.2,
+                "level": 0.1
+              },
+              "decimate": 0.8
+            },
+            {
+              "name": "Lsm6",
+              "chains": [
+                "66"
+              ],
+              "role": "lsm",
+              "grid": {
+                "spacing": 3,
+                "sigma": 1.2,
+                "level": 0.1
+              },
+              "decimate": 0.8
+            },
+            {
+              "name": "Lsm7",
+              "chains": [
+                "67"
+              ],
+              "role": "lsm",
+              "grid": {
+                "spacing": 3,
+                "sigma": 1.2,
+                "level": 0.1
+              },
+              "decimate": 0.8
+            },
+            {
+              "name": "Lsm8",
+              "chains": [
+                "68"
+              ],
+              "role": "lsm",
+              "grid": {
+                "spacing": 3,
+                "sigma": 1.2,
+                "level": 0.1
+              },
+              "decimate": 0.8
+            },
+            {
+              "name": "Tri-snRNP proteins",
+              "chains": [
+                "X",
+                "5J",
+                "5X",
+                "R",
+                "S",
+                "U"
+              ],
+              "role": "tri",
+              "grid": {
+                "spacing": 3,
+                "sigma": 1.2,
+                "level": 0.1
+              },
+              "decimate": 0.8
+            }
+          ],
+          "strands": [
+            {
+              "name": "U4 snRNA",
+              "chain": "4",
+              "self": true
+            },
+            {
+              "name": "U6 snRNA",
+              "chain": "6",
+              "self": true
+            },
+            {
+              "name": "U5 snRNA",
+              "chain": "5",
+              "self": true
+            }
+          ]
+        },
+        {
+          "id": "u2",
+          "file": "source/snrnps/7EVO_trim.cif.gz",
+          "source": "PDB 7EVO",
+          "parts": [
+            {
+              "name": "SF3b",
+              "chains": [
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6"
+              ],
+              "role": "u2",
+              "grid": {
+                "spacing": 3,
+                "sigma": 1.2,
+                "level": 0.1
+              },
+              "decimate": 0.8
+            },
+            {
+              "name": "SF3a",
+              "chains": [
+                "A",
+                "B",
+                "C"
+              ],
+              "role": "u2",
+              "grid": {
+                "spacing": 3,
+                "sigma": 1.2,
+                "level": 0.1
+              },
+              "decimate": 0.8
+            },
+            {
+              "name": "U2A′ and U2B″",
+              "chains": [
+                "F",
+                "G"
+              ],
+              "role": "u2",
+              "grid": {
+                "spacing": 3,
+                "sigma": 1.2,
+                "level": 0.1
+              },
+              "decimate": 0.8
+            },
+            {
+              "name": "HTATSF1 and DDX46",
+              "chains": [
+                "D",
+                "E"
+              ],
+              "role": "u2",
+              "grid": {
+                "spacing": 3,
+                "sigma": 1.2,
+                "level": 0.1
+              },
+              "decimate": 0.8
+            },
+            {
+              "name": "U2 Sm ring",
+              "chains": [
+                "a",
+                "b",
+                "c",
+                "d",
+                "e",
+                "f",
+                "g"
+              ],
+              "role": "sm",
+              "grid": {
+                "spacing": 3,
+                "sigma": 1.2,
+                "level": 0.1
+              },
+              "decimate": 0.8
+            }
+          ],
+          "strands": [
+            {
+              "name": "U2 snRNA",
+              "chain": "H",
+              "self": true
+            }
+          ]
+        },
+        {
+          "id": "u1",
+          "file": "source/snrnps/3CW1.cif.gz",
+          "source": "PDB 3CW1",
+          "parts": [
+            {
+              "name": "U1-70K",
+              "chains": [
+                "K"
+              ],
+              "role": "u1",
+              "grid": {
+                "spacing": 3,
+                "sigma": 1.2,
+                "level": 0.1
+              },
+              "decimate": 0.8
+            },
+            {
+              "name": "U1-C",
+              "chains": [
+                "L"
+              ],
+              "role": "u1",
+              "grid": {
+                "spacing": 3,
+                "sigma": 1.2,
+                "level": 0.1
+              },
+              "decimate": 0.8
+            },
+            {
+              "name": "U1 Sm ring",
+              "chains": [
+                "A",
+                "B",
+                "C",
+                "D",
+                "E",
+                "F",
+                "G"
+              ],
+              "role": "sm",
+              "grid": {
+                "spacing": 3,
+                "sigma": 1.2,
+                "level": 0.1
+              },
+              "decimate": 0.8
+            }
+          ],
+          "strands": [
+            {
+              "name": "U1 snRNA",
+              "chain": "V",
+              "trace": true
+            }
+          ]
+        },
+        {
+          "id": "sm",
+          "file": "source/snrnps/4WZJ_one.cif.gz",
+          "source": "PDB 4WZJ",
+          "align": {
+            "to": "tri",
+            "pairs": [
+              [
+                "A",
+                "43"
+              ],
+              [
+                "B",
+                "4b"
+              ],
+              [
+                "C",
+                "41"
+              ],
+              [
+                "D",
+                "42"
+              ],
+              [
+                "E",
+                "4e"
+              ],
+              [
+                "F",
+                "4f"
+              ],
+              [
+                "G",
+                "4g"
+              ]
+            ]
+          },
+          "parts": [
+            {
+              "name": "SmB",
+              "chains": [
+                "B"
+              ],
+              "role": "sm",
+              "decimate": 0.5
+            },
+            {
+              "name": "SmD1",
+              "chains": [
+                "C"
+              ],
+              "role": "sm",
+              "decimate": 0.5
+            },
+            {
+              "name": "SmD2",
+              "chains": [
+                "D"
+              ],
+              "role": "sm",
+              "decimate": 0.5
+            },
+            {
+              "name": "SmD3",
+              "chains": [
+                "A"
+              ],
+              "role": "sm",
+              "decimate": 0.5
+            },
+            {
+              "name": "SmE",
+              "chains": [
+                "E"
+              ],
+              "role": "sm",
+              "decimate": 0.5
+            },
+            {
+              "name": "SmF",
+              "chains": [
+                "F"
+              ],
+              "role": "sm",
+              "decimate": 0.5
+            },
+            {
+              "name": "SmG",
+              "chains": [
+                "G"
+              ],
+              "role": "sm",
+              "decimate": 0.5
+            }
+          ],
+          "strands": [
+            {
+              "name": "U4 Sm site",
+              "chain": "V",
+              "self": true
+            }
+          ]
+        },
+        {
+          "id": "lsm",
+          "file": "source/snrnps/4M7A_one.cif.gz",
+          "source": "PDB 4M7A",
+          "parts": [
+            {
+              "name": "Lsm2",
+              "chains": [
+                "I"
+              ],
+              "role": "lsm",
+              "decimate": 0.5
+            },
+            {
+              "name": "Lsm3",
+              "chains": [
+                "J"
+              ],
+              "role": "lsm",
+              "decimate": 0.5
+            },
+            {
+              "name": "Lsm4",
+              "chains": [
+                "N"
+              ],
+              "role": "lsm",
+              "decimate": 0.5
+            },
+            {
+              "name": "Lsm5",
+              "chains": [
+                "L"
+              ],
+              "role": "lsm",
+              "decimate": 0.5
+            },
+            {
+              "name": "Lsm6",
+              "chains": [
+                "K"
+              ],
+              "role": "lsm",
+              "decimate": 0.5
+            },
+            {
+              "name": "Lsm7",
+              "chains": [
+                "M"
+              ],
+              "role": "lsm",
+              "decimate": 0.5
+            },
+            {
+              "name": "Lsm8",
+              "chains": [
+                "H"
+              ],
+              "role": "lsm",
+              "decimate": 0.5
+            }
+          ],
+          "strands": [
+            {
+              "name": "U6 3′ end",
+              "chain": "O"
+            }
+          ]
+        }
+      ],
+      "citations": {
+        "6QW6": "Charenton C, Wilkinson ME, Nagai K. Science 364, 362–367 (2019)",
+        "7EVO": "Zhang X et al. Nat Struct Mol Biol 31, 835–845 (2024)",
+        "3CW1": "Pomeranz Krummel DA, Oubridge C, Leung AK et al. Nature 458, 475–480 (2009)",
+        "4WZJ": "Leung AKW, Nagai K, Li J. Nature 473, 536–539 (2011)",
+        "4M7A": "Zhou L et al. Nature 506, 116–120 (2014)"
+      }
+    },
+    {
+      "out": "assets/spliceosome_prea",
+      "quantise": true,
+      "center": "ref",
+      "structures": [
+        {
+          "id": "ref",
+          "file": "source/spliceosome/5XJC_trim.cif.gz",
+          "source": "PDB 5XJC"
+        },
+        {
+          "id": "preb",
+          "file": "source/spliceosome/6QX9_trim.cif.gz",
+          "source": "PDB 6QX9",
+          "align": {
+            "to": "ref",
+            "pairs": [
+              [
+                "5A",
+                "A"
+              ],
+              [
+                "5C",
+                "C"
+              ]
+            ],
+            "core": 0.3
+          }
+        },
+        {
+          "id": "prea",
+          "file": "source/spliceosome/7VPX_trim.cif.gz",
+          "source": "PDB 7VPX",
+          "align": {
+            "to": "preb",
+            "pairs": [
+              [
+                "3",
+                "B3"
+              ],
+              [
+                "5",
+                "B5"
+              ],
+              [
+                "6",
+                "BP"
+              ],
+              [
+                "1",
+                "B1"
+              ],
+              [
+                "2",
+                "B2"
+              ],
+              [
+                "4",
+                "B4"
+              ]
+            ],
+            "core": 0.3
+          },
+          "parts": [
+            {
+              "name": "U1 snRNP",
+              "chains": [
+                "O",
+                "M",
+                "N"
+              ],
+              "grid": {
+                "spacing": 3.5,
+                "sigma": 1.2,
+                "level": 0.1
+              },
+              "decimate": 0.85
+            },
+            {
+              "name": "U1 Sm ring",
+              "chains": [
+                "m",
+                "h",
+                "k",
+                "n",
+                "l",
+                "i",
+                "j"
+              ],
+              "grid": {
+                "spacing": 3.5,
+                "sigma": 1.2,
+                "level": 0.1
+              },
+              "decimate": 0.85
+            },
+            {
+              "name": "U2 snRNP",
+              "chains": [
+                "E",
+                "F",
+                "G"
+              ],
+              "grid": {
+                "spacing": 3.5,
+                "sigma": 1.2,
+                "level": 0.1
+              },
+              "decimate": 0.85
+            },
+            {
+              "name": "SF3a and SF3b",
+              "chains": [
+                "B",
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "A",
+                "C",
+                "6"
+              ],
+              "grid": {
+                "spacing": 3.5,
+                "sigma": 1.2,
+                "level": 0.1
+              },
+              "decimate": 0.85
+            },
+            {
+              "name": "U2 Sm ring",
+              "chains": [
+                "a",
+                "b",
+                "c",
+                "d",
+                "e",
+                "f",
+                "g"
+              ],
+              "grid": {
+                "spacing": 3.5,
+                "sigma": 1.2,
+                "level": 0.1
+              },
+              "decimate": 0.85
+            },
+            {
+              "name": "Other proteins",
+              "chains": [
+                "D",
+                "J"
+              ],
+              "grid": {
+                "spacing": 3.5,
+                "sigma": 1.2,
+                "level": 0.1
+              },
+              "decimate": 0.85
+            }
+          ],
+          "strands": [
+            {
+              "name": "U1 snRNA",
+              "chain": "L",
+              "self": true,
+              "trace": true
+            },
+            {
+              "name": "U2 snRNA",
+              "chain": "H",
+              "self": true,
+              "trace": true
+            },
+            {
+              "name": "pre-mRNA I",
+              "chain": "I",
+              "self": true,
+              "trace": true
+            },
+            {
+              "name": "pre-mRNA K",
+              "chain": "K",
+              "self": true,
+              "trace": true
+            }
+          ]
+        }
+      ],
+      "citations": {
+        "7VPX": "Zhang X et al. Nat Struct Mol Biol 31, 835–845 (2024)",
+        "5XJC": "Zhang X, Yan C, Hang J et al. Cell 169, 918–929 (2017) (the frame)"
+      }
+    },
+    {
+      "out": "assets/spliceosome_preb",
+      "quantise": true,
+      "center": "ref",
+      "structures": [
+        {
+          "id": "ref",
+          "file": "source/spliceosome/5XJC_trim.cif.gz",
+          "source": "PDB 5XJC"
+        },
+        {
+          "id": "preb",
+          "file": "source/spliceosome/6QX9_trim.cif.gz",
+          "source": "PDB 6QX9",
+          "align": {
+            "to": "ref",
+            "pairs": [
+              [
+                "5A",
+                "A"
+              ],
+              [
+                "5C",
+                "C"
+              ]
+            ],
+            "core": 0.3
+          },
+          "parts": [
+            {
+              "name": "U1 snRNP",
+              "chains": [
+                "1K",
+                "1A",
+                "1C"
+              ],
+              "grid": {
+                "spacing": 3.5,
+                "sigma": 1.2,
+                "level": 0.1
+              },
+              "decimate": 0.85
+            },
+            {
+              "name": "U1 Sm ring",
+              "chains": [
+                "13",
+                "1f",
+                "11",
+                "1b",
+                "1g",
+                "1e",
+                "12"
+              ],
+              "grid": {
+                "spacing": 3.5,
+                "sigma": 1.2,
+                "level": 0.1
+              },
+              "decimate": 0.85
+            },
+            {
+              "name": "U2 snRNP",
+              "chains": [
+                "2B",
+                "2A"
+              ],
+              "grid": {
+                "spacing": 3.5,
+                "sigma": 1.2,
+                "level": 0.1
+              },
+              "decimate": 0.85
+            },
+            {
+              "name": "SF3a and SF3b",
+              "chains": [
+                "B4",
+                "A2",
+                "B2",
+                "B5",
+                "B3",
+                "A3",
+                "BP",
+                "A1",
+                "B1"
+              ],
+              "grid": {
+                "spacing": 3.5,
+                "sigma": 1.2,
+                "level": 0.1
+              },
+              "decimate": 0.85
+            },
+            {
+              "name": "U2 Sm ring",
+              "chains": [
+                "22",
+                "2f",
+                "2b",
+                "23",
+                "2g",
+                "2e",
+                "21"
+              ],
+              "grid": {
+                "spacing": 3.5,
+                "sigma": 1.2,
+                "level": 0.1
+              },
+              "decimate": 0.85
+            },
+            {
+              "name": "U4 snRNP",
+              "chains": [
+                "4B",
+                "4C",
+                "4D",
+                "4A"
+              ],
+              "grid": {
+                "spacing": 3.5,
+                "sigma": 1.2,
+                "level": 0.1
+              },
+              "decimate": 0.85
+            },
+            {
+              "name": "U4 Sm ring",
+              "chains": [
+                "41",
+                "4e",
+                "42",
+                "4f",
+                "43",
+                "4b",
+                "4g"
+              ],
+              "grid": {
+                "spacing": 3.5,
+                "sigma": 1.2,
+                "level": 0.1
+              },
+              "decimate": 0.85
+            },
+            {
+              "name": "U6 Lsm ring",
+              "chains": [
+                "66",
+                "67",
+                "62",
+                "63",
+                "68",
+                "64",
+                "65"
+              ],
+              "grid": {
+                "spacing": 3.5,
+                "sigma": 1.2,
+                "level": 0.1
+              },
+              "decimate": 0.85
+            },
+            {
+              "name": "U5 snRNP",
+              "chains": [
+                "5O",
+                "5C",
+                "5A",
+                "5D",
+                "5B"
+              ],
+              "grid": {
+                "spacing": 3.5,
+                "sigma": 1.2,
+                "level": 0.1
+              },
+              "decimate": 0.85
+            },
+            {
+              "name": "U5 Sm ring",
+              "chains": [
+                "5e",
+                "53",
+                "5f",
+                "51",
+                "5b",
+                "52",
+                "5g"
+              ],
+              "grid": {
+                "spacing": 3.5,
+                "sigma": 1.2,
+                "level": 0.1
+              },
+              "decimate": 0.85
+            },
+            {
+              "name": "Tri-snRNP proteins",
+              "chains": [
+                "R",
+                "X",
+                "5X",
+                "S",
+                "5J",
+                "U",
+                "K"
+              ],
+              "grid": {
+                "spacing": 3.5,
+                "sigma": 1.2,
+                "level": 0.1
+              },
+              "decimate": 0.85
+            }
+          ],
+          "strands": [
+            {
+              "name": "U1 snRNA",
+              "chain": "1",
+              "self": true,
+              "trace": true
+            },
+            {
+              "name": "U2 snRNA",
+              "chain": "2",
+              "self": true,
+              "trace": true
+            },
+            {
+              "name": "U4 snRNA",
+              "chain": "4",
+              "self": true,
+              "trace": true
+            },
+            {
+              "name": "U5 snRNA",
+              "chain": "5",
+              "self": true,
+              "trace": true
+            },
+            {
+              "name": "U6 snRNA",
+              "chain": "6",
+              "self": true,
+              "trace": true
+            },
+            {
+              "name": "pre-mRNA",
+              "chain": "I",
+              "self": true,
+              "trace": true
+            }
+          ]
+        }
+      ],
+      "citations": {
+        "6QX9": "Charenton C, Wilkinson ME, Nagai K. Science 364, 362–367 (2019)",
+        "5XJC": "Zhang X, Yan C, Hang J et al. Cell 169, 918–929 (2017) (the frame)"
+      }
+    },
+    {
+      "out": "assets/spliceosome_b",
+      "quantise": true,
+      "center": "ref",
+      "structures": [
+        {
+          "id": "ref",
+          "file": "source/spliceosome/5XJC_trim.cif.gz",
+          "source": "PDB 5XJC"
+        },
+        {
+          "id": "b",
+          "file": "source/spliceosome/6AHD_trim.cif.gz",
+          "source": "PDB 6AHD",
+          "align": {
+            "to": "ref",
+            "pairs": [
+              [
+                "A",
+                "A"
+              ],
+              [
+                "C",
+                "C"
+              ]
+            ],
+            "core": 0.3
+          },
+          "parts": [
+            {
+              "name": "U2 snRNP",
+              "chains": [
+                "o",
+                "p"
+              ],
+              "grid": {
+                "spacing": 3.5,
+                "sigma": 1.2,
+                "level": 0.1
+              },
+              "decimate": 0.85
+            },
+            {
+              "name": "SF3a and SF3b",
+              "chains": [
+                "u",
+                "v",
+                "w",
+                "1",
+                "3",
+                "5",
+                "6",
+                "7",
+                "2",
+                "4"
+              ],
+              "grid": {
+                "spacing": 3.5,
+                "sigma": 1.2,
+                "level": 0.1
+              },
+              "decimate": 0.85
+            },
+            {
+              "name": "U2 Sm ring",
+              "chains": [
+                "h",
+                "i",
+                "j",
+                "k",
+                "l",
+                "m",
+                "n"
+              ],
+              "grid": {
+                "spacing": 3.5,
+                "sigma": 1.2,
+                "level": 0.1
+              },
+              "decimate": 0.85
+            },
+            {
+              "name": "U4 snRNP",
+              "chains": [
+                "M",
+                "L",
+                "J",
+                "W",
+                "K"
+              ],
+              "grid": {
+                "spacing": 3.5,
+                "sigma": 1.2,
+                "level": 0.1
+              },
+              "decimate": 0.85
+            },
+            {
+              "name": "U4 Sm ring",
+              "chains": [
+                "P",
+                "Q",
+                "R",
+                "S",
+                "T",
+                "U",
+                "V"
+              ],
+              "grid": {
+                "spacing": 3.5,
+                "sigma": 1.2,
+                "level": 0.1
+              },
+              "decimate": 0.85
+            },
+            {
+              "name": "U6 Lsm ring",
+              "chains": [
+                "q",
+                "r",
+                "s",
+                "t",
+                "x",
+                "y",
+                "z"
+              ],
+              "grid": {
+                "spacing": 3.5,
+                "sigma": 1.2,
+                "level": 0.1
+              },
+              "decimate": 0.85
+            },
+            {
+              "name": "U5 snRNP",
+              "chains": [
+                "A",
+                "O",
+                "C",
+                "E",
+                "D"
+              ],
+              "grid": {
+                "spacing": 3.5,
+                "sigma": 1.2,
+                "level": 0.1
+              },
+              "decimate": 0.85
+            },
+            {
+              "name": "U5 Sm ring",
+              "chains": [
+                "a",
+                "b",
+                "c",
+                "d",
+                "e",
+                "f",
+                "g"
+              ],
+              "grid": {
+                "spacing": 3.5,
+                "sigma": 1.2,
+                "level": 0.1
+              },
+              "decimate": 0.85
+            },
+            {
+              "name": "Tri-snRNP proteins",
+              "chains": [
+                "N",
+                "9",
+                "X",
+                "A0",
+                "0",
+                "Z",
+                "8",
+                "Y"
+              ],
+              "grid": {
+                "spacing": 3.5,
+                "sigma": 1.2,
+                "level": 0.1
+              },
+              "decimate": 0.85
+            }
+          ],
+          "strands": [
+            {
+              "name": "U2 snRNA",
+              "chain": "H",
+              "self": true,
+              "trace": true
+            },
+            {
+              "name": "U4 snRNA",
+              "chain": "I",
+              "self": true,
+              "trace": true
+            },
+            {
+              "name": "U5 snRNA",
+              "chain": "B",
+              "self": true,
+              "trace": true
+            },
+            {
+              "name": "U6 snRNA",
+              "chain": "F",
+              "self": true,
+              "trace": true
+            },
+            {
+              "name": "pre-mRNA",
+              "chain": "G",
+              "self": true,
+              "trace": true
+            }
+          ]
+        }
+      ],
+      "citations": {
+        "6AHD": "Zhan X, Yan C, Zhang X et al. Cell Res 28, 1129–1140 (2018)",
+        "5XJC": "Zhang X, Yan C, Hang J et al. Cell 169, 918–929 (2017) (the frame)"
+      }
+    },
+    {
+      "out": "assets/spliceosome_bact",
+      "quantise": true,
+      "center": "ref",
+      "structures": [
+        {
+          "id": "ref",
+          "file": "source/spliceosome/5XJC_trim.cif.gz",
+          "source": "PDB 5XJC"
+        },
+        {
+          "id": "bact",
+          "file": "source/spliceosome/8I0R_trim.cif.gz",
+          "source": "PDB 8I0R",
+          "align": {
+            "to": "ref",
+            "pairs": [
+              [
+                "A",
+                "A"
+              ],
+              [
+                "C",
+                "C"
+              ]
+            ],
+            "core": 0.3
+          },
+          "parts": [
+            {
+              "name": "U2 snRNP",
+              "chains": [
+                "p",
+                "o"
+              ],
+              "grid": {
+                "spacing": 3.5,
+                "sigma": 1.2,
+                "level": 0.1
+              },
+              "decimate": 0.85
+            },
+            {
+              "name": "SF3a and SF3b",
+              "chains": [
+                "1",
+                "3",
+                "w",
+                "u",
+                "2",
+                "4",
+                "6",
+                "7",
+                "5",
+                "v"
+              ],
+              "grid": {
+                "spacing": 3.5,
+                "sigma": 1.2,
+                "level": 0.1
+              },
+              "decimate": 0.85
+            },
+            {
+              "name": "U2 Sm ring",
+              "chains": [
+                "h",
+                "i",
+                "m",
+                "l",
+                "k",
+                "j",
+                "n"
+              ],
+              "grid": {
+                "spacing": 3.5,
+                "sigma": 1.2,
+                "level": 0.1
+              },
+              "decimate": 0.85
+            },
+            {
+              "name": "U5 snRNP",
+              "chains": [
+                "A",
+                "C",
+                "D",
+                "E"
+              ],
+              "grid": {
+                "spacing": 3.5,
+                "sigma": 1.2,
+                "level": 0.1
+              },
+              "decimate": 0.85
+            },
+            {
+              "name": "U5 Sm ring",
+              "chains": [
+                "a",
+                "b",
+                "c",
+                "d",
+                "e",
+                "f",
+                "g"
+              ],
+              "grid": {
+                "spacing": 3.5,
+                "sigma": 1.2,
+                "level": 0.1
+              },
+              "decimate": 0.85
+            },
+            {
+              "name": "Prp19 complex",
+              "chains": [
+                "I",
+                "J",
+                "L",
+                "N",
+                "O",
+                "P",
+                "Q",
+                "R",
+                "T",
+                "y"
+              ],
+              "grid": {
+                "spacing": 3.5,
+                "sigma": 1.2,
+                "level": 0.1
+              },
+              "decimate": 0.85
+            },
+            {
+              "name": "Other proteins",
+              "chains": [
+                "K",
+                "S",
+                "U",
+                "V",
+                "W",
+                "X",
+                "Y",
+                "Z",
+                "9",
+                "8",
+                "z"
+              ],
+              "grid": {
+                "spacing": 3.5,
+                "sigma": 1.2,
+                "level": 0.1
+              },
+              "decimate": 0.85
+            }
+          ],
+          "strands": [
+            {
+              "name": "U2 snRNA",
+              "chain": "H",
+              "self": true,
+              "trace": true
+            },
+            {
+              "name": "U5 snRNA",
+              "chain": "B",
+              "self": true,
+              "trace": true
+            },
+            {
+              "name": "U6 snRNA",
+              "chain": "F",
+              "self": true,
+              "trace": true
+            },
+            {
+              "name": "pre-mRNA",
+              "chain": "G",
+              "self": true,
+              "trace": true
+            }
+          ]
+        }
+      ],
+      "citations": {
+        "8I0R": "Zhan X, Lu Y, Shi Y. Nat Commun 15, 6348 (2024)",
+        "5XJC": "Zhang X, Yan C, Hang J et al. Cell 169, 918–929 (2017) (the frame)"
+      }
+    },
+    {
+      "out": "assets/spliceosome_c",
+      "quantise": true,
+      "center": "ref",
+      "structures": [
+        {
+          "id": "ref",
+          "file": "source/spliceosome/5XJC_trim.cif.gz",
+          "source": "PDB 5XJC"
+        },
+        {
+          "id": "c",
+          "file": "source/spliceosome/5YZG_trim.cif.gz",
+          "source": "PDB 5YZG",
+          "align": {
+            "to": "ref",
+            "pairs": [
+              [
+                "A",
+                "A"
+              ],
+              [
+                "C",
+                "C"
+              ]
+            ],
+            "core": 0.3
+          },
+          "parts": [
+            {
+              "name": "U2 snRNP",
+              "chains": [
+                "o",
+                "p"
+              ],
+              "grid": {
+                "spacing": 3.5,
+                "sigma": 1.2,
+                "level": 0.1
+              },
+              "decimate": 0.85
+            },
+            {
+              "name": "U2 Sm ring",
+              "chains": [
+                "h",
+                "i",
+                "j",
+                "k",
+                "m",
+                "l",
+                "n"
+              ],
+              "grid": {
+                "spacing": 3.5,
+                "sigma": 1.2,
+                "level": 0.1
+              },
+              "decimate": 0.85
+            },
+            {
+              "name": "U5 snRNP",
+              "chains": [
+                "A",
+                "C",
+                "D",
+                "E"
+              ],
+              "grid": {
+                "spacing": 3.5,
+                "sigma": 1.2,
+                "level": 0.1
+              },
+              "decimate": 0.85
+            },
+            {
+              "name": "U5 Sm ring",
+              "chains": [
+                "a",
+                "b",
+                "c",
+                "d",
+                "f",
+                "e",
+                "g"
+              ],
+              "grid": {
+                "spacing": 3.5,
+                "sigma": 1.2,
+                "level": 0.1
+              },
+              "decimate": 0.85
+            },
+            {
+              "name": "Prp19 complex",
+              "chains": [
+                "I",
+                "J",
+                "K",
+                "L",
+                "y",
+                "M",
+                "N",
+                "O",
+                "P",
+                "R",
+                "S",
+                "T",
+                "Q",
+                "q",
+                "r",
+                "s",
+                "t",
+                "1"
+              ],
+              "grid": {
+                "spacing": 3.5,
+                "sigma": 1.2,
+                "level": 0.1
+              },
+              "decimate": 0.85
+            },
+            {
+              "name": "Other proteins",
+              "chains": [
+                "U",
+                "V",
+                "W",
+                "X",
+                "Y",
+                "Z",
+                "u",
+                "v",
+                "w",
+                "x",
+                "2",
+                "3",
+                "4"
+              ],
+              "grid": {
+                "spacing": 3.5,
+                "sigma": 1.2,
+                "level": 0.1
+              },
+              "decimate": 0.85
+            }
+          ],
+          "strands": [
+            {
+              "name": "U2 snRNA",
+              "chain": "H",
+              "self": true,
+              "trace": true
+            },
+            {
+              "name": "U5 snRNA",
+              "chain": "B",
+              "self": true,
+              "trace": true
+            },
+            {
+              "name": "U6 snRNA",
+              "chain": "F",
+              "self": true,
+              "trace": true
+            },
+            {
+              "name": "pre-mRNA",
+              "chain": "G",
+              "self": true,
+              "trace": true
+            }
+          ]
+        }
+      ],
+      "citations": {
+        "5YZG": "Zhan X, Yan C, Zhang X et al. Science 359, 537–545 (2018)",
+        "5XJC": "Zhang X, Yan C, Hang J et al. Cell 169, 918–929 (2017) (the frame)"
+      }
+    },
+    {
+      "out": "assets/spliceosome_cstar",
+      "quantise": true,
+      "center": "cstar",
+      "structures": [
+        {
+          "id": "cstar",
+          "file": "source/spliceosome/5XJC_trim.cif.gz",
+          "source": "PDB 5XJC",
+          "parts": [
+            {
+              "name": "U2 snRNP",
+              "chains": [
+                "o",
+                "p"
+              ],
+              "grid": {
+                "spacing": 3.5,
+                "sigma": 1.2,
+                "level": 0.1
+              },
+              "decimate": 0.85
+            },
+            {
+              "name": "U2 Sm ring",
+              "chains": [
+                "h",
+                "i",
+                "j",
+                "k",
+                "m",
+                "l",
+                "n"
+              ],
+              "grid": {
+                "spacing": 3.5,
+                "sigma": 1.2,
+                "level": 0.1
+              },
+              "decimate": 0.85
+            },
+            {
+              "name": "U5 snRNP",
+              "chains": [
+                "A",
+                "C",
+                "D",
+                "E"
+              ],
+              "grid": {
+                "spacing": 3.5,
+                "sigma": 1.2,
+                "level": 0.1
+              },
+              "decimate": 0.85
+            },
+            {
+              "name": "U5 Sm ring",
+              "chains": [
+                "a",
+                "b",
+                "c",
+                "d",
+                "f",
+                "e",
+                "g"
+              ],
+              "grid": {
+                "spacing": 3.5,
+                "sigma": 1.2,
+                "level": 0.1
+              },
+              "decimate": 0.85
+            },
+            {
+              "name": "Prp19 complex",
+              "chains": [
+                "I",
+                "J",
+                "K",
+                "L",
+                "M",
+                "N",
+                "O",
+                "P",
+                "Q",
+                "R",
+                "S",
+                "T",
+                "q",
+                "r",
+                "s",
+                "t"
+              ],
+              "grid": {
+                "spacing": 3.5,
+                "sigma": 1.2,
+                "level": 0.1
+              },
+              "decimate": 0.85
+            },
+            {
+              "name": "Other proteins",
+              "chains": [
+                "U",
+                "V",
+                "W",
+                "X",
+                "Y",
+                "Z",
+                "u",
+                "v",
+                "w",
+                "x"
+              ],
+              "grid": {
+                "spacing": 3.5,
+                "sigma": 1.2,
+                "level": 0.1
+              },
+              "decimate": 0.85
+            }
+          ],
+          "strands": [
+            {
+              "name": "U2 snRNA",
+              "chain": "H",
+              "self": true,
+              "trace": true
+            },
+            {
+              "name": "U5 snRNA",
+              "chain": "B",
+              "self": true,
+              "trace": true
+            },
+            {
+              "name": "U6 snRNA",
+              "chain": "F",
+              "self": true,
+              "trace": true
+            },
+            {
+              "name": "pre-mRNA",
+              "chain": "G",
+              "self": true,
+              "trace": true
+            }
+          ]
+        }
+      ],
+      "citations": {
+        "5XJC": "Zhang X, Yan C, Hang J et al. Cell 169, 918–929 (2017)"
+      }
+    },
+    {
+      "out": "assets/spliceosome_p",
+      "quantise": true,
+      "center": "ref",
+      "structures": [
+        {
+          "id": "ref",
+          "file": "source/spliceosome/5XJC_trim.cif.gz",
+          "source": "PDB 5XJC"
+        },
+        {
+          "id": "p",
+          "file": "source/spliceosome/6QDV_trim.cif.gz",
+          "source": "PDB 6QDV",
+          "align": {
+            "to": "ref",
+            "pairs": [
+              [
+                "A",
+                "A"
+              ],
+              [
+                "C",
+                "C"
+              ]
+            ],
+            "core": 0.3
+          },
+          "parts": [
+            {
+              "name": "U2 snRNP",
+              "chains": [
+                "W",
+                "Y"
+              ],
+              "grid": {
+                "spacing": 3.5,
+                "sigma": 1.2,
+                "level": 0.1
+              },
+              "decimate": 0.85
+            },
+            {
+              "name": "U2 Sm ring",
+              "chains": [
+                "k",
+                "l",
+                "m",
+                "n",
+                "p",
+                "q",
+                "r"
+              ],
+              "grid": {
+                "spacing": 3.5,
+                "sigma": 1.2,
+                "level": 0.1
+              },
+              "decimate": 0.85
+            },
+            {
+              "name": "U5 snRNP",
+              "chains": [
+                "A",
+                "B",
+                "C",
+                "N"
+              ],
+              "grid": {
+                "spacing": 3.5,
+                "sigma": 1.2,
+                "level": 0.1
+              },
+              "decimate": 0.85
+            },
+            {
+              "name": "U5 Sm ring",
+              "chains": [
+                "b",
+                "d",
+                "e",
+                "f",
+                "g",
+                "h",
+                "j"
+              ],
+              "grid": {
+                "spacing": 3.5,
+                "sigma": 1.2,
+                "level": 0.1
+              },
+              "decimate": 0.85
+            },
+            {
+              "name": "Prp19 complex",
+              "chains": [
+                "J",
+                "K",
+                "L",
+                "M",
+                "O",
+                "P",
+                "S",
+                "T",
+                "U",
+                "i",
+                "s",
+                "t",
+                "u",
+                "v",
+                "w",
+                "y"
+              ],
+              "grid": {
+                "spacing": 3.5,
+                "sigma": 1.2,
+                "level": 0.1
+              },
+              "decimate": 0.85
+            },
+            {
+              "name": "Other proteins",
+              "chains": [
+                "7",
+                "8",
+                "9",
+                "D",
+                "F",
+                "G",
+                "H",
+                "R",
+                "V",
+                "Z",
+                "c",
+                "o",
+                "z"
+              ],
+              "grid": {
+                "spacing": 3.5,
+                "sigma": 1.2,
+                "level": 0.1
+              },
+              "decimate": 0.85
+            }
+          ],
+          "strands": [
+            {
+              "name": "U2 snRNA",
+              "chain": "2",
+              "self": true,
+              "trace": true
+            },
+            {
+              "name": "U5 snRNA",
+              "chain": "5",
+              "self": true,
+              "trace": true
+            },
+            {
+              "name": "U6 snRNA",
+              "chain": "6",
+              "self": true,
+              "trace": true
+            },
+            {
+              "name": "pre-mRNA E",
+              "chain": "E",
+              "self": true,
+              "trace": true
+            },
+            {
+              "name": "pre-mRNA I",
+              "chain": "I",
+              "self": true,
+              "trace": true
+            }
+          ]
+        }
+      ],
+      "citations": {
+        "6QDV": "Fica SM, Oubridge C, Wilkinson ME et al. Science 363, 710–714 (2019)",
+        "5XJC": "Zhang X, Yan C, Hang J et al. Cell 169, 918–929 (2017) (the frame)"
+      }
+    },
+    {
+      "out": "assets/spliceosome_ils",
+      "quantise": true,
+      "center": "ref",
+      "structures": [
+        {
+          "id": "ref",
+          "file": "source/spliceosome/5XJC_trim.cif.gz",
+          "source": "PDB 5XJC"
+        },
+        {
+          "id": "ils",
+          "file": "source/spliceosome/6ID1_trim.cif.gz",
+          "source": "PDB 6ID1",
+          "align": {
+            "to": "ref",
+            "pairs": [
+              [
+                "A",
+                "A"
+              ],
+              [
+                "C",
+                "C"
+              ]
+            ],
+            "core": 0.3
+          },
+          "parts": [
+            {
+              "name": "U2 snRNP",
+              "chains": [
+                "o",
+                "p"
+              ],
+              "grid": {
+                "spacing": 3.5,
+                "sigma": 1.2,
+                "level": 0.1
+              },
+              "decimate": 0.85
+            },
+            {
+              "name": "U2 Sm ring",
+              "chains": [
+                "h",
+                "i",
+                "j",
+                "k",
+                "m",
+                "l",
+                "n"
+              ],
+              "grid": {
+                "spacing": 3.5,
+                "sigma": 1.2,
+                "level": 0.1
+              },
+              "decimate": 0.85
+            },
+            {
+              "name": "U5 snRNP",
+              "chains": [
+                "A",
+                "C",
+                "E"
+              ],
+              "grid": {
+                "spacing": 3.5,
+                "sigma": 1.2,
+                "level": 0.1
+              },
+              "decimate": 0.85
+            },
+            {
+              "name": "U5 Sm ring",
+              "chains": [
+                "a",
+                "b",
+                "c",
+                "d",
+                "f",
+                "e",
+                "g"
+              ],
+              "grid": {
+                "spacing": 3.5,
+                "sigma": 1.2,
+                "level": 0.1
+              },
+              "decimate": 0.85
+            },
+            {
+              "name": "Prp19 complex",
+              "chains": [
+                "J",
+                "L",
+                "M",
+                "N",
+                "O",
+                "P",
+                "R",
+                "S",
+                "T",
+                "q",
+                "r",
+                "s",
+                "t",
+                "K",
+                "I",
+                "Q",
+                "y"
+              ],
+              "grid": {
+                "spacing": 3.5,
+                "sigma": 1.2,
+                "level": 0.1
+              },
+              "decimate": 0.85
+            },
+            {
+              "name": "Other proteins",
+              "chains": [
+                "W",
+                "U",
+                "V"
+              ],
+              "grid": {
+                "spacing": 3.5,
+                "sigma": 1.2,
+                "level": 0.1
+              },
+              "decimate": 0.85
+            }
+          ],
+          "strands": [
+            {
+              "name": "U2 snRNA",
+              "chain": "H",
+              "self": true,
+              "trace": true
+            },
+            {
+              "name": "U5 snRNA",
+              "chain": "B",
+              "self": true,
+              "trace": true
+            },
+            {
+              "name": "U6 snRNA",
+              "chain": "F",
+              "self": true,
+              "trace": true
+            },
+            {
+              "name": "pre-mRNA",
+              "chain": "G",
+              "self": true,
+              "trace": true
+            }
+          ]
+        }
+      ],
+      "citations": {
+        "6ID1": "Zhang X, Zhan X, Yan C et al. Cell Res 29, 274–285 (2019)",
+        "5XJC": "Zhang X, Yan C, Hang J et al. Cell 169, 918–929 (2017) (the frame)"
+      }
+    },
+    {
+      "out": "assets/splice_sites",
+      "citations": {"355D": "Shui X, McFail-Isom L, Hu GG, Williams LD. Biochemistry 37, 8341–8355 (1998)"},
+      "structures": [
+        {"id": "bdna", "file": "source/sites/355D.cif.gz", "source": "PDB 355D", "strands": [{"name": "a", "chain": "A"}, {"name": "b", "chain": "B"}]}
+      ]
+    },
+    {
+      "out": "assets/splice_pairs",
+      "quantise": true,
+      "center": "ec",
+      "citations": {"6GMH": "Vos SM, Farnung L, Boehning M, Wigge C, Linden A, Urlaub H, Cramer P. Nature 560, 607–612 (2018)",
+                    "355D": "Shui X, McFail-Isom L, Hu GG, Williams LD. Biochemistry 37, 8341–8355 (1998)"},
+      "structures": [
+        {"id": "ec", "file": "source/sites/6GMH_trim.cif.gz", "source": "PDB 6GMH",
+         "parts": [{"name": "RNAP II", "chains": ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L"], "grid": {"spacing": 3, "sigma": 1.2, "level": 0.1}, "decimate": 0.8}],
+         "strands": [{"name": "template", "chain": "T"}, {"name": "non-template", "chain": "N"}, {"name": "RNA", "chain": "P"}]},
+        {"id": "bdna", "file": "source/sites/355D.cif.gz", "source": "PDB 355D", "strands": [{"name": "a", "chain": "A"}, {"name": "b", "chain": "B"}]}
+      ]
+    },
+    {
+      "out": "assets/lariat",
+      "quantise": true,
+      "center": "c",
+      "citations": {
+        "5YZG": "Zhan X, Yan C, Zhang X, Lei J, Shi Y. Science 359, 537–545 (2018)",
+        "6QDV": "Fica SM, Oubridge C, Wilkinson ME, Newman AJ, Nagai K. Science 363, 710–714 (2019)",
+        "5K78": "Clark NE, Katolik A, Roberts K et al. Proc Natl Acad Sci USA 113, 14727–14732 (2016)"
+      },
+      "structures": [
+        {"id": "c", "file": "source/spliceosome/5YZG_trim.cif.gz", "source": "PDB 5YZG",
+         "parts": [{"name": "C complex", "chains": ["*"], "proteinOnly": true, "grid": {"spacing": 3.5, "sigma": 1.2, "level": 0.1}, "decimate": 0.85}],
+         "strands": [{"name": "C pre-mRNA", "chain": "G"}, {"name": "C U2 snRNA", "chain": "H", "self": true},
+                     {"name": "C U5 snRNA", "chain": "B", "self": true}, {"name": "C U6 snRNA", "chain": "F", "self": true}]},
+        {"id": "c_site", "file": "source/lariat/5YZG_site.cif.gz", "source": "PDB 5YZG",
+         "atoms": [{"name": "C exon", "chains": ["G"], "residues": [-3, -1]}, {"name": "C intron", "chains": ["G"], "residues": [1, 3]},
+                   {"name": "C branch", "chains": ["G"], "residues": [142, 146]}]},
+        {"id": "p", "file": "source/spliceosome/6QDV_trim.cif.gz", "source": "PDB 6QDV", "align": {"to": "c", "pairs": [["A", "A"]], "core": 0.3},
+         "parts": [{"name": "P complex", "chains": ["*"], "proteinOnly": true, "grid": {"spacing": 3.5, "sigma": 1.2, "level": 0.1}, "decimate": 0.85}],
+         "strands": [{"name": "P exons", "chain": "E"}, {"name": "P intron", "chain": "I"}, {"name": "P U2 snRNA", "chain": "2", "self": true},
+                     {"name": "P U5 snRNA", "chain": "5", "self": true}, {"name": "P U6 snRNA", "chain": "6", "self": true}]},
+        {"id": "p_site", "file": "source/lariat/6QDV_site.cif.gz", "source": "PDB 6QDV", "align": {"to": "c", "pairs": [["A", "A"]], "core": 0.3},
+         "atoms": [{"name": "P exon 1", "chains": ["E"], "residues": [-3, -1]}, {"name": "P exon 2", "chains": ["E"], "residues": [1, 2]},
+                   {"name": "P intron", "chains": ["I"], "residues": [110, 113]}]},
+        {"id": "dbr1", "file": "source/lariat/5K78_one.cif.gz", "source": "PDB 5K78",
+         "parts": [{"name": "Dbr1", "chains": ["C"], "decimate": 0.6}],
+         "strands": [{"name": "Dbr1 branch strand", "chain": "X"}, {"name": "Dbr1 2′ strand", "chain": "x"}],
+         "points": [{"name": "Dbr1 2′-O", "chain": "x", "residue": 510, "atom": "OP3"}, {"name": "Dbr1 P", "chain": "x", "residue": 510, "atom": "P"}]}
+      ]
+    },
+    {
+      "out": "assets/library", "quantise": true, "decimate": 0.5,
+      "structures": [
+        {"id": "u1", "file": "source/u1/4PJO_one.cif.gz", "source": "PDB 4PJO",
+         "parts": [{"name": "SmB", "chains": ["B"]}, {"name": "SmD1", "chains": ["C"]}, {"name": "SmD2", "chains": ["D"]}, {"name": "SmD3", "chains": ["A"]}, {"name": "SmE", "chains": ["E"]}, {"name": "SmF", "chains": ["F"]}, {"name": "SmG", "chains": ["G"]}, {"name": "U1-70K", "chains": ["K"]}, {"name": "U1-C", "chains": ["L"]}],
+         "strands": [{"name": "U1 snRNA", "chain": "1", "self": true}, {"name": "5′ splice site", "chain": "X"}]},
+        {"id": "sf1", "file": "source/commitment/1K1G_one.cif.gz", "source": "PDB 1K1G",
+         "parts": [{"name": "SF1", "chains": ["A"]}],
+         "strands": [{"name": "Branch site", "chain": "B"}]},
+        {"id": "u2af65", "file": "source/commitment/2G4B.cif.gz", "source": "PDB 2G4B",
+         "parts": [{"name": "U2AF65", "chains": ["A"]}],
+         "strands": [{"name": "Polypyrimidine tract", "chain": "B"}]},
+        {"id": "u2af35", "file": "source/commitment/1JMT.cif.gz", "source": "PDB 1JMT",
+         "parts": [{"name": "U2AF35", "chains": ["A"]}, {"name": "U2AF65", "chains": ["B"]}]},
+        {"id": "srsf1", "file": "source/commitment/2M8D_one.cif.gz", "source": "PDB 2M8D",
+         "parts": [{"name": "SRSF1", "chains": ["B"]}],
+         "strands": [{"name": "RNA", "chain": "A"}]},
+        {"id": "dbr1", "file": "source/lariat/5K78_one.cif.gz", "source": "PDB 5K78",
+         "parts": [{"name": "Dbr1", "chains": ["C"]}],
+         "strands": [{"name": "Branch", "chain": "X"}, {"name": "2′ arm", "chain": "x"}]},
+        {"id": "ejc", "file": "source/library/2J0S.cif.gz", "source": "PDB 2J0S",
+         "parts": [{"name": "eIF4AIII", "chains": ["A"]}, {"name": "MAGOH", "chains": ["C"]}, {"name": "Y14", "chains": ["D"]}, {"name": "Barentsz", "chains": ["T"]}],
+         "strands": [{"name": "RNA", "chain": "E"}]},
+        {"id": "bclxl", "file": "source/library/1MAZ.cif.gz", "source": "PDB 1MAZ",
+         "parts": [{"name": "Bcl-xL", "chains": ["A"]}]},
+        {"id": "camkii", "file": "source/library/8USO_ca.cif.gz", "source": "PDB 8USO", "assembly": "1",
+         "parts": [{"name": "Kinase domains", "chains": ["*"], "residues": [1, 315], "grid": {"spacing": 3, "sigma": 1.2, "level": 0.1}, "decimate": 0.8}, {"name": "Hub domains", "chains": ["*"], "residues": [344, 478], "grid": {"spacing": 3, "sigma": 1.2, "level": 0.1}, "decimate": 0.8}]}
+      ],
+      "citations": {
+        "4PJO": "Kondo Y, Oubridge C, van Roon AM, Nagai K. eLife 4, e04986 (2015)",
+        "1K1G": "Liu Z et al. Science 294, 1098–1102 (2001)",
+        "2G4B": "Sickmier EA et al. Mol Cell 23, 49–59 (2006)",
+        "1JMT": "Kielkopf CL, Rodionova NA, Green MR, Burley SK. Cell 106, 595–605 (2001)",
+        "2M8D": "Cléry A et al. Proc Natl Acad Sci USA 110, E2802–E2811 (2013)",
+        "5K78": "Clark NE et al. Proc Natl Acad Sci USA 113, 14727–14732 (2016)",
+        "2J0S": "Bono F et al. Cell 126, 713–725 (2006)",
+        "1MAZ": "Muchmore SW et al. Nature 381, 335–341 (1996)",
+        "8USO": "Nguyen BV et al. Nat Commun 16, 8461 (2025)"
+      }
+    },
+    {
+      "out": "assets/isoforms", "quantise": true,
+      "structures": [
+        {"id": "camkii", "file": "source/library/8USO_ca.cif.gz", "source": "PDB 8USO", "assembly": "1",
+         "parts": [{"name": "Kinase domains", "chains": ["*"], "residues": [1, 315], "grid": {"spacing": 3.4, "sigma": 1.2, "level": 0.1}, "decimate": 0.9},
+                   {"name": "Hub domains", "chains": ["*"], "residues": [344, 478], "grid": {"spacing": 3.4, "sigma": 1.2, "level": 0.1}, "decimate": 0.9}]},
+        {"id": "bclxl", "file": "source/library/1MAZ.cif.gz", "source": "PDB 1MAZ",
+         "parts": [{"name": "Bcl-xL", "chains": ["A"], "residues": [[1, 125], [189, 209]], "decimate": 0.2},
+                   {"name": "Missing from Bcl-xS", "chains": ["A"], "residues": [126, 188], "decimate": 0.2}]}
+      ],
+      "citations": {
+        "8USO": "Nguyen BV et al. Nat Commun 16, 8461 (2025)",
+        "1MAZ": "Muchmore SW et al. Nature 381, 335–341 (1996)"
+      }
+    },
+    {
+      "out": "assets/cap", "quantise": true, "center": "pol", "decimate": 0.6,
+      "structures": [
+        {"id": "pol", "file": "source/cap/8P4B.cif.gz", "source": "PDB 8P4B",
+         "parts": [{"name": "Rpb1", "chains": ["A"], "decimate": 0.9},
+                   {"name": "Rpb2", "chains": ["B"], "decimate": 0.9},
+                   {"name": "Other Pol II subunits", "chains": ["C", "D", "E", "F", "G", "H", "I", "J", "K", "L"], "decimate": 0.9},
+                   {"name": "Capping enzyme", "chains": ["M"], "decimate": 0.75}],
+         "strands": [{"name": "template", "chain": "T"}, {"name": "nontemplate", "chain": "N"}, {"name": "rna", "chain": "P"}],
+         "atoms": [{"name": "rna5", "chains": ["P"], "residues": [37, 40], "ideal": true, "charged": true}],
+         "points": [{"name": "gt-lys", "chain": "M", "residue": 294, "atom": "NZ"}]},
+        {"id": "gtg", "file": "source/ccd/GTG.cif.gz", "ccd": true, "source": "PDB Chemical Component Dictionary · GTG",
+         "atoms": [{"name": "cap", "hydrogens": true, "hetero": ["GTG"]}]},
+        {"id": "m7m", "file": "source/ccd/M7M.cif.gz", "ccd": true, "source": "PDB Chemical Component Dictionary · M7M",
+         "atoms": [{"name": "tmg", "hydrogens": true, "hetero": ["M7M"]}]},
+        {"id": "cbc", "file": "source/cap/1N52.cif.gz", "source": "PDB 1N52",
+         "parts": [{"name": "CBP80", "chains": ["A"], "decimate": 0.75}, {"name": "CBP20", "chains": ["B"]}],
+         "atoms": [{"name": "cbc-cap", "chains": ["B"], "hetero": ["GTG"]}]},
+        {"id": "eif4e", "file": "source/cap/1IPC.cif.gz", "source": "PDB 1IPC",
+         "parts": [{"name": "eIF4E", "chains": ["A"]}],
+         "atoms": [{"name": "eif4e-cap", "chains": ["A"], "hetero": ["MGP"]}]},
+        {"id": "xrn1", "file": "source/cap/2Y35.cif.gz", "source": "PDB 2Y35",
+         "parts": [{"name": "Xrn1", "chains": ["A"], "decimate": 0.75}],
+         "points": [{"name": "substrate P1", "chain": "B", "residue": 1, "atom": "P"},
+                    {"name": "substrate C4′ 1", "chain": "B", "residue": 1, "atom": "C4'"},
+                    {"name": "substrate C4′ 2", "chain": "B", "residue": 2, "atom": "C4'"},
+                    {"name": "substrate C4′ 3", "chain": "B", "residue": 3, "atom": "C4'"},
+                    {"name": "substrate P4", "chain": "B", "residue": 4, "atom": "P"},
+                    {"name": "Mg", "chain": "A", "residue": 2141, "atom": "MG"}]},
+        {"id": "amp", "file": "source/ccd/A.cif.gz", "ccd": true, "source": "PDB Chemical Component Dictionary · A",
+         "atoms": [{"name": "AMP", "hydrogens": true, "charged": true}]},
+        {"id": "cmp", "file": "source/ccd/C.cif.gz", "ccd": true, "source": "PDB Chemical Component Dictionary · C",
+         "atoms": [{"name": "CMP", "hydrogens": true, "charged": true}]},
+        {"id": "gmp", "file": "source/ccd/G.cif.gz", "ccd": true, "source": "PDB Chemical Component Dictionary · G",
+         "atoms": [{"name": "GMP", "hydrogens": true, "charged": true}]},
+        {"id": "ump", "file": "source/ccd/U.cif.gz", "ccd": true, "source": "PDB Chemical Component Dictionary · U",
+         "atoms": [{"name": "UMP", "hydrogens": true, "charged": true}]}
+      ],
+      "citations": {
+        "8P4B": "Garg G et al. Mol Cell 83, 2464–2477.e5 (2023)",
+        "1N52": "Calero G et al. Nat Struct Biol 9, 912–917 (2002)",
+        "1IPC": "Tomoo K et al. Biochem J 362, 539–544 (2002)",
+        "2Y35": "Jinek M, Coyle SM, Doudna JA. Mol Cell 41, 600–608 (2011)",
+        "CCD": "Westbrook JD et al. Bioinformatics 31, 1274–1278 (2015)"
+      }
+    },
+    {"out": "assets/hub", "quantise": true, "center": "cap", "structures": [
+      {"id": "cap", "file": "source/hub/8P4E_trim.cif.gz", "source": "PDB 8P4E",
+       "parts": [
+         {"name": "RNA polymerase II", "chains": ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L"], "grid": {"spacing": 2.8, "sigma": 1.5, "level": 0.1}, "decimate": 0.5},
+         {"name": "Capping enzyme", "chains": ["M"], "grid": {"spacing": 2.8, "sigma": 1.5, "level": 0.1}, "decimate": 0.6},
+         {"name": "CMTR1", "chains": ["O"], "grid": {"spacing": 2.8, "sigma": 1.5, "level": 0.1}, "decimate": 0.6},
+         {"name": "SPT5", "chains": ["Z"], "grid": {"spacing": 2.8, "sigma": 1.5, "level": 0.1}, "decimate": 0.5}],
+       "strands": [{"name": "template", "chain": "T"}, {"name": "non-template", "chain": "N"}, {"name": "RNA", "chain": "P"}],
+       "points": [{"name": "cap N7", "chain": "P", "residue": 101, "atom": "N7"}, {"name": "cap PG", "chain": "P", "residue": 101, "atom": "PG"},
+                  {"name": "cap C1'", "chain": "P", "residue": 101, "atom": "C1'"}]},
+      {"id": "u1", "file": "source/hub/7B0Y_trim.cif.gz", "source": "PDB 7B0Y",
+       "align": {"to": "cap", "pairs": [["A", "A"], ["B", "B"]], "core": 0.5},
+       "parts": [
+         {"name": "RNA polymerase II", "chains": ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L"], "grid": {"spacing": 2.8, "sigma": 1.5, "level": 0.1}, "decimate": 0.5},
+         {"name": "U1-70K", "chains": ["b"], "grid": {"spacing": 2.8, "sigma": 1.5, "level": 0.1}, "decimate": 0.5},
+         {"name": "U1-A", "chains": ["c"], "grid": {"spacing": 2.8, "sigma": 1.5, "level": 0.1}, "decimate": 0.5},
+         {"name": "U1 Sm ring", "chains": ["e", "f", "g", "h", "i", "j", "k"], "grid": {"spacing": 2.8, "sigma": 1.5, "level": 0.1}, "decimate": 0.6}],
+       "strands": [{"name": "template", "chain": "T"}, {"name": "non-template", "chain": "N"}, {"name": "RNA", "chain": "P"},
+                   {"name": "U1 snRNA", "chain": "a", "self": true}]}],
+     "citations": {"8P4E": "Garg G, Dienemann C, Farnung L et al. Mol Cell 83, 2464–2477.e5 (2023)",
+                   "7B0Y": "Zhang S, Aibara S, Vos SM et al. Science 371, 305–309 (2021)"}},
+    {"out": "assets/u1", "quantise": true, "center": "u1", "structures": [
+      {"id": "u1", "file": "source/snrnps/3CW1.cif.gz", "source": "PDB 3CW1",
+       "parts": [{"name": "U1-70K", "chains": ["K"], "grid": {"spacing": 2.6, "sigma": 1.45, "level": 0.075}, "decimate": 0.3}],
+       "strands": [{"name": "U1 snRNA", "chain": "V", "trace": true}]},
+      {"id": "min", "file": "source/u1/4PJO_one.cif.gz", "source": "PDB 4PJO",
+       "align": {"to": "u1", "pairs": [["A", "D"], ["B", "A"], ["C", "B"], ["D", "C"], ["E", "E"], ["F", "F"], ["G", "G"], ["K", "K"], ["L", "L"]]},
+       "parts": [{"name": "U1-C", "chains": ["L"], "decimate": 0.5},
+                 {"name": "Sm ring", "chains": ["A", "B", "C", "D", "E", "F", "G"], "decimate": 0.6}],
+       "strands": [{"name": "U1 5′ end", "chain": "1"}, {"name": "5′ splice site", "chain": "X"}]}],
+     "citations": {"3CW1": "Pomeranz Krummel DA, Oubridge C, Leung AK et al. Nature 458, 475–480 (2009)",
+                   "4PJO": "Kondo Y, Oubridge C, van Roon AM, Nagai K. eLife 4, e04986 (2015)"}},
+    {"out": "assets/commitment", "quantise": true, "center": "e", "structures": [
+      {"id": "e", "file": "source/commitment/6N7R_trim.cif.gz", "source": "PDB 6N7R",
+       "parts": [{"name": "U1 snRNP proteins", "chains": ["A", "B", "C", "D", "E", "F", "G", "H", "I"], "grid": {"spacing": 3, "sigma": 1.25, "level": 0.1}, "decimate": 0.5},
+                 {"name": "Sm ring", "chains": ["K", "L", "M", "N", "O", "P", "Q"], "grid": {"spacing": 3, "sigma": 1.25, "level": 0.1}, "decimate": 0.5}],
+       "strands": [{"name": "U1 snRNA", "chain": "R", "self": true}, {"name": "pre-mRNA", "chain": "r"}]},
+      {"id": "sf1", "file": "source/commitment/1K1G_one.cif.gz", "source": "PDB 1K1G",
+       "parts": [{"name": "SF1", "chains": ["A"], "decimate": 0.5}], "strands": [{"name": "branch site", "chain": "B"}]},
+      {"id": "u2af65", "file": "source/commitment/2G4B.cif.gz", "source": "PDB 2G4B",
+       "parts": [{"name": "U2AF65", "chains": ["A"], "decimate": 0.5}], "strands": [{"name": "polypyrimidine tract", "chain": "B"}]},
+      {"id": "u2af35", "file": "source/commitment/7C06_one.cif.gz", "source": "PDB 7C06",
+       "parts": [{"name": "U2AF35", "chains": ["A"], "decimate": 0.5}, {"name": "U2AF65 ULM", "chains": ["B"], "decimate": 0.5}],
+       "strands": [{"name": "3′ splice site", "chain": "C"}]},
+      {"id": "sr", "file": "source/commitment/2M8D_one.cif.gz", "source": "PDB 2M8D",
+       "parts": [{"name": "SR protein RRM", "chains": ["B"], "decimate": 0.5}], "strands": [{"name": "exon sequence", "chain": "A"}],
+       "points": [{"name": "RRM C-terminus", "chain": "B", "residue": 196}]}],
+     "citations": {"6N7R": "Li X, Liu S, Zhang L et al. Nature 573, 375–380 (2019)",
+                   "1K1G": "Liu Z, Luyten I, Bottomley MJ et al. Science 294, 1098–1102 (2001)",
+                   "2G4B": "Sickmier EA, Frato KE, Paranawithana S et al. Mol Cell 23, 49–59 (2006)",
+                   "7C06": "Yoshida H, Park SY, Sakashita G et al. Nat Commun 11, 4744 (2020)",
+                   "2M8D": "Cléry A, Sinha R, Anczuków O et al. Proc Natl Acad Sci USA 110, E2802–E2811 (2013)"}}
+  ]
+}
