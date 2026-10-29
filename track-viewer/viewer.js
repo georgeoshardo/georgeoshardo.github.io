@@ -54,6 +54,7 @@ const el = {
   opacity: $("opacity"),
   subsample: $("subsample"),
   subsampleValue: $("subsample-value"),
+  divisionsOnly: $("divisions-only"),
   colorBy: $("color-by"),
   showMasks: $("show-masks"),
   showPoints: $("show-points"),
@@ -84,7 +85,7 @@ const state = {
   data: null, // the loaded trench
   composite: null, // offscreen canvas with image + masks for every frame
   viewX: 0, // left edge of the view, in kymograph pixels
-  zoom: 4,
+  zoom: 1.7154,
   selected: null, // { tracklet, lineage }
   hoverNode: -1,
   hoverFrame: -1,
@@ -337,13 +338,21 @@ function isEmphasised(d, i) {
 
 function buildFrames(d) {
   const step = Math.max(1, Number(el.subsample.value) || 1);
+  const only = el.divisionsOnly.checked;
   const keep = new Uint8Array(d.T);
-  for (let f = 0; f < d.T; f += step) keep[f] = 1;
-  keep[d.T - 1] = 1;
+  if (!only) {
+    for (let f = 0; f < d.T; f += step) keep[f] = 1;
+    keep[d.T - 1] = 1;
+  }
   for (let i = 0; i < d.N; i++) {
     if (d.outdeg[i] !== 2) continue;
     keep[d.t[i]] = 1;
     for (const c of d.children[i]) keep[d.t[c]] = 1;
+  }
+  // a trench where nothing divides still needs something to show
+  if (only && !keep.some((v) => v)) {
+    keep[0] = 1;
+    keep[d.T - 1] = 1;
   }
   const frames = [];
   for (let f = 0; f < d.T; f++) if (keep[f]) frames.push(f);
@@ -354,7 +363,7 @@ function buildFrames(d) {
   d.slotOf = new Float64Array(d.T);
   for (let i = 0; i < frames.length; i++) {
     const a = frames[i];
-    const b = i + 1 < frames.length ? frames[i + 1] : a + 1;
+    const b = i + 1 < frames.length ? frames[i + 1] : d.T;
     for (let f = a; f < b && f < d.T; f++) d.slotOf[f] = i + (f - a) / (b - a);
   }
   // links between consecutive shown cells of the same tracklet (dashed if the tracklet
@@ -374,7 +383,12 @@ function buildFrames(d) {
   }
   for (let e = 0; e < d.src.length; e++) if (d.linkKind[e] === 2) links.push([d.src[e], d.dst[e], 2]);
   d.links = links;
-  el.subsampleValue.textContent = step === 1 ? "every frame" : `every ${step}th frame + divisions (${d.nSlots} of ${d.T})`;
+  el.subsample.disabled = only;
+  el.subsampleValue.textContent = only
+    ? `divisions only (${d.nSlots} of ${d.T})`
+    : step === 1
+      ? "every frame"
+      : `every ${step}th frame + divisions (${d.nSlots} of ${d.T})`;
 }
 
 function slotToFrame(slot) {
@@ -484,6 +498,7 @@ function buildComposite() {
 // The default zoom is also the closest zoom: the stage keeps the height it has at this
 // zoom, so zooming out (or selecting a time range in the tree) never moves the tree.
 const MAX_ZOOM = 4;
+const DEFAULT_ZOOM = 1.7154; // what a trench opens at, and what Reset zoom returns to
 
 function minZoom() {
   const d = state.data;
@@ -496,7 +511,7 @@ function setZoom(zoom) {
   const lo = Math.log(minZoom());
   const span = Math.log(MAX_ZOOM) - lo;
   el.zoom.value = String(span > 0 ? (Math.log(state.zoom) - lo) / span : 1);
-  el.resetZoom.disabled = state.zoom >= MAX_ZOOM - 1e-6;
+  el.resetZoom.disabled = Math.abs(state.zoom - DEFAULT_ZOOM) < 1e-3;
 }
 
 function zoomFromSlider() {
@@ -1574,7 +1589,7 @@ el.time.addEventListener("input", () => {
 el.resetZoom.addEventListener("click", () => {
   if (!state.data) return;
   const center = state.viewX + viewWidthData() / 2;
-  setZoom(MAX_ZOOM);
+  setZoom(DEFAULT_ZOOM);
   state.viewX = center - viewWidthData() / 2;
   resize();
   writeUrl();
@@ -1603,7 +1618,7 @@ function contrastFromSliders() {
 
 el.lo.addEventListener("input", contrastFromSliders);
 el.hi.addEventListener("input", contrastFromSliders);
-el.subsample.addEventListener("input", () => {
+const refreshFrames = () => {
   const d = state.data;
   if (!d) return;
   const center = slotToFrame((state.viewX + viewWidthData() / 2) / d.X);
@@ -1613,7 +1628,9 @@ el.subsample.addEventListener("input", () => {
   state.viewX = frameToSlot(center) * d.X - viewWidthData() / 2;
   resize();
   writeUrlSoon();
-});
+};
+el.subsample.addEventListener("input", refreshFrames);
+el.divisionsOnly.addEventListener("input", refreshFrames);
 
 for (const control of [el.opacity, el.showMasks, el.colorBy]) {
   control.addEventListener("input", () => {
@@ -1666,6 +1683,7 @@ function writeUrl() {
   if (el.trench.value) params.set("trench", el.trench.value);
   if (state.data) params.set("frame", String(Math.round(slotToFrame(state.viewX / state.data.X))));
   if (Number(el.subsample.value) > 1) params.set("subsample", el.subsample.value);
+  if (el.divisionsOnly.checked) params.set("divisions", "only");
   params.set("zoom", String(Number(state.zoom.toFixed(4))));
   if (state.selected) params.set("tracklet", String(state.selected.tracklet));
   if (state.tab === "spiral") {
@@ -1712,8 +1730,9 @@ el.next.addEventListener("click", () => step(1));
 
 const params = new URLSearchParams(location.search);
 el.dataset.value = params.get("dataset") || DEFAULT_DATASET;
-state.zoom = Number(params.get("zoom")) || MAX_ZOOM;
+state.zoom = Number(params.get("zoom")) || DEFAULT_ZOOM;
 if (params.get("subsample")) el.subsample.value = params.get("subsample");
+if (params.get("divisions") === "only") el.divisionsOnly.checked = true;
 el.subsampleValue.textContent = "every frame";
 if (params.get("turn")) el.turn.value = params.get("turn");
 if (params.get("view") === "spiral") setTab("spiral");
