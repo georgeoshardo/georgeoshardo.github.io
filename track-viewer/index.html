@@ -89,6 +89,12 @@
         color: var(--ink-soft);
       }
 
+      label .value {
+        text-transform: none;
+        letter-spacing: 0;
+        font-weight: 400;
+      }
+
       label.check {
         display: flex;
         align-items: center;
@@ -357,7 +363,7 @@
         font-size: inherit;
       }
 
-      #mode-control {
+      #turn-control {
         margin-left: auto;
       }
 
@@ -438,6 +444,10 @@
             <label for="contrast-lo">Contrast low <input id="contrast-lo" type="range" min="0" max="1" step="0.001" /></label>
             <label for="contrast-hi">Contrast high <input id="contrast-hi" type="range" min="0" max="1" step="0.001" /></label>
             <label for="opacity">Mask opacity <input id="opacity" type="range" min="0" max="1" step="0.05" value="0.6" /></label>
+            <label for="subsample">
+              Subsample <span id="subsample-value" class="value"></span>
+              <input id="subsample" type="range" min="1" max="30" step="1" value="1" />
+            </label>
             <label for="color-by">
               Colour by
               <select id="color-by">
@@ -481,16 +491,9 @@
               <button id="tab-spiral" class="tab" type="button" role="tab" aria-selected="false">Spiral</button>
             </div>
             <button id="reset-zoom" class="link" type="button" disabled>Reset zoom</button>
-            <label class="inline" id="mode-control" hidden>
-              Time as
-              <select id="spiral-mode">
-                <option value="angle">Equal angle per minute</option>
-                <option value="length">Equal length per minute</option>
-              </select>
-            </label>
             <label class="inline" id="turn-control" hidden>
               Minutes per turn
-              <input id="turn" type="range" min="20" max="360" step="5" value="60" />
+              <input id="turn" type="range" min="20" max="360" step="5" value="120" />
               <span id="turn-value"></span>
             </label>
             <button id="reset-spiral" class="link" type="button" hidden>Reset layout</button>

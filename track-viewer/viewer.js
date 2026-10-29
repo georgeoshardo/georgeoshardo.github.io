@@ -52,6 +52,8 @@ const el = {
   lo: $("contrast-lo"),
   hi: $("contrast-hi"),
   opacity: $("opacity"),
+  subsample: $("subsample"),
+  subsampleValue: $("subsample-value"),
   colorBy: $("color-by"),
   showMasks: $("show-masks"),
   showPoints: $("show-points"),
@@ -75,8 +77,6 @@ const el = {
   turnValue: $("turn-value"),
   turnControl: $("turn-control"),
   resetSpiral: $("reset-spiral"),
-  spiralMode: $("spiral-mode"),
-  modeControl: $("mode-control"),
   tree: $("tree"),
 };
 
@@ -194,13 +194,14 @@ async function loadTrench(name) {
   state.selected = null;
   state.hoverNode = -1;
   autoContrast();
+  buildFrames(data);
   buildComposite();
   layoutTree();
   state.spiralView = null;
   el.time.max = String(data.T - 1);
   const params = new URLSearchParams(location.search);
   const frame = params.get("trench") === name ? Number(params.get("frame") || 0) : 0;
-  state.viewX = frame * data.X;
+  state.viewX = frameToSlot(frame) * data.X;
   resize();
   updateSelectionPanel();
   const seconds = ((performance.now() - started) / 1000).toFixed(1);
@@ -328,6 +329,72 @@ function isEmphasised(d, i) {
   return d.lineage[i] === sel.lineage;
 }
 
+// ---------------------------------------------------------------- frames shown
+//
+// The kymograph shows every Nth frame ("subsample"), plus the frames either side of
+// every division, so a division is never skipped. Each shown frame gets a slot (a column
+// of the kymograph); frames in between map to fractional slots.
+
+function buildFrames(d) {
+  const step = Math.max(1, Number(el.subsample.value) || 1);
+  const keep = new Uint8Array(d.T);
+  for (let f = 0; f < d.T; f += step) keep[f] = 1;
+  keep[d.T - 1] = 1;
+  for (let i = 0; i < d.N; i++) {
+    if (d.outdeg[i] !== 2) continue;
+    keep[d.t[i]] = 1;
+    for (const c of d.children[i]) keep[d.t[c]] = 1;
+  }
+  const frames = [];
+  for (let f = 0; f < d.T; f++) if (keep[f]) frames.push(f);
+  d.frames = Int32Array.from(frames);
+  d.shown = keep;
+  d.nSlots = frames.length;
+  d.W = d.nSlots * d.X;
+  d.slotOf = new Float64Array(d.T);
+  for (let i = 0; i < frames.length; i++) {
+    const a = frames[i];
+    const b = i + 1 < frames.length ? frames[i + 1] : a + 1;
+    for (let f = a; f < b && f < d.T; f++) d.slotOf[f] = i + (f - a) / (b - a);
+  }
+  // links between consecutive shown cells of the same tracklet (dashed if the tracklet
+  // has a frame-skipping link in between), and every division
+  const links = [];
+  for (const tr of d.tracklets) {
+    let prev = -1;
+    let gap = false;
+    for (let j = 0; j < tr.nodes.length; j++) {
+      const n = tr.nodes[j];
+      if (j > 0 && d.t[n] - d.t[tr.nodes[j - 1]] > 1) gap = true;
+      if (!keep[d.t[n]]) continue;
+      if (prev >= 0) links.push([prev, n, gap ? 1 : 0]);
+      prev = n;
+      gap = false;
+    }
+  }
+  for (let e = 0; e < d.src.length; e++) if (d.linkKind[e] === 2) links.push([d.src[e], d.dst[e], 2]);
+  d.links = links;
+  el.subsampleValue.textContent = step === 1 ? "every frame" : `every ${step}th frame + divisions (${d.nSlots} of ${d.T})`;
+}
+
+function slotToFrame(slot) {
+  const d = state.data;
+  if (slot <= 0) return d.frames[0] + slot;
+  const last = d.nSlots - 1;
+  if (slot >= last) return d.frames[last] + (slot - last);
+  const i = Math.floor(slot);
+  return d.frames[i] + (slot - i) * (d.frames[i + 1] - d.frames[i]);
+}
+
+function frameToSlot(frame) {
+  const d = state.data;
+  const f = Math.min(d.T - 1, Math.max(0, frame));
+  const i = Math.floor(f);
+  const a = d.slotOf[i];
+  const b = i + 1 < d.T ? d.slotOf[i + 1] : a + 1;
+  return a + (f - i) * (b - a);
+}
+
 // ---------------------------------------------------------------- image + masks
 
 function autoContrast() {
@@ -379,11 +446,12 @@ function buildComposite() {
     nodeRGBA[4 * i + 3] = a;
   }
 
-  for (let t = 0; t < T; t++) {
+  for (let slot = 0; slot < d.nSlots; slot++) {
+    const t = d.frames[slot];
     const base = t * frameSize;
     const lutBase = t * d.stride;
     for (let y = 0; y < Y; y++) {
-      let o = (y * W + t * X) * 4;
+      let o = (y * W + slot * X) * 4;
       let k = base + y * X;
       for (let x = 0; x < X; x++, o += 4, k++) {
         let g = d.img ? (d.img[k] - lo) * scale : 0;
@@ -448,18 +516,19 @@ function showFrames(f0, f1) {
   const d = state.data;
   const width = el.stage.clientWidth;
   const minFrames = width / (d.X * MAX_ZOOM);
-  let a = Math.min(f0, f1);
-  let b = Math.max(f0, f1) + 1;
+  const T = d.nSlots;
+  let a = frameToSlot(Math.min(f0, f1));
+  let b = frameToSlot(Math.max(f0, f1)) + 1;
   if (b - a < minFrames) {
     const mid = (a + b) / 2;
     a = mid - minFrames / 2;
     b = mid + minFrames / 2;
   }
   a = Math.max(0, a);
-  b = Math.min(d.T, b);
+  b = Math.min(T, b);
   if (b - a < minFrames) {
-    if (a === 0) b = Math.min(d.T, minFrames);
-    else a = Math.max(0, d.T - minFrames);
+    if (a === 0) b = Math.min(T, minFrames);
+    else a = Math.max(0, T - minFrames);
   }
   setZoom(width / ((b - a) * d.X));
   state.viewX = a * d.X;
@@ -475,7 +544,7 @@ function clampView() {
   if (!d) return;
   const max = Math.max(0, d.W - viewWidthData());
   state.viewX = Math.min(Math.max(0, state.viewX), max);
-  el.time.value = String(Math.round(state.viewX / d.X));
+  el.time.value = String(Math.round(slotToFrame(state.viewX / d.X)));
   updateTimeLabel();
 }
 
@@ -530,14 +599,14 @@ function draw() {
   const left = state.viewX;
   const right = state.viewX + cssWidth / z;
   const sx = (gx) => (gx - left) * z;
-  const firstFrame = Math.max(0, Math.floor(left / d.X));
-  const lastFrame = Math.min(d.T - 1, Math.ceil(right / d.X));
+  const firstSlot = Math.max(0, Math.floor(left / d.X));
+  const lastSlot = Math.min(d.nSlots - 1, Math.ceil(right / d.X));
 
   if (el.showBounds.checked && d.X * z >= 6) {
     ctx.strokeStyle = STYLE.boundsColor;
     ctx.lineWidth = Math.max(1, STYLE.boundsWidth * z);
     ctx.beginPath();
-    for (let f = Math.max(1, firstFrame); f <= lastFrame; f++) {
+    for (let f = Math.max(1, firstSlot); f <= lastSlot; f++) {
       const x = Math.round(sx(f * d.X)) + 0.5;
       ctx.moveTo(x, oy);
       ctx.lineTo(x, oy + d.Y * z);
@@ -546,18 +615,15 @@ function draw() {
   }
 
   // node centre in screen space; pixel i spans [i, i + 1], napari puts its centre at i
-  const gx = (i) => d.t[i] * d.X + d.x[i] + 0.5;
+  const gx = (i) => d.slotOf[d.t[i]] * d.X + d.x[i] + 0.5;
   const gy = (i) => oy + (d.y[i] + 0.5) * z;
 
   if (el.showPaths.checked || el.showBranches.checked) {
     ctx.lineCap = "butt";
-    for (let e = 0; e < d.src.length; e++) {
-      const s = d.src[e];
-      const t = d.dst[e];
+    for (const [s, t, kind] of d.links) {
       const x0 = gx(s);
       const x1 = gx(t);
       if (Math.max(x0, x1) < left - 1 || Math.min(x0, x1) > right + 1) continue;
-      const kind = d.linkKind[e];
       if (kind === 2 && !el.showBranches.checked) continue;
       if (kind !== 2 && !el.showPaths.checked) continue;
       const faded = !isEmphasised(d, t);
@@ -576,7 +642,9 @@ function draw() {
   const r = (STYLE.pointSize * z) / 2;
   if (el.showPoints.checked && r >= 1.5) {
     for (let i = 0; i < d.N; i++) {
-      if (d.t[i] < firstFrame || d.t[i] > lastFrame) continue;
+      if (!d.shown[d.t[i]]) continue;
+      const slot = d.slotOf[d.t[i]];
+      if (slot < firstSlot || slot > lastSlot) continue;
       const x = sx(gx(i));
       const y = gy(i);
       const faded = !isEmphasised(d, i);
@@ -601,16 +669,6 @@ function drawSymbol(ctx, d, i, x, y, r, alpha, strong) {
     ctx.closePath();
     ctx.fill();
     ctx.stroke();
-  } else if (d.outdeg[i] === 0) {
-    // end of a track: cross
-    const k = r * 0.75;
-    ctx.lineWidth = Math.max(1.5, r * 0.35);
-    ctx.strokeStyle = color;
-    ctx.moveTo(x - k, y - k);
-    ctx.lineTo(x + k, y + k);
-    ctx.moveTo(x + k, y - k);
-    ctx.lineTo(x - k, y + k);
-    ctx.stroke();
   } else {
     ctx.arc(x, y, r * 0.8, 0, Math.PI * 2);
     ctx.fill();
@@ -624,10 +682,11 @@ function pick(clientX, clientY) {
   const rect = el.kymo.getBoundingClientRect();
   const gxData = state.viewX + (clientX - rect.left) / state.zoom;
   const gyData = (clientY - rect.top - offsetY()) / state.zoom;
-  const frame = Math.floor(gxData / d.X);
-  const x = Math.floor(gxData - frame * d.X);
+  const slot = Math.floor(gxData / d.X);
+  const x = Math.floor(gxData - slot * d.X);
   const y = Math.floor(gyData);
-  if (frame < 0 || frame >= d.T || y < 0 || y >= d.Y || x < 0 || x >= d.X) return null;
+  if (slot < 0 || slot >= d.nSlots || y < 0 || y >= d.Y || x < 0 || x >= d.X) return null;
+  const frame = d.frames[slot];
   const k = (frame * d.Y + y) * d.X + x;
   const lab = d.seg[k];
   const node = lab && lab < d.stride ? d.lut[frame * d.stride + lab] : -1;
@@ -733,8 +792,8 @@ function drawLineageTree() {
   ctx.clearRect(0, 0, g.width, g.height);
 
   // visible kymograph window
-  const f0 = state.viewX / d.X;
-  const f1 = (state.viewX + viewWidthData()) / d.X;
+  const f0 = slotToFrame(state.viewX / d.X);
+  const f1 = slotToFrame((state.viewX + viewWidthData()) / d.X);
   ctx.fillStyle = "rgba(17,17,17,0.06)";
   ctx.fillRect(g.tx(f0), TREE.top - 8, Math.max(2, g.tx(f1) - g.tx(f0)), g.height - TREE.top - TREE.bottom + 16);
 
@@ -799,17 +858,6 @@ function drawLineageTree() {
     ctx.moveTo(x0, y);
     ctx.lineTo(x1, y);
     ctx.stroke();
-    if (!tr.divides && tr.end < d.T - 1) {
-      // track ends before the movie does (left the trench or was lost)
-      ctx.strokeStyle = faded ? "rgba(17,17,17,0.25)" : "rgba(17,17,17,0.8)";
-      ctx.lineWidth = 1.5;
-      ctx.beginPath();
-      ctx.moveTo(x1 + 2, y - 3);
-      ctx.lineTo(x1 + 8, y + 3);
-      ctx.moveTo(x1 + 8, y - 3);
-      ctx.lineTo(x1 + 2, y + 3);
-      ctx.stroke();
-    }
   }
 
   if (treeDrag && treeDrag.moved) {
@@ -866,62 +914,46 @@ function treePick(clientX, clientY) {
 
 // ---------------------------------------------------------------- spiral view
 //
-// Each lineage is a spiral with time zero at the centre. The longest-lived line of
-// descent (in a mother machine, the old-pole mother) is the spiral itself; every other
-// daughter leaves it as a straight offshoot pointing outwards, and an offshoot's own
-// divisions fork either side of it, so each sub-lineage reads as a small tree.
-//
-// Two ways to put time on the spiral:
-//  - "length": one frame is the same length everywhere, on the spiral and on every
-//    offshoot, so lengths compare directly. The spiral winds tightly where nothing
-//    sprouts (the lag before growth resumes) and each turn opens just enough to clear
-//    the offshoots of the turn inside it.
-//  - "angle": one turn per "minutes per turn" (an Archimedean spiral), so time reads
-//    like a clock face; offshoots then use a fixed, shorter length per frame.
+// Each lineage is a spiral with time zero at the centre: an Archimedean spiral turning
+// once per "minutes per turn" (default 2 h), which is the longest-lived line of descent
+// (in a mother machine, the old-pole mother). Every other daughter leaves it along the
+// spiral and curls outwards into a coil that tightens slowly as she lives, turning 1.5x
+// faster than the spiral; her own other daughters curl the opposite way at 3x, on
+// smaller coils, and deeper levels at 7.5x. A coil starts tangent to the spiral and stays inside a circle
+// sitting on it, so it never crosses back; the turns are spaced to clear the tallest one.
 
 const SPIRAL = {
   height: 560,
   margin: 30,
-  r0: 12, // radius at time zero
-  clear: 6, // clearance between a turn and whatever lies inside it
-  angleSpeed: 0.6, // offshoot length per frame in "angle" mode
-  look: 0.9, // radians of look-ahead so the spiral widens smoothly
-  slope: 18, // steepest widening, in units of radius per radian
-  bin: Math.PI / 90,
+  r0: 3, // radius at time zero
+  coil: 12, // starting radius of a daughter's coil
+  tighten: 0.25, // how fast coils tighten, relative to the spiral's turning rate
+  shrink: 0.7, // a granddaughter's coil relative to her mother's
+  // how much faster than the spiral each level of offshoot turns: daughters, granddaughters,
+  // then every deeper level
+  rates: [1.5, 3, 7.5],
+  clear: 3,
 };
-const BRANCH_ANGLE = { length: (45 * Math.PI) / 180, angle: (60 * Math.PI) / 180 };
-const FORK_ANGLE = (30 * Math.PI) / 180; // either side of an offshoot at its divisions
-const MIN_ANGLE = (12 * Math.PI) / 180; // keep forks pointing outwards
-const START_ANGLE = -Math.PI / 2; // time zero points up
-
-function spiralMode() {
-  return el.spiralMode.value === "length" ? "length" : "angle";
-}
+const SUBSTEPS = 4;
 
 function framesPerTurn() {
   return Math.max(1, (Number(el.turn.value) * 60) / state.frameSeconds);
 }
 
-// spine, offshoots in local coordinates (x along the spiral, y away from the centre),
-// and how far the offshoots reach outwards
-function lineageStructure(mode) {
+// offshoot coils in the local frame of their attachment: x along the spiral (forwards in
+// time), y away from the centre; one point per frame from the division onwards
+function layoutSpiral() {
   const d = state.data;
+  const F = framesPerTurn();
+  const w0 = (2 * Math.PI) / F;
   const byId = (id) => d.tracklets[d.trackletIndex.get(id)];
-  const latest = new Map();
-  const lastFrame = (tr) => {
-    if (latest.has(tr.id)) return latest.get(tr.id);
-    let v = tr.end;
-    for (const c of tr.children) v = Math.max(v, lastFrame(byId(c)));
-    latest.set(tr.id, v);
-    return v;
-  };
-  const speed = mode === "length" ? 1 : SPIRAL.angleSpeed;
-  return d.lineages.map((lin) => {
+  const lastFrame = descendantEnd(d);
+  const spirals = [];
+  for (const lin of d.lineages) {
     const members = d.tracklets.filter((tr) => tr.lineage === lin);
     const roots = members
       .filter((tr) => tr.parentTracklet === null || !d.trackletIndex.has(tr.parentTracklet))
       .sort((a, b) => a.start - b.start || a.y0 - b.y0);
-    // the spine: from the first root, always follow the child whose descendants last longest
     const spine = new Set();
     let cur = roots[0];
     while (cur) {
@@ -929,152 +961,77 @@ function lineageStructure(mode) {
       cur = cur.children.map(byId).sort((a, b) => lastFrame(b) - lastFrame(a) || a.y0 - b.y0)[0];
     }
     const shoot = new Map();
-    const attachments = new Map(); // frame -> offshoot tracklets starting there
     let reach = 0;
-    const grow = (tr, attach, origin, angle, from, top) => {
-      const dir = [Math.cos(angle), Math.sin(angle)];
-      shoot.set(tr.id, { attach, origin, dir, from, speed });
-      const tip = [origin[0] + dir[0] * (tr.end - from) * speed, origin[1] + dir[1] * (tr.end - from) * speed];
-      reach = Math.max(reach, tip[1]);
-      top.push(tr);
-      const kids = tr.children.map(byId).sort((a, b) => a.y0 - b.y0);
+    const grow = (tr, attach, x, y, heading, sense, rho, depth) => {
+      const rate = w0 * SPIRAL.rates[Math.min(depth, SPIRAL.rates.length) - 1];
+      const from = tr.parentTracklet !== null && d.trackletIndex.has(tr.parentTracklet) ? byId(tr.parentTracklet).end : tr.start;
+      const frames = tr.end - from + 1;
+      const pts = new Float64Array(2 * (frames + 1));
+      pts[0] = x;
+      pts[1] = y;
+      for (let f = 1; f <= frames; f++) {
+        for (let s = 0; s < SUBSTEPS; s++) {
+          const step = (rho * rate) / SUBSTEPS;
+          heading += (sense * rate) / SUBSTEPS;
+          x += step * Math.cos(heading);
+          y += step * Math.sin(heading);
+          rho *= Math.exp((-SPIRAL.tighten * w0) / SUBSTEPS);
+        }
+        pts[2 * f] = x;
+        pts[2 * f + 1] = y;
+        reach = Math.max(reach, y);
+      }
+      shoot.set(tr.id, { attach, from, pts });
+      const kids = tr.children.map(byId).sort((a, b) => lastFrame(b) - lastFrame(a) || a.y0 - b.y0);
       kids.forEach((k, i) => {
-        const turn = kids.length === 1 ? 0 : i === 0 ? -FORK_ANGLE : FORK_ANGLE;
-        const a = Math.min(Math.PI - MIN_ANGLE, Math.max(MIN_ANGLE, angle + turn));
-        grow(k, attach, tip, a, tr.end, top);
+        if (i === 0) grow(k, attach, x, y, heading, sense, rho, depth);
+        else grow(k, attach, x, y, heading - sense * 0.5, -sense, rho * SPIRAL.shrink, depth + 1);
       });
-    };
-    const start = Math.min(...members.map((tr) => tr.start));
-    const end = Math.max(...members.map((tr) => tr.end));
-    const attachAt = (frame, tr) => {
-      const at = Math.min(end, Math.max(start, frame));
-      const list = [];
-      grow(tr, at, [0, 0], BRANCH_ANGLE[mode], frame, list);
-      if (!attachments.has(at)) attachments.set(at, []);
-      attachments.get(at).push(...list);
     };
     for (const id of spine) {
       const tr = byId(id);
-      for (const c of tr.children) if (!spine.has(c)) attachAt(tr.end, byId(c));
-    }
-    for (const root of roots.slice(1)) attachAt(root.start, root);
-    return { lineage: lin, tracklets: members, spine, shoot, attachments, reach, start, end, x: 0, y: 0 };
-  });
-}
-
-// world position of local offshoot coordinates (a, b) attached at a spine pose
-const fromLocal = (p, a, b) => [p.x + a * p.tx + b * p.nx, p.y + a * p.ty + b * p.ny];
-
-function outwardNormal(x, y, tx, ty) {
-  let nx = ty;
-  let ny = -tx;
-  if (nx * x + ny * y < 0) {
-    nx = -nx;
-    ny = -ny;
-  }
-  return [nx, ny];
-}
-
-// "angle" mode: Archimedean spiral, turns spaced just wider than the longest offshoot
-function anglePoses(sp, F) {
-  const spacing = sp.reach + SPIRAL.clear + 4;
-  const poses = [];
-  for (let t = sp.start; t <= sp.end; t++) {
-    const angle = START_ANGLE + (2 * Math.PI * t) / F;
-    const r = SPIRAL.r0 + (spacing * t) / F;
-    const c = Math.cos(angle);
-    const s = Math.sin(angle);
-    const dr = spacing / F;
-    const da = (2 * Math.PI) / F;
-    let tx = dr * c - r * da * s;
-    let ty = dr * s + r * da * c;
-    const len = Math.hypot(tx, ty) || 1;
-    tx /= len;
-    ty /= len;
-    const x = r * c;
-    const y = r * s;
-    const [nx, ny] = outwardNormal(x, y, tx, ty);
-    poses.push({ x, y, tx, ty, nx, ny });
-  }
-  return poses;
-}
-
-// "length" mode: walk the spine one frame (one unit of length) at a time. The radius
-// only grows, and grows just enough to clear everything one turn further in: the
-// previous turn of the spine and the offshoots sprouting from it.
-function lengthPoses(sp) {
-  const poses = [];
-  const inner = new Map(); // angle bin (unwrapped) -> outermost radius of anything there
-  const bin = (theta) => Math.floor(theta / SPIRAL.bin);
-  const mark = (theta, radius) => {
-    const b = bin(theta);
-    inner.set(b, Math.max(inner.get(b) ?? 0, radius));
-  };
-  const need = (theta) => {
-    const b = bin(theta - 2 * Math.PI);
-    let m = -Infinity;
-    for (let k = b - 1; k <= b + 1; k++) if (inner.has(k)) m = Math.max(m, inner.get(k));
-    return m + SPIRAL.clear;
-  };
-  let theta = 0;
-  let r = SPIRAL.r0;
-  let prevR = r;
-  let prevTheta = -1e-3;
-  for (let t = sp.start; t <= sp.end; t++) {
-    // first turn: open gently so it reads as a spiral; afterwards clear the turn inside
-    let target = theta < 2 * Math.PI ? SPIRAL.r0 + (SPIRAL.clear * 1.5 * theta) / (2 * Math.PI) : r;
-    for (let look = 0; look <= SPIRAL.look; look += SPIRAL.bin) {
-      target = Math.max(target, need(theta + look) - SPIRAL.slope * look);
-    }
-    r = Math.max(r, target);
-    const angle = START_ANGLE + theta;
-    const c = Math.cos(angle);
-    const s = Math.sin(angle);
-    const drdtheta = (r - prevR) / Math.max(1e-6, theta - prevTheta);
-    let tx = drdtheta * c - r * s;
-    let ty = drdtheta * s + r * c;
-    const len = Math.hypot(tx, ty) || 1;
-    tx /= len;
-    ty /= len;
-    const x = r * c;
-    const y = r * s;
-    const [nx, ny] = outwardNormal(x, y, tx, ty);
-    const pose = { x, y, tx, ty, nx, ny };
-    poses.push(pose);
-    mark(theta, r + 2);
-    // offshoots sprouting here become obstacles for the next turn out
-    for (const tr of sp.attachments.get(t) || []) {
-      const shoot = sp.shoot.get(tr.id);
-      for (let f = shoot.from; f <= tr.end; f++) {
-        const k = (f - shoot.from) * shoot.speed;
-        const [px, py] = fromLocal(pose, shoot.origin[0] + shoot.dir[0] * k, shoot.origin[1] + shoot.dir[1] * k);
-        let phi = Math.atan2(py, px) - START_ANGLE;
-        phi += 2 * Math.PI * Math.round((theta - phi) / (2 * Math.PI));
-        mark(phi, Math.hypot(px, py) + 2);
+      for (const c of tr.children) {
+        if (!spine.has(c)) grow(byId(c), tr.end, 0, 0, 0, 1, SPIRAL.coil / SPIRAL.rates[0], 1);
       }
     }
-    prevR = r;
-    prevTheta = theta;
-    theta += 1 / Math.hypot(r, drdtheta);
-  }
-  return poses;
-}
-
-function layoutSpiral() {
-  const mode = spiralMode();
-  const F = framesPerTurn();
-  const spirals = lineageStructure(mode);
-  for (const sp of spirals) {
-    sp.poses = mode === "angle" ? anglePoses(sp, F) : lengthPoses(sp);
-    let radius = 0;
-    for (const tr of sp.tracklets) {
-      for (const t of [tr.start, tr.end]) {
-        const [x, y] = spiralPoint(sp, tr, t);
-        radius = Math.max(radius, Math.hypot(x, y));
+    for (const r of roots.slice(1)) grow(r, r.start, 0, 0, 0, 1, SPIRAL.coil / SPIRAL.rates[0], 1);
+    const start = Math.min(...members.map((tr) => tr.start));
+    const end = Math.max(...members.map((tr) => tr.end));
+    const gap = reach + SPIRAL.clear;
+    // the spine, one pose per frame: time zero points up and time runs clockwise
+    const poses = [];
+    for (let t = start; t <= end + 1; t++) {
+      const th = w0 * t;
+      const r = SPIRAL.r0 + (gap * t) / F;
+      const x = r * Math.sin(th);
+      const y = -r * Math.cos(th);
+      const th2 = w0 * (t + 0.5);
+      const r2 = SPIRAL.r0 + (gap * (t + 0.5)) / F;
+      let tx = r2 * Math.sin(th2) - x;
+      let ty = -r2 * Math.cos(th2) - y;
+      const len = Math.hypot(tx, ty) || 1;
+      tx /= len;
+      ty /= len;
+      let nx = ty;
+      let ny = -tx;
+      if (nx * x + ny * y < 0) {
+        nx = -nx;
+        ny = -ny;
+      }
+      poses.push({ x, y, tx, ty, nx, ny });
+    }
+    const sp = { lineage: lin, tracklets: members, spine, shoot, start, end, poses, x: 0, y: 0 };
+    let radius = Math.hypot(poses[poses.length - 1].x, poses[poses.length - 1].y);
+    for (const tr of members) {
+      if (spine.has(tr.id)) continue;
+      const s = shoot.get(tr.id);
+      for (let i = 0; i < s.pts.length; i += 2) {
+        const [px, py] = spiralPoint(sp, tr, s.from + i / 2);
+        radius = Math.max(radius, Math.hypot(px, py));
       }
     }
-    for (const p of sp.poses) radius = Math.max(radius, Math.hypot(p.x, p.y));
     sp.radius = radius + 6;
+    spirals.push(sp);
   }
   return spirals;
 }
@@ -1084,59 +1041,66 @@ function poseAt(sp, t) {
   const i0 = Math.floor(i);
   const i1 = Math.min(sp.poses.length - 1, i0 + 1);
   const f = i - i0;
-  if (f === 0) return sp.poses[i0];
   const a = sp.poses[i0];
+  if (f === 0) return a;
   const b = sp.poses[i1];
   return { x: a.x + (b.x - a.x) * f, y: a.y + (b.y - a.y) * f, tx: a.tx, ty: a.ty, nx: a.nx, ny: a.ny };
 }
 
 // spiral-local position of a tracklet at frame t
 function spiralPoint(sp, tr, t) {
-  const shoot = sp.shoot.get(tr.id);
-  if (!shoot) {
+  const s = sp.shoot.get(tr.id);
+  if (!s) {
     const p = poseAt(sp, t);
     return [p.x, p.y];
   }
-  const k = Math.max(0, t - shoot.from) * shoot.speed;
-  return fromLocal(poseAt(sp, shoot.attach), shoot.origin[0] + shoot.dir[0] * k, shoot.origin[1] + shoot.dir[1] * k);
+  const n = s.pts.length / 2 - 1;
+  const i = Math.min(n, Math.max(0, t - s.from));
+  const i0 = Math.floor(i);
+  const i1 = Math.min(n, i0 + 1);
+  const f = i - i0;
+  const a = s.pts[2 * i0] + (s.pts[2 * i1] - s.pts[2 * i0]) * f;
+  const b = s.pts[2 * i0 + 1] + (s.pts[2 * i1 + 1] - s.pts[2 * i0 + 1]) * f;
+  const p = poseAt(sp, s.attach);
+  return [p.x + a * p.tx + b * p.nx, p.y + a * p.ty + b * p.ny];
 }
 
-// spirals laid out in rows to make the best use of the panel, then fitted to it
+// the biggest spiral on the left, the rest in a grid beside it, fitted to the panel
 function arrangeSpirals(view) {
   const width = el.treeWrap.clientWidth;
   const height = SPIRAL.height;
-  const sizes = view.spirals.map((sp) => sp.radius);
+  const m = SPIRAL.margin;
+  const order = view.spirals.map((sp, i) => i).sort((a, b) => view.spirals[b].radius - view.spirals[a].radius);
+  const big = view.spirals[order[0]];
+  const rest = order.slice(1);
   let best = null;
-  for (let rows = 1; rows <= view.spirals.length; rows++) {
-    const perRow = Math.ceil(view.spirals.length / rows);
-    const rowList = [];
-    for (let i = 0; i < view.spirals.length; i += perRow) rowList.push(view.spirals.slice(i, i + perRow).map((_, k) => i + k));
-    const rowW = rowList.map((r) => r.reduce((acc, i) => acc + 2 * sizes[i] + SPIRAL.margin, -SPIRAL.margin));
-    const rowH = rowList.map((r) => Math.max(...r.map((i) => 2 * sizes[i])));
-    const totalW = Math.max(...rowW);
-    const totalH = rowH.reduce((a, b) => a + b, 0) + SPIRAL.margin * (rowList.length - 1);
-    const scale = Math.min((width - 2 * SPIRAL.margin) / totalW, (height - 2 * SPIRAL.margin) / totalH);
-    if (!best || scale > best.scale) best = { scale, rowList, rowW, rowH, totalH };
+  for (let cols = 1; cols <= Math.max(1, rest.length); cols++) {
+    const rows = Math.ceil(rest.length / cols);
+    const cell = rest.length ? Math.max(...rest.map((i) => 2 * view.spirals[i].radius)) : 0;
+    const totalW = 2 * big.radius + (rest.length ? m + cols * cell + (cols - 1) * m : 0);
+    const totalH = Math.max(2 * big.radius, rows * cell + (rows - 1) * m);
+    const scale = Math.min((width - 2 * m) / totalW, (height - 2 * m) / totalH);
+    if (!best || scale > best.scale) best = { scale, cols, cell, totalW, totalH };
   }
-  let y = 0;
-  best.rowList.forEach((row, r) => {
-    let x = -best.rowW[r] / 2;
-    for (const i of row) {
-      view.spirals[i].x = x + sizes[i];
-      view.spirals[i].y = y + best.rowH[r] / 2;
-      x += 2 * sizes[i] + SPIRAL.margin;
-    }
-    y += best.rowH[r] + SPIRAL.margin;
+  const { scale, cols, cell, totalW, totalH } = best;
+  big.x = -totalW / 2 + big.radius;
+  big.y = 0;
+  rest.forEach((i, n) => {
+    const c = n % cols;
+    const r = Math.floor(n / cols);
+    const rows = Math.ceil(rest.length / cols);
+    view.spirals[i].x = -totalW / 2 + 2 * big.radius + m + c * (cell + m) + cell / 2;
+    view.spirals[i].y = -(rows * cell + (rows - 1) * m) / 2 + r * (cell + m) + cell / 2;
   });
-  view.scale = best.scale;
+  view.scale = scale;
   view.panX = width / 2;
-  view.panY = height / 2 - (best.totalH / 2) * best.scale;
+  view.panY = height / 2;
 }
 
 function ensureSpiralView() {
   const d = state.data;
   if (!d) return null;
-  const key = `${spiralMode()}:${spiralMode() === "angle" ? framesPerTurn() : ""}`;
+  const key = String(framesPerTurn());
   if (state.spiralView && state.spiralView.key === key) return state.spiralView;
   const old = state.spiralView;
   const view = { spirals: layoutSpiral(), key };
@@ -1175,13 +1139,6 @@ function drawSpiral() {
   const screen = (sp, [x, y]) => [view.panX + (sp.x + x) * k, view.panY + (sp.y + y) * k];
   const trace = (sp, tr, t0, t1) => {
     ctx.beginPath();
-    if (sp.shoot.has(tr.id)) {
-      const a = screen(sp, spiralPoint(sp, tr, t0));
-      const b = screen(sp, spiralPoint(sp, tr, t1));
-      ctx.moveTo(a[0], a[1]);
-      ctx.lineTo(b[0], b[1]);
-      return;
-    }
     const a0 = Math.ceil(t0);
     const pts = [t0];
     for (let t = a0; t < t1; t++) if (t > t0) pts.push(t);
@@ -1192,10 +1149,11 @@ function drawSpiral() {
       else ctx.lineTo(x, y);
     });
   };
-  const f0 = state.viewX / d.X;
-  const f1 = (state.viewX + viewWidthData()) / d.X;
-  const spineWidth = Math.max(3.5, 4 * k);
-  const shootWidth = Math.max(2.5, 2.6 * k);
+  const f0 = slotToFrame(state.viewX / d.X);
+  const f1 = slotToFrame((state.viewX + viewWidthData()) / d.X);
+  // fixed on screen, like the prototype: zooming in spreads the lines apart, not fattens them
+  const spineWidth = 4;
+  const shootWidth = 3;
   ctx.lineCap = "round";
   ctx.lineJoin = "round";
 
@@ -1205,8 +1163,8 @@ function drawSpiral() {
     const shoots = sp.tracklets.filter((tr) => !sp.spine.has(tr.id));
 
     // frames currently shown in the kymograph, as a band along the spine
-    ctx.strokeStyle = "rgba(17,17,17,0.10)";
-    ctx.lineWidth = spineWidth + 10;
+    ctx.strokeStyle = "rgba(17,17,17,0.24)";
+    ctx.lineWidth = spineWidth + 14;
     for (const tr of spine) {
       const a = Math.max(tr.start, f0);
       const b = Math.min(tr.end + 1, f1, sp.end);
@@ -1231,7 +1189,6 @@ function drawSpiral() {
       ctx.lineWidth = shootWidth;
       trace(sp, tr, shoot.from, t1);
       ctx.stroke();
-      if (!tr.divides && tr.end < d.T - 1) endMark(ctx, screen(sp, spiralPoint(sp, tr, tr.end)), k, faded);
     }
     for (const tr of spine) {
       const id = el.colorBy.value === "lineage" ? tr.lineage : tr.id;
@@ -1246,30 +1203,29 @@ function drawSpiral() {
       ctx.lineWidth = spineWidth;
       trace(sp, tr, tr.start, Math.max(t1, tr.start + 0.5));
       ctx.stroke();
-      if (!tr.divides && tr.end < d.T - 1) endMark(ctx, screen(sp, spiralPoint(sp, tr, tr.end)), k, faded);
     }
 
-    // time marks along the spine, on its inner side; spaced so they don't crowd
-    ctx.fillStyle = faded ? "rgba(17,17,17,0.25)" : "rgba(17,17,17,0.5)";
+    // time marks sit on the spine itself, on a white label, so they never run into
+    // the neighbouring turn or the coils
     ctx.font = "10px 'IBM Plex Mono', monospace";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    const stepMinutes = [30, 60, 120];
-    let lastXY = null;
-    for (let minutes = stepMinutes[0]; ; minutes += stepMinutes[0]) {
+    // one label per turn, where the spiral crosses straight up from the centre
+    const turn = Number(el.turn.value);
+    for (let minutes = turn; ; minutes += turn) {
       const t = (minutes * 60) / state.frameSeconds;
       if (t > sp.end) break;
       if (t < sp.start) continue;
       const p = poseAt(sp, t);
       const [x, y] = screen(sp, [p.x, p.y]);
-      const lx = x - p.nx * (spineWidth / 2 + 9);
-      const ly = y - p.ny * (spineWidth / 2 + 9);
-      if (lastXY && Math.hypot(lx - lastXY[0], ly - lastXY[1]) < 34) continue;
+      const text = `${Number.isInteger(minutes / 60) ? minutes / 60 : (minutes / 60).toFixed(1)}h`;
+      const w = ctx.measureText(text).width + 6;
+      ctx.fillStyle = "rgba(255,255,255,0.92)";
       ctx.beginPath();
-      ctx.arc(x, y, 1.6, 0, Math.PI * 2);
+      ctx.roundRect(x - w / 2, y - 7, w, 14, 7);
       ctx.fill();
-      ctx.fillText(`${minutes}m`, lx, ly);
-      lastXY = [lx, ly];
+      ctx.fillStyle = faded ? "rgba(17,17,17,0.3)" : "rgba(17,17,17,0.75)";
+      ctx.fillText(text, x, y + 0.5);
     }
     ctx.textBaseline = "alphabetic";
 
@@ -1280,7 +1236,7 @@ function drawSpiral() {
         if (state.hoverFrame < tr.start || state.hoverFrame > tr.end) continue;
         const [x, y] = screen(sp, spiralPoint(sp, tr, state.hoverFrame));
         ctx.beginPath();
-        ctx.arc(x, y, Math.max(3, 3.5 * k), 0, Math.PI * 2);
+        ctx.arc(x, y, 3, 0, Math.PI * 2);
         ctx.fill();
       }
     }
@@ -1292,18 +1248,6 @@ function drawSpiral() {
     const [lx, ly] = screen(sp, [0, -sp.radius]);
     ctx.fillText(`L${sp.lineage}`, lx, ly - 4);
   }
-}
-
-function endMark(ctx, [x, y], k, faded) {
-  const m = Math.max(2.5, 2.2 * k);
-  ctx.strokeStyle = faded ? "rgba(17,17,17,0.25)" : "rgba(17,17,17,0.8)";
-  ctx.lineWidth = 1.2;
-  ctx.beginPath();
-  ctx.moveTo(x - m, y - m);
-  ctx.lineTo(x + m, y + m);
-  ctx.moveTo(x + m, y - m);
-  ctx.lineTo(x - m, y + m);
-  ctx.stroke();
 }
 
 function formatMinutes(frame) {
@@ -1348,8 +1292,7 @@ function setTab(tab) {
   el.tabSpiral.setAttribute("aria-selected", String(spiral));
   el.tree.hidden = spiral;
   el.spiral.hidden = !spiral;
-  el.modeControl.hidden = !spiral;
-  el.turnControl.hidden = !spiral || spiralMode() !== "angle";
+  el.turnControl.hidden = !spiral;
   el.resetSpiral.hidden = !spiral;
   drawTree();
   writeUrlSoon();
@@ -1357,11 +1300,6 @@ function setTab(tab) {
 
 el.tabTree.addEventListener("click", () => setTab("tree"));
 el.tabSpiral.addEventListener("click", () => setTab("spiral"));
-el.spiralMode.addEventListener("input", () => {
-  el.turnControl.hidden = spiralMode() !== "angle";
-  drawTree();
-  writeUrlSoon();
-});
 el.turn.addEventListener("input", () => {
   drawTree();
   writeUrlSoon();
@@ -1488,7 +1426,7 @@ function updateSelectionPanel() {
 
 function centerOnFrame(frame) {
   const d = state.data;
-  state.viewX = frame * d.X + d.X / 2 - viewWidthData() / 2;
+  state.viewX = frameToSlot(frame) * d.X + d.X / 2 - viewWidthData() / 2;
   clampView();
 }
 
@@ -1626,7 +1564,7 @@ el.tree.addEventListener("mousemove", (event) => {
 
 el.time.addEventListener("input", () => {
   if (!state.data) return;
-  state.viewX = Number(el.time.value) * state.data.X;
+  state.viewX = frameToSlot(Number(el.time.value)) * state.data.X;
   clampView();
   draw();
   drawTree();
@@ -1665,6 +1603,18 @@ function contrastFromSliders() {
 
 el.lo.addEventListener("input", contrastFromSliders);
 el.hi.addEventListener("input", contrastFromSliders);
+el.subsample.addEventListener("input", () => {
+  const d = state.data;
+  if (!d) return;
+  const center = slotToFrame((state.viewX + viewWidthData() / 2) / d.X);
+  buildFrames(d);
+  buildComposite();
+  setZoom(state.zoom);
+  state.viewX = frameToSlot(center) * d.X - viewWidthData() / 2;
+  resize();
+  writeUrlSoon();
+});
+
 for (const control of [el.opacity, el.showMasks, el.colorBy]) {
   control.addEventListener("input", () => {
     if (!state.data) return;
@@ -1714,13 +1664,13 @@ function writeUrl() {
   const params = new URLSearchParams();
   params.set("dataset", el.dataset.value.trim());
   if (el.trench.value) params.set("trench", el.trench.value);
-  if (state.data) params.set("frame", String(Math.round(state.viewX / state.data.X)));
+  if (state.data) params.set("frame", String(Math.round(slotToFrame(state.viewX / state.data.X))));
+  if (Number(el.subsample.value) > 1) params.set("subsample", el.subsample.value);
   params.set("zoom", String(Number(state.zoom.toFixed(4))));
   if (state.selected) params.set("tracklet", String(state.selected.tracklet));
   if (state.tab === "spiral") {
     params.set("view", "spiral");
-    params.set("time", spiralMode());
-    if (spiralMode() === "angle") params.set("turn", el.turn.value);
+    params.set("turn", el.turn.value);
   }
   history.replaceState(null, "", `${location.pathname}?${params}`);
 }
@@ -1763,8 +1713,9 @@ el.next.addEventListener("click", () => step(1));
 const params = new URLSearchParams(location.search);
 el.dataset.value = params.get("dataset") || DEFAULT_DATASET;
 state.zoom = Number(params.get("zoom")) || MAX_ZOOM;
+if (params.get("subsample")) el.subsample.value = params.get("subsample");
+el.subsampleValue.textContent = "every frame";
 if (params.get("turn")) el.turn.value = params.get("turn");
-if (params.get("time") === "length") el.spiralMode.value = "length";
 if (params.get("view") === "spiral") setTab("spiral");
 loadDataset(params.get("trench")).then(() => {
   const wanted = Number(params.get("tracklet"));
