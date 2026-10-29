@@ -539,32 +539,34 @@ function buildComposite() {
 
 // The stage keeps the height it has at the closest zoom, so zooming out (or selecting a
 // time range in the tree) never moves the tree below it.
-const MAX_ZOOM = 2.86;
+const DESKTOP_MAX_ZOOM = 2.86;
+// on a phone the panel hugs the default zoom more tightly, so less of the screen is black
+const maxZoom = () => (window.innerWidth < 600 ? DEFAULT_ZOOM * 1.2 : DESKTOP_MAX_ZOOM);
 const DEFAULT_ZOOM = 1.7154; // what a trench opens at, and what Reset zoom returns to
 
 function minZoom() {
   const d = state.data;
-  return d ? Math.min(MAX_ZOOM, el.stage.clientWidth / d.W) : MAX_ZOOM;
+  return d ? Math.min(maxZoom(), el.stage.clientWidth / d.W) : maxZoom();
 }
 
 function setZoom(zoom) {
-  state.zoom = Math.min(MAX_ZOOM, Math.max(minZoom(), zoom));
+  state.zoom = Math.min(maxZoom(), Math.max(minZoom(), zoom));
   // the zoom slider is logarithmic between "whole movie" and the default zoom
   const lo = Math.log(minZoom());
-  const span = Math.log(MAX_ZOOM) - lo;
+  const span = Math.log(maxZoom()) - lo;
   el.zoom.value = String(span > 0 ? (Math.log(state.zoom) - lo) / span : 1);
   el.resetZoom.disabled = Math.abs(state.zoom - DEFAULT_ZOOM) < 1e-3;
 }
 
 function zoomFromSlider() {
   const lo = Math.log(minZoom());
-  return Math.exp(lo + Number(el.zoom.value) * (Math.log(MAX_ZOOM) - lo));
+  return Math.exp(lo + Number(el.zoom.value) * (Math.log(maxZoom()) - lo));
 }
 
 // vertical offset that centres the image in the fixed-height stage
 function offsetY() {
   const d = state.data;
-  return d ? (d.Y * MAX_ZOOM - d.Y * state.zoom) / 2 : 0;
+  return d ? (d.Y * maxZoom() - d.Y * state.zoom) / 2 : 0;
 }
 
 // show frames [f0, f1] across the whole width, but never fewer frames than fit at the
@@ -572,7 +574,7 @@ function offsetY() {
 function showFrames(f0, f1) {
   const d = state.data;
   const width = el.stage.clientWidth;
-  const minFrames = width / (d.X * MAX_ZOOM);
+  const minFrames = width / (d.X * maxZoom());
   const T = d.nSlots;
   let a = frameToSlot(Math.min(f0, f1));
   let b = frameToSlot(Math.max(f0, f1)) + 1;
@@ -624,7 +626,7 @@ function resize() {
   const d = state.data;
   const dpr = window.devicePixelRatio || 1;
   const width = el.stage.clientWidth;
-  const height = d ? Math.round(d.Y * MAX_ZOOM) : 300;
+  const height = d ? Math.round(d.Y * maxZoom()) : 300;
   if (d) setZoom(state.zoom);
   el.kymo.style.width = `${width}px`;
   el.kymo.style.height = `${height}px`;
@@ -1134,7 +1136,7 @@ function spiralPoint(sp, tr, t) {
 // the biggest spiral on the left, the rest in a grid beside it, fitted to the panel
 function arrangeSpirals(view) {
   const width = el.treeWrap.clientWidth;
-  const height = SPIRAL.height;
+  const height = spiralHeight();
   const m = SPIRAL.margin;
   const order = view.spirals.map((sp, i) => i).sort((a, b) => view.spirals[b].radius - view.spirals[a].radius);
   const big = view.spirals[order[0]];
@@ -1184,13 +1186,17 @@ function ensureSpiralView() {
   return view;
 }
 
+function spiralHeight() {
+  return Math.round(Math.min(SPIRAL.height, Math.max(320, el.treeWrap.clientWidth * 0.95)));
+}
+
 function drawSpiral() {
   const d = state.data;
   const canvas = el.spiral;
   const ctx = canvas.getContext("2d");
   const dpr = window.devicePixelRatio || 1;
   const width = el.treeWrap.clientWidth;
-  const height = SPIRAL.height;
+  const height = spiralHeight();
   canvas.style.width = `${width}px`;
   canvas.style.height = `${height}px`;
   canvas.width = Math.round(width * dpr);
@@ -1378,9 +1384,21 @@ el.resetSpiral.addEventListener("click", () => {
 // drag a spiral to move it, drag empty space to pan, scroll to zoom, click to select
 let spiralDrag = null;
 
+const spiralTouches = new Map();
+let spiralPinch = null;
+
 el.spiral.addEventListener("pointerdown", (event) => {
   const view = state.spiralView;
   if (!view) return;
+  spiralTouches.set(event.pointerId, { x: event.clientX, y: event.clientY });
+  if (spiralTouches.size === 2) {
+    const [a, b] = [...spiralTouches.values()];
+    spiralPinch = { dist: Math.hypot(a.x - b.x, a.y - b.y) || 1, scale: view.scale, panX: view.panX, panY: view.panY,
+      mid: [(a.x + b.x) / 2, (a.y + b.y) / 2] };
+    spiralDrag = null;
+    el.spiral.setPointerCapture(event.pointerId);
+    return;
+  }
   const hit = spiralPick(event.clientX, event.clientY);
   spiralDrag = {
     x: event.clientX,
@@ -1396,6 +1414,22 @@ el.spiral.addEventListener("pointerdown", (event) => {
 el.spiral.addEventListener("pointermove", (event) => {
   const view = state.spiralView;
   if (!view) return;
+  if (spiralTouches.has(event.pointerId)) spiralTouches.set(event.pointerId, { x: event.clientX, y: event.clientY });
+  if (spiralPinch && spiralTouches.size === 2) {
+    const [a, b] = [...spiralTouches.values()];
+    const rect = el.spiral.getBoundingClientRect();
+    const f = Math.hypot(a.x - b.x, a.y - b.y) / spiralPinch.dist;
+    const mx = spiralPinch.mid[0] - rect.left;
+    const my = spiralPinch.mid[1] - rect.top;
+    const nx = (a.x + b.x) / 2 - rect.left;
+    const ny = (a.y + b.y) / 2 - rect.top;
+    view.scale = spiralPinch.scale * f;
+    view.panX = nx - (mx - spiralPinch.panX) * f;
+    view.panY = ny - (my - spiralPinch.panY) * f;
+    view.moved = true;
+    drawSpiral();
+    return;
+  }
   if (spiralDrag) {
     const dx = event.clientX - spiralDrag.x;
     const dy = event.clientY - spiralDrag.y;
@@ -1420,7 +1454,19 @@ el.spiral.addEventListener("pointermove", (event) => {
       : "";
 });
 
+el.spiral.addEventListener("pointercancel", (event) => {
+  spiralTouches.delete(event.pointerId);
+  if (spiralTouches.size === 0) spiralPinch = null;
+  spiralDrag = null;
+});
+
 el.spiral.addEventListener("pointerup", (event) => {
+  spiralTouches.delete(event.pointerId);
+  if (spiralPinch) {
+    if (spiralTouches.size === 0) spiralPinch = null;
+    spiralDrag = null;
+    return;
+  }
   const dragged = spiralDrag && spiralDrag.moved;
   spiralDrag = null;
   el.spiral.style.cursor = "grab";
@@ -1749,8 +1795,15 @@ function trenchPick(clientX, clientY) {
   return { frame, node: best };
 }
 
-el.trenchView.addEventListener("mousemove", (event) => {
+let trenchTouch = null;
+
+el.trenchView.addEventListener("pointerdown", (event) => {
+  trenchTouch = { x: event.clientX, moved: false };
+});
+
+el.trenchView.addEventListener("pointermove", (event) => {
   const d = state.data;
+  if (trenchTouch && Math.abs(event.clientX - trenchTouch.x) > 6) trenchTouch.moved = true;
   const hit = trenchPick(event.clientX, event.clientY);
   if (!d || !hit) return;
   if (hit.frame !== state.hoverFrame) {
@@ -1760,13 +1813,21 @@ el.trenchView.addEventListener("mousemove", (event) => {
   el.hover.textContent = hit.node >= 0 ? `${formatTime(d.t[hit.node])} · ${describeNode(d, hit.node)}` : formatTime(hit.frame);
 });
 
-el.trenchView.addEventListener("mouseleave", () => {
+el.trenchView.addEventListener("pointerleave", (event) => {
+  if (event.pointerType !== "mouse") return;
   state.hoverFrame = -1;
   drawTrench();
 });
 
-el.trenchView.addEventListener("click", (event) => {
+el.trenchView.addEventListener("pointercancel", () => {
+  trenchTouch = null;
+});
+
+el.trenchView.addEventListener("pointerup", (event) => {
   const d = state.data;
+  const moved = trenchTouch && trenchTouch.moved;
+  trenchTouch = null;
+  if (moved) return;
   const hit = trenchPick(event.clientX, event.clientY);
   if (!d || !hit) return;
   centerOnFrame(hit.frame);
@@ -1819,17 +1880,43 @@ function centerOnFrame(frame) {
 // ---------------------------------------------------------------- interaction
 
 let drag = null;
+const stageTouches = new Map();
+let pinch = null;
+
+function startPinch() {
+  const [a, b] = [...stageTouches.values()];
+  const rect = el.kymo.getBoundingClientRect();
+  const mid = (a.x + b.x) / 2 - rect.left;
+  pinch = { dist: Math.hypot(a.x - b.x, a.y - b.y) || 1, zoom: state.zoom, anchor: state.viewX + mid / state.zoom };
+  drag = null;
+}
 
 el.stage.addEventListener("pointerdown", (event) => {
   if (!state.data) return;
-  drag = { x: event.clientX, viewX: state.viewX, moved: false };
+  stageTouches.set(event.pointerId, { x: event.clientX, y: event.clientY });
   el.stage.setPointerCapture(event.pointerId);
+  if (stageTouches.size === 2) {
+    startPinch();
+    return;
+  }
+  drag = { x: event.clientX, viewX: state.viewX, moved: false };
   el.stage.classList.add("dragging");
 });
 
 el.stage.addEventListener("pointermove", (event) => {
   const d = state.data;
   if (!d) return;
+  if (stageTouches.has(event.pointerId)) stageTouches.set(event.pointerId, { x: event.clientX, y: event.clientY });
+  if (pinch && stageTouches.size === 2) {
+    const [a, b] = [...stageTouches.values()];
+    const rect = el.kymo.getBoundingClientRect();
+    const mid = (a.x + b.x) / 2 - rect.left;
+    setZoom(pinch.zoom * (Math.hypot(a.x - b.x, a.y - b.y) / pinch.dist));
+    state.viewX = pinch.anchor - mid / state.zoom;
+    resize();
+    writeUrlSoon();
+    return;
+  }
   if (drag) {
     const dx = event.clientX - drag.x;
     if (Math.abs(dx) > 3) drag.moved = true;
@@ -1857,18 +1944,42 @@ el.stage.addEventListener("pointermove", (event) => {
   el.hover.textContent = `${formatTime(hit.frame)} · y ${hit.y} x ${hit.x}${value}${cell}`;
 });
 
-el.stage.addEventListener("pointerup", (event) => {
+const endStageTouch = (event) => {
+  stageTouches.delete(event.pointerId);
   el.stage.classList.remove("dragging");
+  if (pinch) {
+    // after a pinch, lifting the fingers is not a tap
+    if (stageTouches.size === 0) pinch = null;
+    drag = null;
+    return true;
+  }
+  return false;
+};
+
+el.stage.addEventListener("pointercancel", (event) => {
+  endStageTouch(event);
+  drag = null;
+});
+
+el.stage.addEventListener("pointerup", (event) => {
+  if (endStageTouch(event)) return;
   const wasDrag = drag && drag.moved;
   drag = null;
   if (wasDrag || !state.data) return;
+  const d = state.data;
   const hit = pick(event.clientX, event.clientY);
-  select(hit && hit.node >= 0 ? state.data.tracklet[hit.node] : null);
+  select(hit && hit.node >= 0 ? d.tracklet[hit.node] : null);
+  if (hit && event.pointerType !== "mouse") {
+    // no hovering on a touch screen: show what was tapped
+    const cell = hit.node >= 0 ? ` · ${describeNode(d, hit.node)}` : "";
+    el.hover.textContent = `${formatTime(hit.frame)}${cell}`;
+  }
   writeUrl();
 });
 
-el.stage.addEventListener("pointerleave", () => {
-  if (drag) return;
+el.stage.addEventListener("pointerleave", (event) => {
+  // a lifted finger also "leaves"; keep what it tapped on screen
+  if (drag || event.pointerType !== "mouse") return;
   state.hoverNode = -1;
   state.hoverFrame = -1;
   el.hover.textContent = "";

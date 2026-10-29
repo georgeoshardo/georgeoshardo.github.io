@@ -319,7 +319,7 @@
 
       .panel-head {
         display: flex;
-        align-items: baseline;
+        align-items: center;
         gap: 4px 14px;
         flex-wrap: wrap;
         margin-top: 6px;
@@ -330,30 +330,39 @@
         color: var(--ink-soft);
       }
 
+      /* the three views as one segmented control */
       .tabs {
         display: flex;
-        gap: 14px;
+        border: 1px solid rgba(17, 17, 17, 0.3);
       }
 
       button.tab {
-        padding: 0 0 3px;
+        padding: 6px 12px;
         border: 0;
-        border-bottom: 2px solid transparent;
-        background: none;
+        border-right: 1px solid rgba(17, 17, 17, 0.3);
+        background: transparent;
         font: inherit;
         letter-spacing: inherit;
         text-transform: inherit;
-        color: rgba(17, 17, 17, 0.45);
+        color: rgba(17, 17, 17, 0.6);
         cursor: pointer;
       }
 
+      button.tab:last-child {
+        border-right: 0;
+      }
+
+      button.tab:hover {
+        background: rgba(17, 17, 17, 0.06);
+      }
+
       button.tab.active {
-        color: var(--ink);
-        border-bottom-color: var(--ink);
+        color: #ffffff;
+        background: #111111;
       }
 
       .panel-head button.link {
-        margin-left: 0;
+        margin-left: 6px;
       }
 
       label.inline {
@@ -409,13 +418,97 @@
         color: var(--ink-soft);
       }
 
+      #tree,
+      #trench-view {
+        touch-action: pan-y; /* vertical swipes scroll the page, horizontal ones drag */
+      }
+
       @media (max-width: 900px) {
-        .layout {
-          grid-template-columns: 1fr;
+        .shell {
+          width: calc(100vw - 24px);
+          padding-top: 12px;
         }
 
+        .layout {
+          grid-template-columns: 1fr;
+          gap: 14px;
+        }
+
+        /* dataset and trench first, then the viewer, then the other controls */
         .sidebar {
-          position: static;
+          display: contents;
+        }
+
+        .sidebar > .section {
+          order: 2;
+        }
+
+        .sidebar > .section:first-child {
+          order: 0;
+        }
+
+        .main {
+          order: 1;
+        }
+
+        .section + .section {
+          padding-top: 12px;
+        }
+
+        .panel-head {
+          gap: 8px 10px;
+        }
+
+        #turn-control {
+          margin-left: 0;
+          width: 100%;
+        }
+
+        label.inline input {
+          flex: 1 1 auto;
+          width: auto;
+        }
+      }
+
+      /* fingers: bigger targets */
+      @media (pointer: coarse) {
+        button,
+        button.tab {
+          padding: 11px 14px;
+        }
+
+        button.link {
+          padding: 8px 4px;
+        }
+
+        input[type="text"],
+        select {
+          font-size: 16px; /* stops phones zooming in on focus */
+          padding: 10px 0;
+        }
+
+        input[type="range"] {
+          height: 32px;
+        }
+
+        #time::-webkit-slider-thumb {
+          width: 24px;
+          height: 24px;
+          margin-top: -11px;
+        }
+
+        #time::-moz-range-thumb {
+          width: 24px;
+          height: 24px;
+        }
+
+        input[type="checkbox"] {
+          width: 20px;
+          height: 20px;
+        }
+
+        label.check {
+          min-height: 32px;
         }
       }
     </style>
@@ -479,7 +572,7 @@
           <section class="section">
             <p class="hint">
               Drag or scroll to move through time. Ctrl + scroll zooms. Arrow keys step one frame,
-              Shift + arrow one screen. Click a cell or a tree branch to follow its lineage, or drag across the tree to show that stretch of time. In the spiral view, drag a spiral to move it and scroll to zoom.
+              Shift + arrow one screen. Click a cell or a tree branch to follow its lineage, or drag across the tree to show that stretch of time. In the spiral view, drag a spiral to move it and scroll to zoom. On a touch screen: drag to move, pinch to zoom, tap to select.
             </p>
           </section>
         </aside>
