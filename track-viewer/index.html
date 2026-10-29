@@ -311,6 +311,85 @@
         cursor: default;
       }
 
+      .panel-head {
+        display: flex;
+        align-items: baseline;
+        gap: 4px 14px;
+        flex-wrap: wrap;
+        margin-top: 6px;
+        font-size: 0.72rem;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--ink-soft);
+      }
+
+      .tabs {
+        display: flex;
+        gap: 14px;
+      }
+
+      button.tab {
+        padding: 0 0 3px;
+        border: 0;
+        border-bottom: 2px solid transparent;
+        background: none;
+        font: inherit;
+        letter-spacing: inherit;
+        text-transform: inherit;
+        color: rgba(17, 17, 17, 0.45);
+        cursor: pointer;
+      }
+
+      button.tab.active {
+        color: var(--ink);
+        border-bottom-color: var(--ink);
+      }
+
+      .panel-head button.link {
+        margin-left: 0;
+      }
+
+      label.inline {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: inherit;
+      }
+
+      #mode-control {
+        margin-left: auto;
+      }
+
+      label.inline select {
+        width: auto;
+        padding: 2px 0;
+        font-size: 0.72rem;
+        text-transform: none;
+        letter-spacing: 0;
+      }
+
+      label.inline[hidden],
+      button[hidden],
+      canvas[hidden] {
+        display: none;
+      }
+
+      label.inline input {
+        width: 140px;
+      }
+
+      #turn-value {
+        min-width: 3.5em;
+        text-transform: none;
+        letter-spacing: 0;
+      }
+
+      #spiral {
+        touch-action: none;
+        cursor: grab;
+      }
+
       .panel-title {
         margin: 6px 0 0;
         font-size: 0.72rem;
@@ -384,7 +463,7 @@
           <section class="section">
             <p class="hint">
               Drag or scroll to move through time. Ctrl + scroll zooms. Arrow keys step one frame,
-              Shift + arrow one screen. Click a cell or a tree branch to follow its lineage, or drag across the tree to show that stretch of time.
+              Shift + arrow one screen. Click a cell or a tree branch to follow its lineage, or drag across the tree to show that stretch of time. In the spiral view, drag a spiral to move it and scroll to zoom.
             </p>
           </section>
         </aside>
@@ -396,11 +475,30 @@
             <input id="time" type="range" min="0" max="0" step="1" value="0" aria-label="Time" />
             <div class="time-label" id="time-label"></div>
           </div>
-          <p class="panel-title">
-            Lineage tree
+          <div class="panel-head">
+            <div class="tabs" role="tablist">
+              <button id="tab-tree" class="tab active" type="button" role="tab" aria-selected="true">Lineage tree</button>
+              <button id="tab-spiral" class="tab" type="button" role="tab" aria-selected="false">Spiral</button>
+            </div>
             <button id="reset-zoom" class="link" type="button" disabled>Reset zoom</button>
-          </p>
-          <div class="tree-wrap" id="tree-wrap"><canvas id="tree"></canvas></div>
+            <label class="inline" id="mode-control" hidden>
+              Time as
+              <select id="spiral-mode">
+                <option value="angle">Equal angle per minute</option>
+                <option value="length">Equal length per minute</option>
+              </select>
+            </label>
+            <label class="inline" id="turn-control" hidden>
+              Minutes per turn
+              <input id="turn" type="range" min="20" max="360" step="5" value="60" />
+              <span id="turn-value"></span>
+            </label>
+            <button id="reset-spiral" class="link" type="button" hidden>Reset layout</button>
+          </div>
+          <div class="tree-wrap" id="tree-wrap">
+            <canvas id="tree"></canvas>
+            <canvas id="spiral" hidden></canvas>
+          </div>
         </section>
       </section>
     </main>
