@@ -73,6 +73,8 @@ const el = {
   treeWrap: $("tree-wrap"),
   tabTree: $("tab-tree"),
   tabSpiral: $("tab-spiral"),
+  tabTrench: $("tab-trench"),
+  trenchView: $("trench-view"),
   spiral: $("spiral"),
   turn: $("turn"),
   turnValue: $("turn-value"),
@@ -280,6 +282,20 @@ function buildTrench(name, raw) {
     }
   }
   const lineages = [...new Set(tracklets.map((tr) => tr.lineage))].sort((a, b) => a - b);
+  const cellOf = new Map();
+  for (const tr of [...tracklets].sort((a, b) => a.start - b.start)) {
+    const parent = tr.parentTracklet !== null && trackletIndex.has(tr.parentTracklet)
+      ? tracklets[trackletIndex.get(tr.parentTracklet)]
+      : null;
+    if (!parent) {
+      cellOf.set(tr.id, tr.id);
+      continue;
+    }
+    const top = parent.children
+      .map((id) => tracklets[trackletIndex.get(id)])
+      .reduce((a, b) => (b.y0 < a.y0 ? b : a));
+    cellOf.set(tr.id, top.id === tr.id ? cellOf.get(parent.id) ?? parent.id : tr.id);
+  }
 
   const linkKind = new Uint8Array(E); // 0 path, 1 gap, 2 division
   for (let e = 0; e < E; e++) {
@@ -316,12 +332,23 @@ function buildTrench(name, raw) {
     tracklets,
     trackletIndex,
     lineages,
+    cellOf,
     contrast: [0, 1],
   };
 }
 
+// "cell": at every division the daughter nearer the closed end (the one keeping the old
+// pole, so in a mother machine the mother) carries on her mother's colour and the other
+// daughter starts a new one
+function colourKey(d, lineage, tracklet) {
+  const mode = el.colorBy.value;
+  if (mode === "lineage") return lineage;
+  if (mode === "cell") return d.cellOf.get(tracklet) ?? tracklet;
+  return tracklet;
+}
+
 function nodeColor(d, i) {
-  return colorOf(el.colorBy.value === "lineage" ? d.lineage[i] : d.tracklet[i]);
+  return colorOf(colourKey(d, d.lineage[i], d.tracklet[i]));
 }
 
 function isEmphasised(d, i) {
@@ -443,14 +470,13 @@ function buildComposite() {
   const scale = 255 / (hi - lo || 1);
   const alpha = Number(el.opacity.value);
   const masks = el.showMasks.checked;
-  const byLineage = el.colorBy.value === "lineage";
   const sel = state.selected;
   const frameSize = Y * X;
 
   // colour per node, with the selection's dimming applied
   const nodeRGBA = new Float32Array(d.N * 4);
   for (let i = 0; i < d.N; i++) {
-    const c = colorOf(byLineage ? d.lineage[i] : d.tracklet[i]);
+    const c = colorOf(colourKey(d, d.lineage[i], d.tracklet[i]));
     nodeRGBA[4 * i] = c[0];
     nodeRGBA[4 * i + 1] = c[1];
     nodeRGBA[4 * i + 2] = c[2];
@@ -714,6 +740,7 @@ function describeNode(d, i) {
 
 // ---------------------------------------------------------------- lineage tree
 
+const TREE_SPLIT = 1 / 8; // where a parent sits between her daughters, from the mother
 const TREE = { left: 54, right: 16, top: 22, bottom: 26, lane: 12, lineageGap: 10 };
 document.documentElement.style.setProperty("--tree-left", `${TREE.left}px`);
 document.documentElement.style.setProperty("--tree-right", `${TREE.right}px`);
@@ -732,35 +759,36 @@ function descendantEnd(d) {
   return end;
 }
 
-// Lineages are ordered by how long their longest line of descent lasts (in a mother
-// machine, the old-pole mother's lineage comes first); within a lineage, each branch
-// sits midway between its daughters.
+// Lineages are in trench order (founders from the closed end down, as in the image).
 function layoutTree() {
   const d = state.data;
   const byId = (id) => d.tracklets[d.trackletIndex.get(id)];
-  const lastFrame = descendantEnd(d);
   let lane = 0;
   d.lineageTop = new Map();
-  // the daughter whose descendants last longest goes below its sister, so a lineage
-  // grows down and to the right, with its root near the top
+  // the daughter that keeps the cell (nearer the closed end: the mother) goes above her
+  // sister, and the parent sits only 1/8 of the way from her towards the sister, so the
+  // mother's line barely moves at each division while the daughter drops away below
   const place = (tr) => {
-    const kids = tr.children.map(byId).sort((a, b) => lastFrame(a) - lastFrame(b) || b.y0 - a.y0);
+    const kids = tr.children.map(byId).sort((a, b) => a.y0 - b.y0);
     if (!kids.length) {
       tr.lane = lane++;
       return;
     }
     kids.forEach(place);
-    tr.lane = (kids[0].lane + kids[kids.length - 1].lane) / 2;
+    const keep = kids[0].lane;
+    tr.lane = keep + TREE_SPLIT * (kids[kids.length - 1].lane - keep);
   };
   const lineages = d.lineages.map((lin) => {
     const members = d.tracklets.filter((tr) => tr.lineage === lin);
     const roots = members
       .filter((tr) => tr.parentTracklet === null || !d.trackletIndex.has(tr.parentTracklet))
       .sort((a, b) => a.start - b.start || a.y0 - b.y0);
-    const span = Math.max(...roots.map((r) => lastFrame(r) - r.start));
-    return { lin, roots, span, size: members.length };
+    // where the lineage's founder sits in the trench when first seen (closed end first)
+    return { lin, roots, start: roots[0].start, y0: roots[0].y0 };
   });
-  lineages.sort((a, b) => b.span - a.span || b.size - a.size || a.lin - b.lin);
+  // in trench order, as in the image above: founders present from the start first, from
+  // the closed end down, then any that appear later
+  lineages.sort((a, b) => a.start - b.start || a.y0 - b.y0 || a.lin - b.lin);
   for (const { lin, roots } of lineages) {
     const top = lane;
     roots.forEach(place);
@@ -784,7 +812,8 @@ function treeGeometry() {
 }
 
 function drawTree() {
-  if (state.tab === "spiral") drawSpiral();
+  if (state.tab === "trench") drawTrench();
+  else if (state.tab === "spiral") drawSpiral();
   else drawLineageTree();
 }
 
@@ -855,7 +884,7 @@ function drawLineageTree() {
   for (const tr of d.tracklets) {
     const faded = sel && sel.lineage !== tr.lineage;
     const isSel = sel && sel.tracklet === tr.id;
-    const id = el.colorBy.value === "lineage" ? tr.lineage : tr.id;
+    const id = colourKey(d, tr.lineage, tr.id);
     const y = g.ly(tr.lane);
     const x0 = g.tx(tr.start);
     const x1 = Math.max(g.tx(tr.end), x0 + 1.5);
@@ -1192,7 +1221,7 @@ function drawSpiral() {
     // offshoots first, so the spine is drawn over their roots
     for (const tr of shoots) {
       const shoot = sp.shoot.get(tr.id);
-      const id = el.colorBy.value === "lineage" ? tr.lineage : tr.id;
+      const id = colourKey(d, tr.lineage, tr.id);
       const t1 = Math.max(tr.end, shoot.from + 0.5);
       if (sel && sel.tracklet === tr.id) {
         ctx.strokeStyle = "rgba(0,170,200,0.9)";
@@ -1206,7 +1235,7 @@ function drawSpiral() {
       ctx.stroke();
     }
     for (const tr of spine) {
-      const id = el.colorBy.value === "lineage" ? tr.lineage : tr.id;
+      const id = colourKey(d, tr.lineage, tr.id);
       const t1 = Math.min(sp.end, tr.end + (tr.divides ? 1 : 0));
       if (sel && sel.tracklet === tr.id) {
         ctx.strokeStyle = "rgba(0,170,200,0.9)";
@@ -1301,12 +1330,13 @@ function spiralPick(clientX, clientY) {
 function setTab(tab) {
   state.tab = tab;
   const spiral = tab === "spiral";
-  el.tabTree.classList.toggle("active", !spiral);
-  el.tabSpiral.classList.toggle("active", spiral);
-  el.tabTree.setAttribute("aria-selected", String(!spiral));
-  el.tabSpiral.setAttribute("aria-selected", String(spiral));
-  el.tree.hidden = spiral;
+  for (const [button, name] of [[el.tabTree, "tree"], [el.tabSpiral, "spiral"], [el.tabTrench, "trench"]]) {
+    button.classList.toggle("active", tab === name);
+    button.setAttribute("aria-selected", String(tab === name));
+  }
+  el.tree.hidden = tab !== "tree";
   el.spiral.hidden = !spiral;
+  el.trenchView.hidden = tab !== "trench";
   el.turnControl.hidden = !spiral;
   el.resetSpiral.hidden = !spiral;
   drawTree();
@@ -1315,6 +1345,7 @@ function setTab(tab) {
 
 el.tabTree.addEventListener("click", () => setTab("tree"));
 el.tabSpiral.addEventListener("click", () => setTab("spiral"));
+el.tabTrench.addEventListener("click", () => setTab("trench"));
 el.turn.addEventListener("input", () => {
   drawTree();
   writeUrlSoon();
@@ -1402,6 +1433,247 @@ el.spiral.addEventListener(
   },
   { passive: false },
 );
+
+
+// ---------------------------------------------------------------- trench view
+//
+// The lineage drawn where the cells are: time across (aligned with the tree and the
+// time slider), position along the trench down (closed end at the top). Each cell, in
+// the "Cell" sense (the daughter nearer the closed end carries the cell on), is one
+// heavily smoothed line, so the mother is one continuous curve near the top and each
+// new daughter peels off it and drifts down to the open end.
+
+const TRENCH_VIEW = { height: 380, sigma: 8 }; // sigma: smoothing, in frames
+
+function smooth(values, sigma) {
+  const n = values.length;
+  const out = new Float64Array(n);
+  const r = Math.ceil(3 * sigma);
+  for (let i = 0; i < n; i++) {
+    let sum = 0;
+    let wsum = 0;
+    for (let j = Math.max(0, i - r); j <= Math.min(n - 1, i + r); j++) {
+      const w = Math.exp(-((j - i) ** 2) / (2 * sigma * sigma));
+      sum += w * values[j];
+      wsum += w;
+    }
+    out[i] = sum / wsum;
+  }
+  return out;
+}
+
+// smoothed position of every cell: one curve per cell chain, nodes in time order
+function trenchCurves() {
+  const d = state.data;
+  if (d.trenchCurves) return d.trenchCurves;
+  const chains = new Map();
+  for (const tr of d.tracklets) {
+    const key = d.cellOf.get(tr.id) ?? tr.id;
+    if (!chains.has(key)) chains.set(key, []);
+    chains.get(key).push(...tr.nodes);
+  }
+  const smoothY = new Float64Array(d.N);
+  const curves = [];
+  for (const [key, nodes] of chains) {
+    nodes.sort((a, b) => d.t[a] - d.t[b]);
+    curves.push({ key, nodes });
+  }
+  for (const { nodes } of curves) {
+    const ys = smooth(nodes.map((i) => d.y[i]), TRENCH_VIEW.sigma);
+    nodes.forEach((i, j) => (smoothY[i] = ys[j]));
+  }
+  d.trenchCurves = { curves, smoothY };
+  return d.trenchCurves;
+}
+
+// the closed end of the trench: the median over frames of the top edge of the topmost mask
+function closedEnd(d) {
+  if (d.closedEnd !== undefined) return d.closedEnd;
+  const tops = [];
+  for (let t = 0; t < d.T; t++) {
+    const base = t * d.Y * d.X;
+    for (let y = 0; y < d.Y; y++) {
+      let hit = false;
+      for (let x = 0; x < d.X; x++) {
+        if (d.seg[base + y * d.X + x]) {
+          hit = true;
+          break;
+        }
+      }
+      if (hit) {
+        tops.push(y);
+        break;
+      }
+    }
+  }
+  tops.sort((a, b) => a - b);
+  d.closedEnd = tops.length ? tops[Math.floor(tops.length / 2)] : 0;
+  return d.closedEnd;
+}
+
+function trenchGeometry() {
+  const d = state.data;
+  const width = el.treeWrap.clientWidth;
+  const plotW = width - TREE.left - TREE.right;
+  const top = 16;
+  const plotH = TRENCH_VIEW.height - top - 26;
+  return {
+    width,
+    height: TRENCH_VIEW.height,
+    tx: (t) => TREE.left + (t / Math.max(1, d.T - 1)) * plotW,
+    py: (y) => top + (y / d.Y) * plotH,
+    plotW,
+    plotH,
+    top,
+  };
+}
+
+function drawTrench() {
+  const d = state.data;
+  const canvas = el.trenchView;
+  const ctx = canvas.getContext("2d");
+  const dpr = window.devicePixelRatio || 1;
+  const width = el.treeWrap.clientWidth;
+  canvas.style.width = `${width}px`;
+  canvas.style.height = `${TRENCH_VIEW.height}px`;
+  canvas.width = Math.round(width * dpr);
+  canvas.height = Math.round(TRENCH_VIEW.height * dpr);
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, width, TRENCH_VIEW.height);
+  if (!d) return;
+  const g = trenchGeometry();
+  const { curves, smoothY } = trenchCurves();
+  const sel = state.selected;
+
+  // frames shown in the kymograph
+  const f0 = slotToFrame(state.viewX / d.X);
+  const f1 = slotToFrame((state.viewX + viewWidthData()) / d.X);
+  ctx.fillStyle = "rgba(17,17,17,0.06)";
+  ctx.fillRect(g.tx(f0), g.top - 6, Math.max(2, g.tx(f1) - g.tx(f0)), g.plotH + 12);
+
+  // axes: time ticks as in the tree, the two ends of the trench
+  ctx.strokeStyle = "rgba(17,17,17,0.12)";
+  ctx.fillStyle = "rgba(17,17,17,0.6)";
+  ctx.font = "11px 'IBM Plex Mono', monospace";
+  ctx.textAlign = "center";
+  const tickStep = niceStep(d.T, g.plotW / 70);
+  ctx.beginPath();
+  for (let t = 0; t < d.T; t += tickStep) {
+    const x = Math.round(g.tx(t)) + 0.5;
+    ctx.moveTo(x, g.top - 6);
+    ctx.lineTo(x, g.top + g.plotH + 4);
+    ctx.fillText(String(t), x, g.height - 8);
+  }
+  ctx.stroke();
+  ctx.textAlign = "left";
+  ctx.fillText("frame", 4, g.height - 8);
+  // a trench beside the axis: its rounded closed end level with the top of the cell at
+  // the closed end, open at the bottom
+  const R = 9;
+  const cx = 23;
+  const closed = g.py(closedEnd(d));
+  ctx.strokeStyle = "rgba(17,17,17,0.35)";
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(cx - R, g.top + g.plotH);
+  ctx.lineTo(cx - R, closed + R);
+  ctx.arc(cx, closed + R, R, Math.PI, 0);
+  ctx.lineTo(cx + R, g.top + g.plotH);
+  ctx.stroke();
+
+  const X = (i) => g.tx(d.t[i]);
+  const Y = (i) => g.py(smoothY[i] + 0.5);
+  ctx.lineCap = "round";
+  ctx.lineJoin = "round";
+  // a daughter starting a new cell peels off her mother in a smooth curve
+  for (const { nodes } of curves) {
+    const first = nodes[0];
+    const p = d.parent[first];
+    if (p < 0) continue;
+    const faded = sel && sel.lineage !== d.lineage[first];
+    ctx.strokeStyle = css(nodeColor(d, first), faded ? 0.2 : 0.9);
+    ctx.lineWidth = 2.4;
+    const x0 = X(p);
+    const y0 = Y(p);
+    const x1 = X(first);
+    const y1 = Y(first);
+    const mid = (x0 + x1) / 2 + 4;
+    ctx.beginPath();
+    ctx.moveTo(x0, y0);
+    ctx.bezierCurveTo(mid, y0, mid, y1, x1 + 2, y1);
+    ctx.stroke();
+  }
+  // each cell as one line, coloured piece by piece (so "Tracklet" colouring still works)
+  for (const { nodes } of curves) {
+    for (let j = 1; j < nodes.length; j++) {
+      const a = nodes[j - 1];
+      const b = nodes[j];
+      const faded = sel && sel.lineage !== d.lineage[b];
+      const isSel = sel && d.tracklet[b] === sel.tracklet;
+      if (isSel) {
+        ctx.strokeStyle = "rgba(0,170,200,0.35)";
+        ctx.lineWidth = 8;
+        ctx.beginPath();
+        ctx.moveTo(X(a), Y(a));
+        ctx.lineTo(X(b), Y(b));
+        ctx.stroke();
+      }
+      ctx.strokeStyle = css(nodeColor(d, b), faded ? 0.2 : 1);
+      ctx.lineWidth = 2.8;
+      ctx.beginPath();
+      ctx.moveTo(X(a), Y(a));
+      ctx.lineTo(X(b), Y(b));
+      ctx.stroke();
+    }
+  }
+  if (state.hoverFrame >= 0) {
+    const x = Math.round(g.tx(state.hoverFrame)) + 0.5;
+    ctx.strokeStyle = "rgba(0,150,180,0.8)";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(x, g.top - 6);
+    ctx.lineTo(x, g.top + g.plotH + 6);
+    ctx.stroke();
+  }
+}
+
+function trenchPick(clientX, clientY) {
+  const d = state.data;
+  if (!d) return null;
+  const rect = el.trenchView.getBoundingClientRect();
+  const g = trenchGeometry();
+  const mx = clientX - rect.left;
+  const my = clientY - rect.top;
+  const frame = Math.max(0, Math.min(d.T - 1, Math.round(((mx - TREE.left) / g.plotW) * (d.T - 1))));
+  const { smoothY } = trenchCurves();
+  let best = -1;
+  let bestDist = 10;
+  for (let i = 0; i < d.N; i++) {
+    if (Math.abs(d.t[i] - frame) > 6) continue;
+    const dist = Math.hypot(g.tx(d.t[i]) - mx, g.py(smoothY[i] + 0.5) - my);
+    if (dist < bestDist) {
+      bestDist = dist;
+      best = i;
+    }
+  }
+  return { frame, node: best };
+}
+
+el.trenchView.addEventListener("mousemove", (event) => {
+  const d = state.data;
+  const hit = trenchPick(event.clientX, event.clientY);
+  if (!d || !hit) return;
+  el.hover.textContent = hit.node >= 0 ? `${formatTime(d.t[hit.node])} · ${describeNode(d, hit.node)}` : formatTime(hit.frame);
+});
+
+el.trenchView.addEventListener("click", (event) => {
+  const d = state.data;
+  const hit = trenchPick(event.clientX, event.clientY);
+  if (!d || !hit) return;
+  centerOnFrame(hit.frame);
+  select(hit.node >= 0 ? d.tracklet[hit.node] : null);
+  writeUrl();
+});
 
 // ---------------------------------------------------------------- selection
 
@@ -1690,6 +1962,7 @@ function writeUrl() {
     params.set("view", "spiral");
     params.set("turn", el.turn.value);
   }
+  if (state.tab === "trench") params.set("view", "trench");
   history.replaceState(null, "", `${location.pathname}?${params}`);
 }
 
@@ -1736,6 +2009,7 @@ if (params.get("divisions") === "only") el.divisionsOnly.checked = true;
 el.subsampleValue.textContent = "every frame";
 if (params.get("turn")) el.turn.value = params.get("turn");
 if (params.get("view") === "spiral") setTab("spiral");
+if (params.get("view") === "trench") setTab("trench");
 loadDataset(params.get("trench")).then(() => {
   const wanted = Number(params.get("tracklet"));
   if (state.data && params.get("tracklet") && state.data.trackletIndex.has(wanted)) select(wanted);

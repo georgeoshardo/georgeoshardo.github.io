@@ -396,6 +396,10 @@
         cursor: grab;
       }
 
+      #trench-view {
+        cursor: pointer;
+      }
+
       .panel-title {
         margin: 6px 0 0;
         font-size: 0.72rem;
@@ -452,6 +456,7 @@
             <label for="color-by">
               Colour by
               <select id="color-by">
+                <option value="cell" selected>Cell</option>
                 <option value="tracklet">Tracklet</option>
                 <option value="lineage">Lineage</option>
               </select>
@@ -490,6 +495,7 @@
             <div class="tabs" role="tablist">
               <button id="tab-tree" class="tab active" type="button" role="tab" aria-selected="true">Lineage tree</button>
               <button id="tab-spiral" class="tab" type="button" role="tab" aria-selected="false">Spiral</button>
+              <button id="tab-trench" class="tab" type="button" role="tab" aria-selected="false">Trench</button>
             </div>
             <button id="reset-zoom" class="link" type="button" disabled>Reset zoom</button>
             <label class="inline" id="turn-control" hidden>
@@ -502,6 +508,7 @@
           <div class="tree-wrap" id="tree-wrap">
             <canvas id="tree"></canvas>
             <canvas id="spiral" hidden></canvas>
+            <canvas id="trench-view" hidden></canvas>
           </div>
         </section>
       </section>
