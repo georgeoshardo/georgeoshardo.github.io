@@ -521,9 +521,9 @@ function buildComposite() {
 
 // ---------------------------------------------------------------- kymograph view
 
-// The default zoom is also the closest zoom: the stage keeps the height it has at this
-// zoom, so zooming out (or selecting a time range in the tree) never moves the tree.
-const MAX_ZOOM = 4;
+// The stage keeps the height it has at the closest zoom, so zooming out (or selecting a
+// time range in the tree) never moves the tree below it.
+const MAX_ZOOM = 2.86;
 const DEFAULT_ZOOM = 1.7154; // what a trench opens at, and what Reset zoom returns to
 
 function minZoom() {
