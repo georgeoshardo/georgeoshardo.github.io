@@ -347,6 +347,22 @@ function colourKey(d, lineage, tracklet) {
   return tracklet;
 }
 
+// the frame being looked at: under the cursor if hovering, else the time slider's
+function currentFrame() {
+  return state.hoverFrame >= 0 ? state.hoverFrame : Number(el.time.value);
+}
+
+// a dot in a cell's colour, ringed white, marking where it is at the current frame
+function frameDot(ctx, x, y, color, alpha = 1) {
+  ctx.beginPath();
+  ctx.arc(x, y, 4.5, 0, Math.PI * 2);
+  ctx.fillStyle = css(color, alpha);
+  ctx.fill();
+  ctx.lineWidth = 1.5;
+  ctx.strokeStyle = `rgba(255,255,255,${alpha})`;
+  ctx.stroke();
+}
+
 function nodeColor(d, i) {
   return colorOf(colourKey(d, d.lineage[i], d.tracklet[i]));
 }
@@ -926,6 +942,12 @@ function drawLineageTree() {
     ctx.lineTo(x, g.height - TREE.bottom + 8);
     ctx.stroke();
   }
+  const now = currentFrame();
+  for (const tr of d.tracklets) {
+    if (now < tr.start || now > tr.end) continue;
+    const faded = sel && sel.lineage !== tr.lineage;
+    frameDot(ctx, g.tx(now), g.ly(tr.lane), colorOf(colourKey(d, tr.lineage, tr.id)), faded ? 0.35 : 1);
+  }
 }
 
 function niceStep(total, maxTicks) {
@@ -1273,15 +1295,13 @@ function drawSpiral() {
     }
     ctx.textBaseline = "alphabetic";
 
-    // where the kymograph cursor is in time, on every cell alive then
-    if (state.hoverFrame >= sp.start && state.hoverFrame <= sp.end) {
-      ctx.fillStyle = "rgba(0,170,200,1)";
+    // every cell alive at the current frame
+    const now = currentFrame();
+    if (now >= sp.start && now <= sp.end) {
       for (const tr of sp.tracklets) {
-        if (state.hoverFrame < tr.start || state.hoverFrame > tr.end) continue;
-        const [x, y] = screen(sp, spiralPoint(sp, tr, state.hoverFrame));
-        ctx.beginPath();
-        ctx.arc(x, y, 3, 0, Math.PI * 2);
-        ctx.fill();
+        if (now < tr.start || now > tr.end) continue;
+        const [x, y] = screen(sp, spiralPoint(sp, tr, now));
+        frameDot(ctx, x, y, colorOf(colourKey(d, tr.lineage, tr.id)), faded ? 0.35 : 1);
       }
     }
 
@@ -1688,6 +1708,22 @@ function drawTrench() {
     ctx.moveTo(x, g.top - 6);
     ctx.lineTo(x, g.top + g.plotH + 6);
     ctx.stroke();
+  }
+  const now = currentFrame();
+  for (let i = 0; i < d.N; i++) {
+    if (d.t[i] !== now) continue;
+    const faded = sel && sel.lineage !== d.lineage[i];
+    // a faint dotted line back to the centre of this cell's mask in the trench
+    ctx.save();
+    ctx.setLineDash([2, 4]);
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = css(nodeColor(d, i), faded ? 0.15 : 0.45);
+    ctx.beginPath();
+    ctx.moveTo(X(i), Y(i));
+    ctx.lineTo(left + (d.x[i] - c0 + 0.5) * scale, g.py(d.y[i] + 0.5));
+    ctx.stroke();
+    ctx.restore();
+    frameDot(ctx, X(i), Y(i), nodeColor(d, i), faded ? 0.35 : 1);
   }
 }
 
