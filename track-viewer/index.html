@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lineage Track Viewer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,500;6..96,700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #ffffff;
+        --ink: #111111;
+        --ink-soft: rgba(17, 17, 17, 0.66);
+        --line: rgba(17, 17, 17, 0.14);
+        --stage: #0b0b0b;
+        --warn: #8a1f1f;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        color: var(--ink);
+        background: var(--bg);
+        font-family: "IBM Plex Mono", monospace;
+      }
+
+      .shell {
+        width: min(1600px, calc(100vw - 32px));
+        margin: 0 auto;
+        padding: 24px 0 40px;
+      }
+
+      .layout {
+        display: grid;
+        grid-template-columns: 300px minmax(0, 1fr);
+        gap: 24px;
+        align-items: start;
+      }
+
+      .sidebar {
+        display: grid;
+        gap: 20px;
+        position: sticky;
+        top: 16px;
+      }
+
+      .section {
+        display: grid;
+        gap: 12px;
+      }
+
+      .section + .section {
+        padding-top: 16px;
+        border-top: 1px solid var(--line);
+      }
+
+      h1 {
+        margin: 0;
+        font-family: "Bodoni Moda", serif;
+        font-size: 1.5rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+      }
+
+      .section h2 {
+        margin: 0;
+        font-family: "Bodoni Moda", serif;
+        font-size: 1.05rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      label {
+        display: grid;
+        gap: 6px;
+        font-size: 0.72rem;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--ink-soft);
+      }
+
+      label.check {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        letter-spacing: 0.06em;
+      }
+
+      input[type="text"],
+      select {
+        width: 100%;
+        border: 0;
+        border-bottom: 1px solid rgba(17, 17, 17, 0.28);
+        border-radius: 0;
+        padding: 8px 0;
+        font: inherit;
+        font-size: 0.85rem;
+        color: var(--ink);
+        background: transparent;
+      }
+
+      input[type="range"] {
+        width: 100%;
+        accent-color: #111111;
+      }
+
+      button {
+        border: 1px solid #111111;
+        border-radius: 0;
+        padding: 8px 12px;
+        font: inherit;
+        font-size: 0.78rem;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #ffffff;
+        background: #111111;
+        cursor: pointer;
+      }
+
+      button.secondary {
+        color: var(--ink);
+        background: transparent;
+        border-color: rgba(17, 17, 17, 0.25);
+      }
+
+      button:disabled {
+        opacity: 0.5;
+        cursor: progress;
+      }
+
+      .row {
+        display: flex;
+        gap: 8px;
+        align-items: end;
+      }
+
+      .row > select {
+        flex: 1 1 auto;
+      }
+
+      .checks {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 6px 10px;
+      }
+
+      .status {
+        color: var(--ink-soft);
+        font-size: 0.8rem;
+        line-height: 1.45;
+        min-height: 2.9em;
+      }
+
+      .status.error {
+        color: var(--warn);
+      }
+
+      dl {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 4px 12px;
+        margin: 0;
+        font-size: 0.8rem;
+      }
+
+      dt {
+        color: var(--ink-soft);
+      }
+
+      dd {
+        margin: 0;
+        overflow-wrap: anywhere;
+      }
+
+      .hint {
+        margin: 0;
+        color: var(--ink-soft);
+        font-size: 0.75rem;
+        line-height: 1.5;
+      }
+
+      .main {
+        display: grid;
+        gap: 10px;
+        min-width: 0;
+      }
+
+      #hover {
+        height: 1.5em;
+        line-height: 1.5em;
+        color: var(--ink-soft);
+        font-size: 0.8rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .stage {
+        position: relative;
+        background: var(--stage);
+        overflow: hidden;
+        cursor: grab;
+        touch-action: none;
+      }
+
+      .stage.dragging {
+        cursor: grabbing;
+      }
+
+      .tree-wrap {
+        position: relative;
+        border: 1px solid var(--line);
+        background: #ffffff;
+        overflow: hidden;
+      }
+
+      canvas {
+        display: block;
+      }
+
+      /* the slider track lines up with the lineage tree's time axis */
+      .time-row {
+        position: relative;
+        padding: 0 calc(var(--tree-right) + 1px - 7px) 0 calc(var(--tree-left) + 1px - 7px);
+        height: 40px;
+      }
+
+      #time {
+        -webkit-appearance: none;
+        appearance: none;
+        display: block;
+        width: 100%;
+        height: 16px;
+        margin: 0;
+        background: transparent;
+      }
+
+      #time::-webkit-slider-runnable-track {
+        height: 2px;
+        background: rgba(17, 17, 17, 0.35);
+      }
+
+      #time::-moz-range-track {
+        height: 2px;
+        background: rgba(17, 17, 17, 0.35);
+      }
+
+      #time::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 14px;
+        height: 14px;
+        margin-top: -6px;
+        border: 0;
+        border-radius: 50%;
+        background: #111111;
+      }
+
+      #time::-moz-range-thumb {
+        width: 14px;
+        height: 14px;
+        border: 0;
+        border-radius: 50%;
+        background: #111111;
+      }
+
+      .time-label {
+        position: absolute;
+        top: 18px;
+        transform: translateX(-50%);
+        font-size: 0.78rem;
+        white-space: nowrap;
+        pointer-events: none;
+      }
+
+      #tree {
+        touch-action: none;
+      }
+
+      button.link {
+        margin-left: 10px;
+        padding: 0;
+        border: 0;
+        background: none;
+        font: inherit;
+        letter-spacing: inherit;
+        text-transform: none;
+        color: #1a6fd1;
+        cursor: pointer;
+      }
+
+      button.link:hover {
+        text-decoration: underline;
+      }
+
+      button.link:disabled {
+        color: rgba(17, 17, 17, 0.35);
+        text-decoration: none;
+        opacity: 1;
+        cursor: default;
+      }
+
+      .panel-title {
+        margin: 6px 0 0;
+        font-size: 0.72rem;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--ink-soft);
+      }
+
+      @media (max-width: 900px) {
+        .layout {
+          grid-template-columns: 1fr;
+        }
+
+        .sidebar {
+          position: static;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="shell">
+      <section class="layout">
+        <aside class="sidebar">
+          <section class="section">
+            <h1>Lineage tracks</h1>
+            <label for="dataset">
+              Hugging Face dataset
+              <input id="dataset" type="text" spellcheck="false" />
+            </label>
+            <button id="load-dataset" type="button">Load dataset</button>
+            <label for="trench">
+              Trench
+              <div class="row">
+                <button id="prev" class="secondary" type="button" title="Previous trench">&lt;</button>
+                <select id="trench"></select>
+                <button id="next" class="secondary" type="button" title="Next trench">&gt;</button>
+              </div>
+            </label>
+            <div id="status" class="status" aria-live="polite"></div>
+          </section>
+
+          <section class="section">
+            <h2>Display</h2>
+            <label for="zoom">Zoom <input id="zoom" type="range" min="0" max="1" step="0.001" value="1" /></label>
+            <label for="contrast-lo">Contrast low <input id="contrast-lo" type="range" min="0" max="1" step="0.001" /></label>
+            <label for="contrast-hi">Contrast high <input id="contrast-hi" type="range" min="0" max="1" step="0.001" /></label>
+            <label for="opacity">Mask opacity <input id="opacity" type="range" min="0" max="1" step="0.05" value="0.6" /></label>
+            <label for="color-by">
+              Colour by
+              <select id="color-by">
+                <option value="tracklet">Tracklet</option>
+                <option value="lineage">Lineage</option>
+              </select>
+            </label>
+            <div class="checks">
+              <label class="check"><input id="show-masks" type="checkbox" checked /> Masks</label>
+              <label class="check"><input id="show-points" type="checkbox" checked /> Points</label>
+              <label class="check"><input id="show-paths" type="checkbox" checked /> Paths</label>
+              <label class="check"><input id="show-branches" type="checkbox" checked /> Divisions</label>
+              <label class="check"><input id="show-bounds" type="checkbox" checked /> Frame lines</label>
+            </div>
+          </section>
+
+          <section class="section">
+            <h2>Selection</h2>
+            <dl id="selection"><dt>None</dt><dd>Click a cell or a branch</dd></dl>
+            <button id="clear" class="secondary" type="button">Clear selection</button>
+          </section>
+
+          <section class="section">
+            <p class="hint">
+              Drag or scroll to move through time. Ctrl + scroll zooms. Arrow keys step one frame,
+              Shift + arrow one screen. Click a cell or a tree branch to follow its lineage, or drag across the tree to show that stretch of time.
+            </p>
+          </section>
+        </aside>
+
+        <section class="main">
+          <div id="hover"></div>
+          <div class="stage" id="stage"><canvas id="kymo"></canvas></div>
+          <div class="time-row" id="time-row">
+            <input id="time" type="range" min="0" max="0" step="1" value="0" aria-label="Time" />
+            <div class="time-label" id="time-label"></div>
+          </div>
+          <p class="panel-title">
+            Lineage tree
+            <button id="reset-zoom" class="link" type="button" disabled>Reset zoom</button>
+          </p>
+          <div class="tree-wrap" id="tree-wrap"><canvas id="tree"></canvas></div>
+        </section>
+      </section>
+    </main>
+
+    <script type="module" src="./viewer.js"></script>
+  </body>
+</html>
