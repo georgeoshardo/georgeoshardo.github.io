@@ -1435,7 +1435,7 @@ el.spiral.addEventListener(
 );
 
 
-// ---------------------------------------------------------------- trench view
+// ---------------------------------------------------------------- lineage kymograph
 //
 // The lineage drawn where the cells are: time across (aligned with the tree and the
 // time slider), position along the trench down (closed end at the top). Each cell, in
@@ -1484,6 +1484,51 @@ function trenchCurves() {
   }
   d.trenchCurves = { curves, smoothY };
   return d.trenchCurves;
+}
+
+// one frame's masks, coloured like the rest of the viewer, cropped to columns c0..c1
+function frameMasks(d, t, c0, c1, sel) {
+  const w = c1 - c0 + 1;
+  if (!d.maskCanvas || d.maskCanvas.width !== w) {
+    d.maskCanvas = document.createElement("canvas");
+    d.maskCanvas.width = w;
+    d.maskCanvas.height = d.Y;
+  }
+  const ctx = d.maskCanvas.getContext("2d");
+  const img = ctx.createImageData(w, d.Y);
+  const px = img.data;
+  const base = t * d.Y * d.X;
+  for (let y = 0; y < d.Y; y++) {
+    for (let x = c0; x <= c1; x++) {
+      const lab = d.seg[base + y * d.X + x];
+      if (!lab) continue;
+      const node = lab < d.stride ? d.lut[t * d.stride + lab] : -1;
+      if (node < 0) continue;
+      const c = nodeColor(d, node);
+      const o = (y * w + (x - c0)) * 4;
+      px[o] = c[0];
+      px[o + 1] = c[1];
+      px[o + 2] = c[2];
+      px[o + 3] = sel && sel.lineage !== d.lineage[node] ? 80 : 245;
+    }
+  }
+  ctx.putImageData(img, 0, 0);
+  return d.maskCanvas;
+}
+
+// the columns the cells occupy over the whole movie (the trench's inside)
+function trenchColumns(d) {
+  if (d.trenchColumns) return d.trenchColumns;
+  let c0 = d.X;
+  let c1 = -1;
+  for (let k = 0; k < d.seg.length; k++) {
+    if (!d.seg[k]) continue;
+    const x = k % d.X;
+    if (x < c0) c0 = x;
+    if (x > c1) c1 = x;
+  }
+  d.trenchColumns = c1 >= c0 ? [c0, c1] : [0, d.X - 1];
+  return d.trenchColumns;
 }
 
 // the closed end of the trench: the median over frames of the top edge of the topmost mask
@@ -1568,10 +1613,19 @@ function drawTrench() {
   ctx.textAlign = "left";
   ctx.fillText("frame", 4, g.height - 8);
   // a trench beside the axis: its rounded closed end level with the top of the cell at
-  // the closed end, open at the bottom
-  const R = 9;
-  const cx = 23;
-  const closed = g.py(closedEnd(d));
+  // the closed end, open at the bottom; inside it, the masks of the current frame (under
+  // the cursor, else the time slider's) at the plot's own scale, so every cell keeps its
+  // shape and sits at the height of its line
+  const [c0, c1] = trenchColumns(d);
+  const scale = g.plotH / d.Y;
+  const w = (c1 - c0 + 1) * scale;
+  const cx = TREE.left / 2;
+  const left = cx - w / 2;
+  const frame = state.hoverFrame >= 0 ? state.hoverFrame : Number(el.time.value);
+  ctx.imageSmoothingEnabled = true;
+  ctx.drawImage(frameMasks(d, frame, c0, c1, sel), left, g.py(0), w, d.Y * scale);
+  const R = w / 2 + 3;
+  const closed = g.py(closedEnd(d)) - 2;
   ctx.strokeStyle = "rgba(17,17,17,0.35)";
   ctx.lineWidth = 1.5;
   ctx.beginPath();
@@ -1663,7 +1717,16 @@ el.trenchView.addEventListener("mousemove", (event) => {
   const d = state.data;
   const hit = trenchPick(event.clientX, event.clientY);
   if (!d || !hit) return;
+  if (hit.frame !== state.hoverFrame) {
+    state.hoverFrame = hit.frame;
+    drawTrench();
+  }
   el.hover.textContent = hit.node >= 0 ? `${formatTime(d.t[hit.node])} · ${describeNode(d, hit.node)}` : formatTime(hit.frame);
+});
+
+el.trenchView.addEventListener("mouseleave", () => {
+  state.hoverFrame = -1;
+  drawTrench();
 });
 
 el.trenchView.addEventListener("click", (event) => {
