@@ -7,8 +7,8 @@ excerpt: 'Dissecting the lytic phage lifecycle by imaging phage infections at th
 date: 2024-10-22
 venue: 'bioRxiv, currently in review'
 #slidesurl: 'http://academicpages.github.io/files/slides1.pdf'
-paperurl: 'http://georgeoshardo.github.io/files/papers/wedd_single_cell_imaging_phage_cycle.pdf'
-bibtexurl: 'http://georgeoshardo.github.io/files/bibtex/wedd_single_cell_imaging_phage_cycle.bib'
+paperurl: 'https://hardo.org/files/papers/wedd_single_cell_imaging_phage_cycle.pdf'
+bibtexurl: 'https://hardo.org/files/bibtex/wedd_single_cell_imaging_phage_cycle.bib'
 citation: 'Wedd, Charlie., et al. (2024). &quot;Single-cell imaging of the lytic phage life cycle in bacteria.&quot; <i>bioRxiv (in review)</i>'
 ---
 

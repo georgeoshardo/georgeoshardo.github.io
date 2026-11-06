@@ -7,8 +7,8 @@ excerpt: 'Here we look at the issues surrounding measurement of single-cell gene
 date: 2021-04-16
 venue: 'Essays in Biochemistry'
 #slidesurl: 'http://academicpages.github.io/files/slides1.pdf'
-paperurl: 'http://georgeoshardo.github.io/files/papers/hardo_challenges_analysing_gene_exp.pdf'
-bibtexurl: 'http://georgeoshardo.github.io/files/bibtex/hardo_challenges_analysing_gene_exp.bib'
+paperurl: 'https://hardo.org/files/papers/hardo_challenges_analysing_gene_exp.pdf'
+bibtexurl: 'https://hardo.org/files/bibtex/hardo_challenges_analysing_gene_exp.bib'
 citation: 'Hardo, Georgeos., Bakshi, Somenath. (2021). &quot;Challenges of analysing stochastic gene expression in bacteria using single-cell time-lapse experiments.&quot; <i>Essays in Biochemistry</i>. 65(1).'
 ---
 
