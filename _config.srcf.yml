@@ -1,0 +1,6 @@
+# Overlay for the SRCF mirror at https://gh464.user.srcf.net
+# Build with: jekyll build --config _config.yml,_config.srcf.yml
+url: https://gh464.user.srcf.net
+baseurl: ""
+# Keep search engines pointed at the main GitHub Pages site
+canonical_url: https://georgeoshardo.github.io
