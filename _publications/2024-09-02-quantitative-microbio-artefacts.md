@@ -7,8 +7,8 @@ excerpt: 'Analysing optical artefacts affecting quantification of single-cell pa
 date: 2024-09-02
 venue: 'npj Imaging'
 #slidesurl: 'http://academicpages.github.io/files/slides1.pdf'
-paperurl: 'https://hardo.org/files/papers/hardo_quantitative_microbio_artefacts.pdf'
-bibtexurl: 'https://hardo.org/files/bibtex/hardo_quantitative_microbio_artefacts.bib'
+paperurl: 'https://har.do/files/papers/hardo_quantitative_microbio_artefacts.pdf'
+bibtexurl: 'https://har.do/files/bibtex/hardo_quantitative_microbio_artefacts.bib'
 citation: 'Hardo, Georgeos., et al. (2024). &quot;Quantitative microbiology with widefield microscopy: navigating optical artefacts for accurate interpretations.&quot; <i>npj Imaging</i>'
 ---
 

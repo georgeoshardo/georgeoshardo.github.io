@@ -2,5 +2,5 @@
 # Build with: jekyll build --config _config.yml,_config.srcf.yml
 url: https://gh464.user.srcf.net
 baseurl: ""
-# Keep search engines pointed at the main site (GitHub Pages on hardo.org)
-canonical_url: https://hardo.org
+# Keep search engines pointed at the main site (GitHub Pages on har.do)
+canonical_url: https://har.do

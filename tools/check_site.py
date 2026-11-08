@@ -74,11 +74,11 @@ for path in pages:
     duplicates = [name for name, count in Counter(doc.ids).items() if count > 1]
     if duplicates: errors.append(f'{path.relative_to(site)}: duplicate IDs {duplicates}')
     if any(name not in doc.ids for name in doc.labels): errors.append(f'{path.relative_to(site)}: broken accessible label')
-    base = 'https://hardo.org/' + str(path.relative_to(site))
+    base = 'https://har.do/' + str(path.relative_to(site))
     for ref in doc.links:
         parsed = urlparse(urljoin(base, ref))
         if parsed.scheme not in ('http', 'https'): continue
-        if parsed.hostname not in ('hardo.org', 'www.hardo.org', 'georgeoshardo.github.io', '127.0.0.1', 'localhost'): continue
+        if parsed.hostname not in ('har.do', 'www.har.do', 'hardo.org', 'www.hardo.org', 'georgeoshardo.github.io', '127.0.0.1', 'localhost'): continue
         target = resolve(parsed.path)
         if target is None:
             errors.append(f'{path.relative_to(site)}: missing local target {ref}')
