@@ -13,7 +13,7 @@ title                    : "Georgeos Hardo"
 title_separator          : "-"
 name                     : &name "Georgeos Hardo"
 description              : &description "Assistant Professor in single-cell quantitative microbiology at UAE University"
-url                      : https://har.do # the base hostname & protocol for your site (custom domain; see CNAME)
+url                      : https://hardo.org # the base hostname & protocol for your site (custom domain; see CNAME)
 baseurl                  : "" # the subpath of your site, e.g. "/blog"
 repository               : "georgeoshardo/georgeoshardo.github.io"
 
